@@ -1,7 +1,5 @@
 package edu.cmu.cs.sasylf.util;
 
-import edu.cmu.cs.sasylf.util.VSDocument;
-import edu.cmu.cs.sasylf.util.VSRegion;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

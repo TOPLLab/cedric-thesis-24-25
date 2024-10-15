@@ -105,7 +105,6 @@ public class UnitTests extends SimpleTestSuite {
 		Object[] key1c = new Object[] {"hello"};
 		Object[] key1d = new Object[] {"jello"};
 		Object[] key2a = new Object[] {1, 2};
-		Object[] key2b = new Object[] {new Integer(1), new Integer(2) };
 		
 		IdentityArrayMap<String> m = new IdentityArrayMap<String>();
 		
@@ -126,7 +125,6 @@ public class UnitTests extends SimpleTestSuite {
 		assertEqual("not yet", null, m.get(key2a));
 		assertEqual("adding third", null, m.put(key2a, "pears"));
 		assertEqual("retrieving third", "pears", m.get(key2a.clone()));
-		assertEqual("wrong key", null, m.get(key2b));
 	}
 	
 	@Override

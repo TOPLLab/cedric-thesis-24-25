@@ -2,8 +2,8 @@ package edu.cmu.cs.sasylf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -202,23 +202,23 @@ public class Proof {
 	private ObjectNode moduleToJSON(Module module) {
 		ObjectNode astNode = objectMapper.createObjectNode();
 
-		astNode.put("name", module.getName());
+		astNode.set("name", new TextNode(module.getName()));
 
 		ArrayNode theoremsNode = objectMapper.createArrayNode();
 		ArrayNode modulesNode = objectMapper.createArrayNode();
 		ObjectNode syntaxesNode = objectMapper.createObjectNode();
 		ArrayNode judgmentsNode = objectMapper.createArrayNode();
 
-		astNode.put("theorems", theoremsNode);
-		astNode.put("modules", modulesNode);
-		astNode.put("syntax", syntaxesNode);
-		astNode.put("judgments", judgmentsNode);
+		astNode.set("theorems", theoremsNode);
+		astNode.set("modules", modulesNode);
+		astNode.set("syntax", syntaxesNode);
+		astNode.set("judgments", judgmentsNode);
 
 		ArrayNode syntaxDeclarationsNode = objectMapper.createArrayNode();
 		ArrayNode syntaxSugarsNode = objectMapper.createArrayNode();
 
-		syntaxesNode.put("syntax_declarations", syntaxDeclarationsNode);
-		syntaxesNode.put("sugars", syntaxSugarsNode);
+		syntaxesNode.set("syntax_declarations", syntaxDeclarationsNode);
+		syntaxesNode.set("sugars", syntaxSugarsNode);
 
 		List<Node> pieces = new ArrayList<>();
 		module.collectTopLevel(pieces);
@@ -241,7 +241,7 @@ public class Proof {
 
 				ArrayNode forallsNode = objectMapper.createArrayNode();
 
-				theoremNode.put("foralls", forallsNode);
+				theoremNode.set("foralls", forallsNode);
 
 				for (Fact forall : theorem.getForalls()) {
 					forallsNode.add(forall.getElement().toString());
@@ -263,7 +263,7 @@ public class Proof {
 				moduleNode.put("file", startLoc.getFile());
 
 				Module m = (Module)modulePart.getModule().resolve(null);
-				moduleNode.put("ast", moduleToJSON(m));
+				moduleNode.set("ast", moduleToJSON(m));
 			} else if (piece instanceof SyntaxDeclaration) {
 				SyntaxDeclaration syntax = (SyntaxDeclaration)piece;
 				ObjectNode syntaxNode = objectMapper.createObjectNode();
@@ -277,7 +277,7 @@ public class Proof {
 
 				ArrayNode clausesNode = objectMapper.createArrayNode();
 
-				syntaxNode.put("clauses", clausesNode);
+				syntaxNode.set("clauses", clausesNode);
 
 				List<Clause> clauses = syntax.getClauses();
 
@@ -318,7 +318,7 @@ public class Proof {
 
 				ArrayNode rulesNode = objectMapper.createArrayNode();
 
-				judgmentNode.put("rules", rulesNode);
+				judgmentNode.set("rules", rulesNode);
 
 				for (Rule rule : rules) {
 					ObjectNode ruleNode = objectMapper.createObjectNode();
@@ -327,7 +327,7 @@ public class Proof {
 
 					ArrayNode premisesNode = objectMapper.createArrayNode();
 
-					ruleNode.put("premises", premisesNode);
+					ruleNode.set("premises", premisesNode);
 
 					for (Clause clause : rule.getPremises()) {
 						premisesNode.add(clause.getName());
@@ -357,7 +357,7 @@ public class Proof {
 		if (lsp) {
 			ArrayNode qfArray = objectMapper.createArrayNode();
 
-			json.put("quickfixes", qfArray);
+			json.set("quickfixes", qfArray);
 
 			for (Report rep : reports) {
 				Span s = rep.getSpan();
@@ -387,7 +387,7 @@ public class Proof {
 				qfNode.put("end_column", end.getColumn());
 			}
 
-			json.put("ast", moduleToJSON((Module)syntaxTree));
+			json.set("ast", moduleToJSON((Module)syntaxTree));
 		}
 
 		cacheErrorCount();

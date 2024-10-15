@@ -1,0 +1,18 @@
+terminals z s
+
+syntax
+
+n ::= z 
+  | s n 
+
+judgment sum: n + n = n 
+
+ --------------- sum-z
+    z + n = n 
+
+
+   n1 + n2 = n3
+ --------------- sum-s 
+  (s n1) + n2 = s n3 
+
+

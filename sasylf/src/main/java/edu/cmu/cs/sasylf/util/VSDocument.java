@@ -1,7 +1,5 @@
 package edu.cmu.cs.sasylf.util;
 
-import edu.cmu.cs.sasylf.util.VSRegion;
-
 /**
  * This simulates the IDocument class in Eclipse.
  */

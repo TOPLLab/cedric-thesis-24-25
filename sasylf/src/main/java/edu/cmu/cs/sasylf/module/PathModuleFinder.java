@@ -14,7 +14,7 @@ import edu.cmu.cs.sasylf.util.Span;
 /**
  * Module finder that uses a path of module providers.
  */
-public class PathModuleFinder extends AbstractModuleFinder implements ModuleFinder, ModuleEventListener {
+public class PathModuleFinder extends AbstractModuleFinder implements ModuleEventListener {
 
 	private final List<ModuleId> inProcess = new ArrayList<ModuleId>();
 	private final Map<ModuleId,ModuleProvider> presentCache = new HashMap<ModuleId,ModuleProvider>();

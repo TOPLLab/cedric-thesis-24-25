@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+
 import edu.cmu.cs.sasylf.module.Module;
 import edu.cmu.cs.sasylf.module.ModuleFinder;
 import edu.cmu.cs.sasylf.module.ModuleId;
@@ -17,9 +18,17 @@ import edu.cmu.cs.sasylf.util.Errors;
 import edu.cmu.cs.sasylf.util.Location;
 import edu.cmu.cs.sasylf.util.ParseUtil;
 import edu.cmu.cs.sasylf.util.SASyLFError;
+import edu.cmu.cs.sasylf.ast.Context;
 
 
 public class CompUnit extends Node implements Module {
+
+	private Context ctxt;
+
+	public Context getContext() {
+		return ctxt;
+	}
+
 	public CompUnit(PackageDeclaration pack, Location loc, String n) {
 		super(loc);
 		packageDecl=pack; 
@@ -120,9 +129,9 @@ public class CompUnit extends Node implements Module {
 	public boolean typecheck(ModuleFinder mf, ModuleId id) {
 		ErrorHandler.recordLastSpan(this);
 		int oldCount = ErrorHandler.getErrorCount();
-		Context ctx = new Context(mf,this);
+		this.ctxt = new Context(mf,this);
 		try {
-			typecheck(ctx,id);
+			typecheck(ctxt,id);
 		} catch (SASyLFError e) {
 			// ignore the error; it has already been reported
 			//e.printStackTrace();

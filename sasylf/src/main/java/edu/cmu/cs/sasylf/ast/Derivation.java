@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.term.Substitution;
 import edu.cmu.cs.sasylf.term.Term;
@@ -114,7 +115,29 @@ public abstract class Derivation extends Fact {
 		clauseChecked = true;
 	}
 
-	public static void typecheck(Node node, Context ctx, List<Derivation> derivations) {
+	// @Override
+	public void interactiveTypecheck(Context ctx) {
+		ErrorHandler.recordLastSpan(this);
+		ctx.checkConsistent(this);
+		clause = clause.typecheck(ctx);
+
+		Element newClause = clause.computeClause(ctx, false);
+		if (!(newClause instanceof Clause))
+			ErrorHandler.error(Errors.DERIVATION_SYNTAX, this);
+		else if (!(newClause.getType() instanceof Judgment))
+			ErrorHandler.error(Errors.DERIVATION_SYNTAX,this);
+		clause = (Clause) newClause;
+		clause.checkBindings(ctx.bindingTypes, this);
+		clause.checkVariables(Collections.<String>emptySet(), false);
+
+		clauseChecked = true;
+	}
+
+	public static boolean typecheck(Node node, Context ctx, List<Derivation> derivations) {
+		return typecheck(node, ctx, derivations, true);
+	}
+
+	public static boolean typecheck(Node node, Context ctx, List<Derivation> derivations, boolean isFinal) {
 		int n = derivations.size();
 		if (n == 0) {
 			ErrorHandler.error(Errors.NO_DERIVATION, node);
@@ -131,17 +154,25 @@ public abstract class Derivation extends Fact {
 			}
 			finalOK = d.typecheckAndAssume(ctx);
 		}
-		if (!finalOK) return;
+		if (!finalOK) return false;
 
 		Derivation last = derivations.get(derivations.size()-1);
 		if (last instanceof PartialCaseAnalysis) {
 			ErrorHandler.error(Errors.PARTIAL_CASE_ANALYSIS, last, "do\nproof by");
 		}
-		if (!Derivation.checkMatchWithImplicitCoercions(null, ctx, ctx.currentGoalClause, last.getElement(), "")) {
-			ErrorHandler.error(Errors.WRONG_RESULT, last);
+		Boolean match = Derivation.checkMatchWithImplicitCoercions(null, ctx, ctx.currentGoalClause, last.getElement(), "");
+		if(isFinal){ 
+			if (!match) {
+				ErrorHandler.error(Errors.WRONG_RESULT, last);
+				return false;
+			}
+			return true;
+		} else {
+			return match;
 		}
 	}
 
+	
 	/**
 	 * Check that the supplied derivation matches what is required.
 	 * In the process, permit implicit coercions:
