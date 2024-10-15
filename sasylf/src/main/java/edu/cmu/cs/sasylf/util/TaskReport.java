@@ -3,7 +3,6 @@ package edu.cmu.cs.sasylf.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.cmu.cs.sasylf.parser.CommentListener;
 import edu.cmu.cs.sasylf.parser.Token;
 
 /**

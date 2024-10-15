@@ -1,4 +1,6 @@
-package edu.cmu.cs.sasylf.parser;
+package edu.cmu.cs.sasylf.util;
+
+import edu.cmu.cs.sasylf.parser.Token;
 
 /**
  * This object is interested in the content of

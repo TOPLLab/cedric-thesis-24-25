@@ -1,11 +1,5 @@
 package edu.cmu.cs.sasylf.util;
 
-import edu.cmu.cs.sasylf.util.Errors;
-import edu.cmu.cs.sasylf.util.Marker;
-import edu.cmu.cs.sasylf.util.VSDocument;
-import edu.cmu.cs.sasylf.util.VSFindReplaceDocumentAdapter;
-import edu.cmu.cs.sasylf.util.VSMarker;
-import edu.cmu.cs.sasylf.util.VSRegion;
 import java.util.HashMap;
 
 /**
@@ -14,13 +8,7 @@ import java.util.HashMap;
  * mirror the Eclipse ones.
  */
 public class Quickfix {
-	private HashMap<String, String> getCategoryAndLexicalInfo(String ruleName) {
-		HashMap<String, String> categoryAndLexicalInfo =
-				new HashMap<String, String>();
-
-		return categoryAndLexicalInfo;
-	}
-
+	@SuppressWarnings("unused")
 	public HashMap<String, Object> makeQuickfix(VSDocument doc, VSMarker marker) {
 		String fixInfo;
 		int line;
