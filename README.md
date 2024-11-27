@@ -6,7 +6,17 @@ SASyLF (pronounced "Sassy Elf") is an LF-based proof assistant specialized to ch
 
 ## Installing and Running
 
-The [Wiki](https://github.com/boyland/sasylf/wiki) has pages for [installing](https://github.com/boyland/sasylf/wiki/Install) and [running](https://github.com/boyland/sasylf/wiki/Running-SASyLF) SASyLF.
+### Nix/NixOS
+
+The repository contains a flake file. The `sasylf-jar` target builds the jar file.
+The `sasylf` (default) target wraps this jar such that it can be executed as `sasylf` when installed.
+For development, clone the repo and run using `nix run . -- any-args-here`.
+
+### Manual
+
+Run `mvn clean package`. The `.jar` file for the cli will be in `sasylf/target`.
+
+### Download
 
 Summary: get the JAR file from the release page and either put in the `dropins/` folder of the Eclipse distribution or use it with `java -jar`.
 
@@ -70,18 +80,16 @@ how to use the tool or interpret its output, contact John Boyland
 
 Third-party contributors are welcome to submit pull requests.  Development requires an Eclipse "for Eclipse committers" IDE using Java 8.  JavaCC is required as well.  If you are changing any code in the core (edu.cmu.cs.sasylf packages), please make sure your change passes all the tests ("make test") before submitting a pull request.
 
+### Legacy
+
 This directory is an Eclipse project and can be compiled with Eclipse 4.8
 (Photon) or later.  You will need to compile the parser file
 
-> edu/cmu/cs/sasylf/parser/parser.jj 
+> sasylf/src/main/java/edu/cmu/cs/sasylf/parser/parser.jj 
 
 with the JavaCC Eclipse plugin, available from update site
 http://eclipse-javacc.sourceforge.net/ (compile the .jj file to .java
 by right-clicking on parser.jj and choosing Compile with JavaCC).
-
-Alternatively, if you fetch the source from github, you can build SASyLF
-(under Unix) assuming you have java and javacc in your path using
->	make build
 
 There's no easy way to build the Eclipse plugin from the command-line.
 
