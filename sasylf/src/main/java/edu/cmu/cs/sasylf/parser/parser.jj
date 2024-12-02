@@ -44,8 +44,9 @@ import edu.cmu.cs.sasylf.util.*;
 
 import java.io.*;
 import java.util.*;
+import java.lang.String;
 
-@SuppressWarnings({"unused","serial"})
+@SuppressWarnings({"unused"})
 public class DSLToolkitParser {
     public static String currentFile = "NONE";
 
@@ -63,9 +64,7 @@ public class DSLToolkitParser {
         do { 
             CommentListener[] previous = listeners;
             CommentListener[] proposed = new CommentListener[previous.length+1];
-            for (int i=0; i < previous.length; ++i) {
-                proposed[i] = previous[i];
-            }
+            System.arraycopy(previous, 0, proposed, 0, previous.length);
             proposed[previous.length] = l;
             synchronized (DSLToolkitParser.class) {
                 if (listeners == previous) {
@@ -81,7 +80,7 @@ public class DSLToolkitParser {
      * If the listeners include this listener, it is removed
      * and we return true.  Otherwise, return false.
      * If it is present multiple times, only the first instance is removed.
-     * @param listener to remove
+     * @param l listener to remove
      * @return whether the listener was present (and removed).
      */
     public static boolean remListener(CommentListener l) {
@@ -114,20 +113,17 @@ public class DSLToolkitParser {
     
     public Token firstToken = null;
 
-    public static CompUnit read(File f) throws FileNotFoundException, IOException, ParseException {
-        InputStream fi = new FileInputStream(f);
-        try {
-                        DSLToolkitParser parser;
-                        parser = new DSLToolkitParser(fi,"UTF-8");
-                        currentFile = f.toString();
-                        return parser.CompilationUnit();
+    public static CompUnit read(File f) throws IOException, ParseException {
+        try (InputStream fi = new FileInputStream(f)) {
+            DSLToolkitParser parser;
+            parser = new DSLToolkitParser(fi, "UTF-8");
+            currentFile = f.toString();
+            return parser.CompilationUnit();
         } catch (ParseException e) {
-                System.err.println(e.getMessage());
-                //ErrorHandler.report(e.getMessage(), null);
-                throw e;
-                //return null; // unreachable
-        } finally {
-                fi.close();
+            System.err.println(e.getMessage());
+            //ErrorHandler.report(e.getMessage(), null);
+            throw e;
+            //return null; // unreachable
         }
     }
     
@@ -293,8 +289,7 @@ public class DSLToolkitParser {
     }
     
     NonTerminal getNonTerminal(Token t) {
-		NonTerminal nt = new NonTerminal(t.image, new Location(t));
-		return nt;
+        return new NonTerminal(t.image, new Location(t));
     }
     Clause clauseFor(Token t) {
     	Element e = getNonTerminal(t);
@@ -306,8 +301,7 @@ public class DSLToolkitParser {
 		return getTerminal(t, t.image);
     }
     Terminal getTerminal(Token t, String s) {
-		Terminal tm = new Terminal(s, makeSpan(t));
-		return tm;
+        return new Terminal(s, makeSpan(t));
     }
     
     Span makeSpan(Token t) {
@@ -317,7 +311,6 @@ public class DSLToolkitParser {
 }
 
 PARSER_END(DSLToolkitParser)
-
 
 /* WHITE SPACE */
 
@@ -1136,7 +1129,6 @@ TOKEN :
 | < EQUAL: "=" >
 }
 
-
 /* USER-DEFINED OPERATORS */
 
 TOKEN :
@@ -1523,8 +1515,6 @@ TOKEN :
   >
 }
 
-
-
 /************************************
  * THE LANGUAGE GRAMMAR STARTS HERE *
  ************************************/
@@ -1538,7 +1528,7 @@ CompUnit CompilationUnit() :
   String moduleName = null;
   Part p;
   QualName qn;
-  List<QualName> args = new ArrayList<QualName>();
+  List<QualName> args = new ArrayList<>();
   Token s, t=null, tp;
   QualName usedModule = null;
   Location loc;
@@ -1552,24 +1542,27 @@ CompUnit CompilationUnit() :
     cu = new CompUnit(pkg, firstToken != null ? new Location(firstToken) : new Location(currentFile,1,1), moduleName);
   }
   
-  (t=<REQUIRES> { if (firstToken == null) firstToken = t;
-                  if (moduleName == null) ErrorHandler.recoverableError(Errors.REQUIRES_IN_MODULE,new Location(t)); }
-    (
-      LOOKAHEAD( ("abstract" | "terminals" | "syntax" | "judgment" | "theorem" | "lemma") ) 
+  (t=<REQUIRES> {
+        if (firstToken == null) firstToken = t;
+        if (moduleName == null) ErrorHandler.recoverableError(Errors.REQUIRES_IN_MODULE,new Location(t));
+    } (
+      LOOKAHEAD( "abstract" | "terminals" | "syntax" | "judgment" | "theorem" | "lemma" )
       p=Part(true) {  cu.addParameterChunk(p); }
   	)+
   )?
    
-  (t=<EXTENDS> usedModule=QualName()
-    { if (firstToken == null) firstToken = t;
-      if (moduleName == null) ErrorHandler.recoverableError(Errors.EXTENDS_IN_MODULE, new Location(t));
-      else ErrorHandler.recoverableError(Errors.EXTENDS_UNIMPLEMENTED, new Location(t)); }
-  )*
+  (t=<EXTENDS> usedModule=QualName() {
+    if (firstToken == null) firstToken = t;
+    if (moduleName == null) ErrorHandler.recoverableError(Errors.EXTENDS_IN_MODULE, new Location(t));
+    else ErrorHandler.recoverableError(Errors.EXTENDS_UNIMPLEMENTED, new Location(t));
+  })*
    
-  (t=<PROVIDES> { if (firstToken == null) firstToken = t;
-                  if (moduleName == null) ErrorHandler.recoverableError(Errors.PROVIDES_IN_MODULE,new Location(t)); }
-  | { if (moduleName != null) ErrorHandler.recoverableError(Errors.PROVIDES_NOT_IN_MODULE, new Location(token)); }
-  )
+  (t=<PROVIDES> {
+    if (firstToken == null) firstToken = t;
+    if (moduleName == null) ErrorHandler.recoverableError(Errors.PROVIDES_IN_MODULE,new Location(t)); }
+  | {
+    if (moduleName != null) ErrorHandler.recoverableError(Errors.PROVIDES_NOT_IN_MODULE, new Location(token));
+  })
 
   (
     p=Part(false) {  cu.addChunk(p); }
@@ -1602,7 +1595,7 @@ Part Part(boolean abstractOK) :
 {
   List<Syntax> syntax; Judgment j;
   Set<String> terms;
-  List<Judgment> judges = new ArrayList<Judgment>();
+  List<Judgment> judges = new ArrayList<>();
   List<Theorem> theorems; }
 {
     terms=TerminalsDeclaration() { return new TerminalsPart(terms); }
@@ -1614,7 +1607,7 @@ Part Part(boolean abstractOK) :
 
 List<Theorem> Theorems(boolean abstractOK) :
 { Theorem thm, lastThm;
-  List<Theorem> theorems = new ArrayList<Theorem>(); }
+  List<Theorem> theorems = new ArrayList<>(); }
 {
   (	LOOKAHEAD(2)
     thm=TheoremDeclaration(abstractOK) { theorems.add(thm); lastThm = thm; }
@@ -1680,7 +1673,6 @@ QualName QualName() :
      return result;
   }
 }  
-    
 
 StringSpan RuleName() :
 {Token t, t1; StringSpan s; }
@@ -1705,7 +1697,7 @@ StringSpan RuleName() :
 
 List<Syntax> Syntax(boolean abstractOK) :
 { 	Token f; Syntax s;
-	List<Syntax> l = new ArrayList<Syntax>(); }
+	List<Syntax> l = new ArrayList<>(); }
 {
   f=<SYNTAX>
   ( LOOKAHEAD(2) s=BNFRule() { l.add(s); }
@@ -1725,7 +1717,7 @@ Token ExtendedIdentifier() :
 } 
 
 Set<String> TerminalsDeclaration() :
-{Token f; Token t; Set<String> l = new HashSet<String>(); }
+{Token f; Token t; Set<String> l = new HashSet<>(); }
 {
   f="terminals"
   (t=ExtendedIdentifier() { debug2(t.image); l.add(t.image); getTerminal(t); } )+
@@ -1734,9 +1726,9 @@ Set<String> TerminalsDeclaration() :
 
 SyntaxDeclaration BNFRule() :
 { Token t;
-  List<NonTerminal> alts = new ArrayList<NonTerminal>();
+  List<NonTerminal> alts = new ArrayList<>();
   QualName qn = null;
-  List<Clause> l = new ArrayList<Clause>(); }
+  List<Clause> l = new ArrayList<>(); }
 {
   t=<IDENTIFIER>
   (
@@ -1809,7 +1801,7 @@ Element Term() :
 }
 
 Binding Binding() :
-{ Token t,u; Element e; List<Element> l = new ArrayList<Element>(); }
+{ Token t,u; Element e; List<Element> l = new ArrayList<>(); }
 {
   t=<IDENTIFIER> "["
   	(LOOKAHEAD({ isVarBindingArg() }) e=Term()
@@ -1821,7 +1813,7 @@ Binding Binding() :
 
 Judgment JudgmentDeclaration(boolean abstractOK) :
 { Token t,t_assume=null; StringSpan s; Clause c; QualName qn = null;
-  Rule r; List<Rule> rules = new ArrayList<Rule>(); }
+  Rule r; List<Rule> rules = new ArrayList<>(); }
 {
   (t=<ABSTRACT> <JUDGMENT> { if (!abstractOK) ErrorHandler.recoverableError(Errors.ABSTRACT_NOT_PERMITTED_HERE,"",new StringSpan(t),t.image + "\n"); }
    | t=<JUDGMENT>) s=RuleName() ["=" qn=QualName()] <COLON>
@@ -1842,7 +1834,7 @@ Judgment JudgmentDeclaration(boolean abstractOK) :
 }
 
 Rule RuleDeclaration() :
-{ Token t; StringSpan n; Clause c; List<Clause> premises = new ArrayList<Clause>(); }
+{ Token t; StringSpan n; Clause c; List<Clause> premises = new ArrayList<>(); }
 {
   ( [<PREMISE>] c=ExprToNL() { premises.add(c); } )*
   t=<BAR>
@@ -1945,7 +1937,7 @@ Clause SimpleExpr() :
 	  { c = new Clause(new Location(t)); }
 	  (
 	    t=<IDENTIFIER> { c.add(getNonTerminal(t)); }
-	  | t=<COMMA> { } // not added (unordered)
+	  | t=<COMMA> // not added (unordered)
 	  | t=<LPAREN> { c2 = new Clause(new Location(t)); }
 	    (
 	  	  LOOKAHEAD(<IDENTIFIER>|<LBRACE>)
@@ -2012,7 +2004,6 @@ WhereClause WhereClauses() :
    }
 }
 
-
 Theorem TheoremHeader(boolean abstractOK) :
 { Token tinit = null, t0, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Theorem thm; Derivation d; }
 {
@@ -2032,14 +2023,11 @@ Theorem TheoremHeader(boolean abstractOK) :
   <EXISTS> c=ExprToNL()
   	(t=<AND> a=ExprToNL() { AndJudgment.addAnd(c,new Location(t),a); a = null; }
     |t=<OR> a=ExprToNL() {  OrJudgment.addOr(c,new Location(t),a); a = null; }  )*
-    { thm.setExists(c); }
-
-  { 
-    return thm;
-  }
+    { thm.setExists(c);
+  return thm;
+}
 }
 
-  
 Theorem TheoremDeclaration(boolean abstractOK) :
 { Token tinit = null, t0, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Theorem thm; Derivation d; }
 {
@@ -2081,11 +2069,11 @@ Derivation DerivationHeader() :
 { Token t; Token t2; Token a; StringSpan s; QualName q = null; Case ca; Clause c; Clause c2 = null; Derivation d; Token of = null;}
 {
    (
-   //   t=<IDENTIFIER> <COLON> c=Expr()
-   // (a=<AND> t2=<IDENTIFIER> <COLON> c2=Expr()
-   //   { t.image = t.image+","+t2.image;
-   //     AndJudgment.addAnd(c,new Location(a),c2); })*
-   //   |
+      t=<IDENTIFIER> <COLON> c=Expr()
+    (a=<AND> t2=<IDENTIFIER> <COLON> c2=Expr()
+      { t.image += "," + t2.image;
+        AndJudgment.addAnd(c,new Location(a),c2); })*
+      |
      t=<PROOF> { c = null; })
    <BY> d=JustificationHeader(t, c)
   { return d; }
@@ -2131,32 +2119,30 @@ Derivation Derivation() :
    (
      t=<IDENTIFIER> <COLON> c=Expr()
    (a=<AND> t2=<IDENTIFIER> <COLON> c2=Expr()
-     { t.image = t.image+","+t2.image;
+     { t.image += "," + t2.image;
        AndJudgment.addAnd(c,new Location(a),c2); })*
      |
      t=<PROOF> { c = null; })
    <BY> d=Justification(t, c)
   { return d; }
 | LOOKAHEAD(<USE> <INVERSION>)
-  (
-    t=<USE> t2=<INVERSION> (of=<IDENTIFIER> [<RULE>] q=QualName() [<ON> c2=SimpleExpr()]
-                        |<ON> c2=SimpleExpr())
-    {
-	  Element lhs=null; Clause rhs=null;
-	  WhereClause whereClauses = null;
-      if (c2 == null) {
-          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_ON,new TokenSpan(t2));
-          c2 = new Clause(q.getLocation());
-      } else if (of != null && !of.image.equals("of")) {
-          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF,"'inversion " + of.image + "'", new Location(of));
-      }
+  t=<USE> t2=<INVERSION> (of=<IDENTIFIER> [<RULE>] q=QualName() [<ON> c2=SimpleExpr()]
+                      |<ON> c2=SimpleExpr())
+  {
+    Element lhs=null; Clause rhs=null;
+    WhereClause whereClauses = null;
+    if (c2 == null) {
+        ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_ON,new TokenSpan(t2));
+        c2 = new Clause(q.getLocation());
+    } else if (of != null && !of.image.equals("of")) {
+        ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF,"'inversion " + of.image + "'", new Location(of));
     }
-    whereClauses=WhereClauses()
-    {
-      return new DerivationByInversion("_", new Location(t), c2.getEndLocation(),
-    	 AndClauseUse.makeEmptyAndClause(new Location(t)), q, c2, whereClauses);
-    }
-  )
+  }
+  whereClauses=WhereClauses()
+  {
+    return new DerivationByInversion("_", new Location(t), c2.getEndLocation(),
+       AndClauseUse.makeEmptyAndClause(new Location(t)), q, c2, whereClauses);
+  }
 |  t=<USE> <INDUCTION> <ON> c2=SimpleExpr()
 	{ d = new DerivationByInduction(t.image, new Location(t), AndClauseUse.makeEmptyAndClause(new Location(t))); 
 	  ((DerivationWithArgs)d).addArgString(c2); }
@@ -2185,24 +2171,24 @@ Derivation JustificationHeader(Token startT, Clause c) :
       ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* 
     ]
     { return da; }
-  // | (t=<THEOREM> | t=<LEMMA>) qn=QualName() { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, new StringSpan(t)); }
-  //   [ <ON> cl=SimpleExpr() { da.addArgString(cl); }
-  //     ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* 
-  //   ]
-  //   { return da; }
-  // |
-   // LOOKAHEAD(2) <INDUCTION> <ON> cl=SimpleExpr()
-   //  { di = new DerivationByInduction(startT.image, new Location(startT), c, cl); }
-   //    ( <COMMA> cl=SimpleExpr() { di.addArgString(cl); } )* 
-   //  <COLON>
-    // ( ca=Case() { if (ca != null) di.getCases().add(ca); })*
-    // of=<END> 
-    // (t=<INDUCTION> |
-    //  (LOOKAHEAD(2) <CASE> t=<ANALYSIS> | t=<CASE> | t=<LEMMA> | t=<THEOREM>)
-    //  { String wrong = t.image;
-    //    if (wrong.equals("analysis")) wrong = "case analysis";
-    //    ErrorHandler.recoverableError(Errors.WRONG_END,"'end induction'",new TokenSpan(t),wrong+"\ninduction"); } )
-    // { di.setEndLocation(Location.endOf(t)); return di; }
+   | (t=<THEOREM> | t=<LEMMA>) qn=QualName() { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, new StringSpan(t)); }
+     [ <ON> cl=SimpleExpr() { da.addArgString(cl); }
+       ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
+     ]
+     { return da; }
+//   |
+//    LOOKAHEAD(2) <INDUCTION> <ON> cl=SimpleExpr()
+//     { di = new DerivationByInduction(startT.image, new Location(startT), c, cl); }
+//       ( <COMMA> cl=SimpleExpr() { di.addArgString(cl); } )*
+//     <COLON>
+//     ( ca=Case() { if (ca != null) di.getCases().add(ca); })*
+//     of=<END>
+//     (t=<INDUCTION> |
+//      (LOOKAHEAD(2) <CASE> t=<ANALYSIS> | t=<CASE> | t=<LEMMA> | t=<THEOREM>)
+//      { String wrong = t.image;
+//        if (wrong.equals("analysis")) wrong = "case analysis";
+//        ErrorHandler.recoverableError(Errors.WRONG_END,"'end induction'",new TokenSpan(t),wrong+"\ninduction"); } )
+//     { di.setEndLocation(Location.endOf(t)); return di; }
  //  | LOOKAHEAD(2) <CASE> <ANALYSIS> <ON> cl=SimpleExpr()
  //    { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, cl); }
  //      ( <COMMA> cl=SimpleExpr() { dca.addArgString(cl); } )* 
@@ -2352,43 +2338,39 @@ Derivation Justification(Token startT, Clause c) :
     { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, t.image); 
       dca.setEndLocation(Location.endOf(t)); return dca; }
   | LOOKAHEAD(4)
-  (
-	<INVERSION> [of=<IDENTIFIER>] <OR> <ON> cl=SimpleExpr()
-	{
-	  Element lhs=null; Clause rhs=null;
-	  WhereClause whereClauses = null;
-      if (of == null) {
-          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion'",cl);
-      } else if (!of.image.equals("of")) {
-          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion " + of.image + "'", new Location(of));
-      }
-    }
-    whereClauses=WhereClauses()
-    {
-   	  return new DerivationByInversion(startT.image, new Location(startT), cl.getEndLocation(),
-   	      c, DerivationByInversion.OR, cl, whereClauses);
-	}
-  ) 
+  <INVERSION> [of=<IDENTIFIER>] <OR> <ON> cl=SimpleExpr()
+  {
+    Element lhs=null; Clause rhs=null;
+    WhereClause whereClauses = null;
+if (of == null) {
+ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion'",cl);
+} else if (!of.image.equals("of")) {
+ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion " + of.image + "'", new Location(of));
+}
+}
+whereClauses=WhereClauses()
+{
+       return new DerivationByInversion(startT.image, new Location(startT), cl.getEndLocation(),
+           c, DerivationByInversion.OR, cl, whereClauses);
+  }
   | LOOKAHEAD(3)
-  (
-    t2=<INVERSION> (of=<IDENTIFIER> [<RULE>] q=QualName() [<ON> cl=SimpleExpr()]
-                   |<ON> cl=SimpleExpr()) 
-    {
-	  Element lhs=null; Clause rhs=null;
-	  WhereClause whereClauses = null;
-      if (cl == null) {
-          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_ON,new TokenSpan(t2));
-          cl = new Clause(q.getLocation());
-      } else if (of != null && !of.image.equals("of")) {
-          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion " + of.image + "'", new Location(of));
-      }
+  t2=<INVERSION> (of=<IDENTIFIER> [<RULE>] q=QualName() [<ON> cl=SimpleExpr()]
+                 |<ON> cl=SimpleExpr())
+  {
+    Element lhs=null; Clause rhs=null;
+    WhereClause whereClauses = null;
+    if (cl == null) {
+        ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_ON,new TokenSpan(t2));
+        cl = new Clause(q.getLocation());
+    } else if (of != null && !of.image.equals("of")) {
+        ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion " + of.image + "'", new Location(of));
     }
-    whereClauses=WhereClauses()
-    {
-   	  return new DerivationByInversion(startT.image, new Location(startT), cl.getEndLocation(),
-   	      c, q, cl, whereClauses);
-	}
-  )
+  }
+  whereClauses=WhereClauses()
+  {
+       return new DerivationByInversion(startT.image, new Location(startT), cl.getEndLocation(),
+           c, q, cl, whereClauses);
+  }
   | <INDUCTION> t=<HYPOTHESIS> (<ON> cl=SimpleExpr() | {cl = null; })
     { da = new DerivationByInductionHypothesis(startT.image, new Location(startT), c);
       if (cl != null) {
@@ -2426,13 +2408,12 @@ Derivation Justification(Token startT, Clause c) :
     { return da; }
   | LOOKAHEAD({isRulePart2()}) qn = QualName() 
      { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, null); }
-     (<ON> cl=SimpleExpr() { da.addArgString(cl); }
-      ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* | {} )
+     <ON> cl=SimpleExpr() { da.addArgString(cl); }
+      ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
      { // handled later: ErrorHandler.recoverableError("Missing keyword 'rule' or 'theorem'/'lemma' before name", new Location(startT));
        return da;
      }
-  | LOOKAHEAD(2) t=<IDENTIFIER> {qn = new QualName(new Location(t), t.image);} 
-     { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, null); }
+  | LOOKAHEAD(2) t=<IDENTIFIER> {qn = new QualName(new Location(t), t.image);  da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, null); }
      <ON> cl=SimpleExpr() { da.addArgString(cl); }
       ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* 
      { // handled later: ErrorHandler.recoverableError("Missing keyword 'rule' or 'theorem'/'lemma' before name", new Location(t));
@@ -2449,7 +2430,7 @@ Derivation Justification(Token startT, Clause c) :
 Case Case() :
 { Token first=null, t,t2,t3,u,a; StringSpan s; QualName q;
   Clause cl,ce=null,c2; Case ca; Derivation d;
-  List<Derivation> premises = new ArrayList<Derivation>();
+  List<Derivation> premises = new ArrayList<>();
   Element lhs=null;
   Clause rhs=null;
   WhereClause whereClauses = null;

@@ -5,10 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5f380a3-2a3f-44f8-b75c-d1c1d32064b8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Derivation.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Derivation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Theorem.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Theorem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/interactive/InteractiveProof.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/interactive/InteractiveProof.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/parser/parser.jj" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sum_interactive.slf" beforeDir="false" afterPath="$PROJECT_DIR$/sum_interactive.slf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,30 +33,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main (1).executor&quot;: &quot;Run&quot;,
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Unnamed.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.sasylf [package].executor&quot;: &quot;Run&quot;,
-    &quot;NIXITCH_NIXPKGS_CONFIG&quot;: &quot;&quot;,
-    &quot;NIXITCH_NIX_CONF_DIR&quot;: &quot;&quot;,
-    &quot;NIXITCH_NIX_OTHER_STORES&quot;: &quot;&quot;,
-    &quot;NIXITCH_NIX_PATH&quot;: &quot;&quot;,
-    &quot;NIXITCH_NIX_PROFILES&quot;: &quot;&quot;,
-    &quot;NIXITCH_NIX_REMOTE&quot;: &quot;&quot;,
-    &quot;NIXITCH_NIX_USER_PROFILE_DIR&quot;: &quot;&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;maven-and-nix&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_directory_selection&quot;: &quot;/Users/cedric.meukens/Documents/UGent/sasylf/target/generated-sources/edu/cmu/cs/sasylf&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/cedric.meukens/Thesis/sasylf&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.build.tools.auto.reload&quot;: &quot;ALL&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main (1).executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.Unnamed.executor": "Run",
+    "Maven.sasylf [package].executor": "Run",
+    "NIXITCH_NIXPKGS_CONFIG": "",
+    "NIXITCH_NIX_CONF_DIR": "",
+    "NIXITCH_NIX_OTHER_STORES": "",
+    "NIXITCH_NIX_PATH": "",
+    "NIXITCH_NIX_PROFILES": "",
+    "NIXITCH_NIX_REMOTE": "",
+    "NIXITCH_NIX_USER_PROFILE_DIR": "",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "restructure-interactive-theorem",
+    "kotlin-language-version-configured": "true",
+    "last_directory_selection": "/Users/cedric.meukens/Documents/UGent/sasylf/target/generated-sources/edu/cmu/cs/sasylf",
+    "last_opened_file_path": "/Users/cedric.meukens/Thesis/sasylf",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.build.tools.auto.reload": "ALL",
+    "settings.editor.selected.configurable": "terminal"
   }
 }</component>
   <component name="RecentsManager">
@@ -70,7 +72,7 @@
     <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="edu.cmu.cs.sasylf.Main" />
       <module name="sasylf (2)" />
-      <option name="PROGRAM_PARAMETERS" value="examples/and.slf" />
+      <option name="PROGRAM_PARAMETERS" value="--verbose --interactive sum_interactive.slf" />
       <option name="WORKING_DIRECTORY" value="$ProjectFileDir$" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -87,5 +89,27 @@
       <updated>1732644461141</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Derivation.java</url>
+          <line>163</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

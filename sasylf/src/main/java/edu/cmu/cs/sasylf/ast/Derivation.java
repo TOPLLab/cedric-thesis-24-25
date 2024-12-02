@@ -160,7 +160,7 @@ public abstract class Derivation extends Fact {
 		if (last instanceof PartialCaseAnalysis) {
 			ErrorHandler.error(Errors.PARTIAL_CASE_ANALYSIS, last, "do\nproof by");
 		}
-		Boolean match = Derivation.checkMatchWithImplicitCoercions(null, ctx, ctx.currentGoalClause, last.getElement(), "");
+		boolean match = Derivation.checkMatchWithImplicitCoercions(null, ctx, ctx.currentGoalClause, last.getElement(), "");
 		if(isFinal){ 
 			if (!match) {
 				ErrorHandler.error(Errors.WRONG_RESULT, last);
