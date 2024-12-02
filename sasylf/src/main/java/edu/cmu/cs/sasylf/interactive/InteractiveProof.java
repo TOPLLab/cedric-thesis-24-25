@@ -73,7 +73,7 @@ public class InteractiveProof {
         currentContext = currentTheorem.run(this, currentContext);
         addTheoremToProof(currentTheorem);
       } catch (ParseException e) {
-        e.printStackTrace();
+        System.out.println(e.getMessage());
       } catch (QuitException e) {
         break;
       }
@@ -83,7 +83,7 @@ public class InteractiveProof {
   private void typeCheckCurrentProof() {
     try {
       currentProof.getCompilationUnit().typecheck();
-      System.out.println("Proof with new theorem typechecked ... ");
+      System.out.println("Proof with new theorem type checked ... ");
     } catch (SASyLFError e) {
       System.err.println(
           "Error while check compilation unit ... : " + e.getMessage());

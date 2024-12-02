@@ -201,86 +201,80 @@ public class Theorem extends RuleLike {
 			DSLToolkitParser parser = new DSLToolkitParser(inputCommand, "UTF-8");
 
 			try {
-				Derivation derivation = parser.Derivation();
+				Derivation derivation = parser.DerivationHeader();
 
-				// clone the context in case something goes wrong
-				Context newCtxPrime = newCtx.clone();
-
-				// TODO: call `derivation.interactiveTypecheck()` inside of:
-				isTheoremFinished = this.addAndTypeCheckDerivation(newCtxPrime, derivation);
+				isTheoremFinished = this.addAndTypeCheckDerivation(newCtx, derivation);
 
 				// if it typechecks add the derivation to the theorem
 				this.getDerivations().add(derivation);
-
-				// update the curernt context to include the new derivation
-				return newCtxPrime;
 			} catch (ParseException e) {
-				System.err.println("Error: " + e.getMessage());
-				System.err.println("Please enter another line of input");
+				System.out.println(e.getMessage());
 			}
 		}
 
+		// TODO: update the current context to include the new derivation
 		// TODO: Allow <END> ( <THEOREM> | <LEMMA> ) after all stuff
-
-		return ctx;
+		return newCtx;
 	}
 
 	private Context setupTypeChecking(Context ctx, int oldErrorCount) {
 		debug("checking ", kind, " ", this.getName());
 
-		ctx.derivationMap = new HashMap<String, Fact>();
-		ctx.inputVars = new HashSet<FreeVar>();
-		ctx.outputVars = new HashSet<FreeVar>();
-		ctx.currentSub = new Substitution();
-		ctx.currentTheorem = this;
-		ctx.assumedContext = null;
+		Context newCtx = ctx.clone();
 
-		checkInterface(ctx);
+		newCtx.derivationMap = new HashMap<String, Fact>();
+		newCtx.inputVars = new HashSet<FreeVar>();
+		newCtx.outputVars = new HashSet<FreeVar>();
+		newCtx.currentSub = new Substitution();
+		newCtx.currentTheorem = this;
+		newCtx.assumedContext = null;
+
+		checkInterface(newCtx);
 
 		if (isAbstract) {
 			if (!derivations.isEmpty()) {
 				ErrorHandler.recoverableError(Errors.THEOREM_ABSTRACT, this);
 			}
-			return ctx;
+			return newCtx;
 		}
 
 		if (!interfaceOK || ErrorHandler.getErrorCount() > oldErrorCount) {
-			return ctx;
+			return newCtx;
 		}
 
 		/*
-		 * if (andTheorem != null) { andTheorem.addToMap(ctx); }
+		 * if (andTheorem != null) { andTheorem.addToMap(newCtx); }
 		 */
-		ctx.recursiveTheorems = new HashMap<String, Theorem>();
-		firstInGroup.addToMap(ctx);
+		newCtx.recursiveTheorems = new HashMap<String, Theorem>();
+		firstInGroup.addToMap(newCtx);
 
-		ctx.bindingTypes = new HashMap<String, List<ElemType>>();
+		newCtx.bindingTypes = new HashMap<String, List<ElemType>>();
 
 		if (assumes != null) {
-			ctx.assumedContext = assumes;
+			newCtx.assumedContext = assumes;
 		}
-		ctx.varFreeNTmap.clear();
+		newCtx.varFreeNTmap.clear();
 
 		for (Fact f : foralls) {
-			f.typecheck(ctx);
-			f.addToDerivationMap(ctx);
-			ctx.subderivations.put(f, new Pair<Fact, Integer>(f, 0));
+			f.typecheck(newCtx);
+			f.addToDerivationMap(newCtx);
+			newCtx.subderivations.put(f, new Pair<Fact, Integer>(f, 0));
 			Set<FreeVar> freeVariables = f.getElement().asTerm().getFreeVariables();
-			ctx.inputVars.addAll(freeVariables);
+			newCtx.inputVars.addAll(freeVariables);
 		}
 
 		Term theoremTerm = exists.asTerm();
 		System.out.println("Theorem Term: " + theoremTerm.toString());
-		ctx.currentGoal = theoremTerm;
-		System.out.println("Current goal: " + ctx.currentGoal.toString());
+		newCtx.currentGoal = theoremTerm;
+		System.out.println("Current goal: " + newCtx.currentGoal.toString());
 
-		ctx.currentGoalClause = exists;
-		ctx.outputVars.addAll(theoremTerm.getFreeVariables());
-		ctx.outputVars.removeAll(ctx.inputVars);
+		newCtx.currentGoalClause = exists;
+		newCtx.outputVars.addAll(theoremTerm.getFreeVariables());
+		newCtx.outputVars.removeAll(newCtx.inputVars);
 
 		for (Fact f : foralls) {
 			NonTerminal root = f.getElement().getRoot();
-			ctx.addKnownContext(root);
+			newCtx.addKnownContext(root);
 		}
 		if (assumes != null) {
 			boolean foundAssumption = false;
@@ -295,42 +289,42 @@ public class Theorem extends RuleLike {
 				ErrorHandler.warning(Errors.EXTRANEOUS_ASSUMES, assumes);
 			}
 		}
-		if (ctx.knownContexts != null && !ctx.knownContexts.isEmpty()) {
-			if (ctx.knownContexts.size() > 1 || ctx.assumedContext != null) {
+		if (newCtx.knownContexts != null && !newCtx.knownContexts.isEmpty()) {
+			if (newCtx.knownContexts.size() > 1 || newCtx.assumedContext != null) {
 				ErrorHandler.recoverableError(Errors.THEOREM_MULTIPLE_CONTEXT, this);
-			} else if (ctx.knownContexts.size() == 1) {
-				NonTerminal root = ctx.knownContexts.iterator().next();
+			} else {
+				NonTerminal root = newCtx.knownContexts.iterator().next();
 				if (assumes == null) {
 					ErrorHandler.warning(Errors.ASSUMED_ASSUMES, this, "assumes " + root);
 				}
 			}
-			if (assumes == null) { // Avoid further errors XXX: EXTENION POINT
-				assumes = ctx.knownContexts.iterator().next();
-				ctx.assumedContext = assumes;
+			if (assumes == null) { // Avoid further errors XXX: EXTENSION POINT
+				assumes = newCtx.knownContexts.iterator().next();
+				newCtx.assumedContext = assumes;
 			}
 		}
 
-		return ctx;
+		return newCtx;
 	}
 
-	private Context interactiveTypeCheck(InteractiveProof prf, Context oldCtx) {
+	private Context interactiveTypeCheck(InteractiveProof prf, Context ctx) {
 		if (edu.cmu.cs.sasylf.util.Util.VERBOSE) {
 			System.out.println(getKindTitle() + " " + getName());
 		}
 		
-		if (!oldCtx.ruleMap.containsKey(getName())) {
-			oldCtx.ruleMap.put(getName(), this);
-		} else if (oldCtx.ruleMap.get(getName()) != this) {
+		if (!ctx.ruleMap.containsKey(getName())) {
+			ctx.ruleMap.put(getName(), this);
+		} else if (ctx.ruleMap.get(getName()) != this) {
 			ErrorHandler.recoverableError(Errors.RULE_LIKE_REDECLARED, this);
 		}
 
 		int oldErrorCount = ErrorHandler.getErrorCount();
-		Context ctx = oldCtx.clone();
+		Context newCtx = ctx.clone();
 		try {
-			ctx = this.setupTypeChecking(ctx, oldErrorCount);
+			newCtx = this.setupTypeChecking(newCtx, oldErrorCount);
 		} catch (SASyLFError e) {
 			// ignore the error; it has already been reported
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		} finally {
 			int newErrorCount = ErrorHandler.getErrorCount() - oldErrorCount;
 			if (edu.cmu.cs.sasylf.util.Util.VERBOSE) {
@@ -340,7 +334,7 @@ public class Theorem extends RuleLike {
 			}
 		}
 
-		return ctx;
+		return newCtx;
 	}
 
 	public boolean addAndTypeCheckDerivation(Context ctx, Derivation derivation) {
