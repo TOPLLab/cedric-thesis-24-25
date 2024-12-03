@@ -52,7 +52,7 @@ public abstract class Derivation extends Fact {
 	}
 
 	/**
-	 * Type check this derivation, and then, whether or not it raised an error,
+	 * Type check this derivation, and then, whether it raised an error,
 	 * assume it is true and go on.  Here "assume" means add it to the map.
 	 * @param ctx context to use.
 	 * @return whether everything went without error
@@ -108,7 +108,8 @@ public abstract class Derivation extends Fact {
 			ErrorHandler.error(Errors.DERIVATION_SYNTAX, this);
 		else if (!(newClause.getType() instanceof Judgment))
 			ErrorHandler.error(Errors.DERIVATION_SYNTAX,this);
-		clause = (Clause) newClause;
+        assert newClause instanceof Clause;
+        clause = (Clause) newClause;
 		clause.checkBindings(ctx.bindingTypes, this);
 		clause.checkVariables(Collections.<String>emptySet(), false);
 
@@ -116,7 +117,7 @@ public abstract class Derivation extends Fact {
 	}
 
 	// @Override
-	public void interactiveTypecheck(Context ctx) {
+	public void run(Context ctx) {
 		ErrorHandler.recordLastSpan(this);
 		ctx.checkConsistent(this);
 		clause = clause.typecheck(ctx);
@@ -126,7 +127,8 @@ public abstract class Derivation extends Fact {
 			ErrorHandler.error(Errors.DERIVATION_SYNTAX, this);
 		else if (!(newClause.getType() instanceof Judgment))
 			ErrorHandler.error(Errors.DERIVATION_SYNTAX,this);
-		clause = (Clause) newClause;
+        assert newClause instanceof Clause;
+        clause = (Clause) newClause;
 		clause.checkBindings(ctx.bindingTypes, this);
 		clause.checkVariables(Collections.<String>emptySet(), false);
 
@@ -210,7 +212,7 @@ public abstract class Derivation extends Fact {
 			for (ClauseUse provided : ((OrClauseUse)supplied).getClauses()) {
 				provided = ContextJudgment.unwrap(provided);
 				boolean result = checkMatchWithImplicitCoercions(errorPoint,ctx,match,provided,info);
-				if (result == false) return false;
+				if (!result) return false;
 			}
 			return true;
 		}
@@ -218,7 +220,7 @@ public abstract class Derivation extends Fact {
 			for (ClauseUse required : ((OrClauseUse)match).getClauses()) {
 				required = ContextJudgment.unwrap(required);
 				boolean result = checkMatchWithImplicitCoercions(null,ctx,required,supplied,info);
-				if (result == true) return true;
+				if (result) return true;
 			}
 			if (errorPoint == null) return false;
 			ErrorHandler.error(Errors.DERIVATION_OR,info, errorPoint);
@@ -229,7 +231,8 @@ public abstract class Derivation extends Fact {
 				ErrorHandler.error(Errors.DERIVATION_AND,info, errorPoint);
 			}
 			List<ClauseUse> matchList = ((AndClauseUse)match).getClauses();
-			List<ClauseUse> suppliedList = ((AndClauseUse)supplied).getClauses();
+            assert supplied instanceof AndClauseUse;
+            List<ClauseUse> suppliedList = ((AndClauseUse)supplied).getClauses();
 			if (matchList.size() != suppliedList.size()) {
 				if (errorPoint == null) return false;
 				ErrorHandler.error(Errors.DERIVATION_AND_NEQ, matchList.size() + " != " + suppliedList.size() + " " + info, errorPoint);
@@ -346,26 +349,25 @@ public abstract class Derivation extends Fact {
 	/**
 	 * Give an error for this node if copying from the source to the target
 	 * involves changing the variable context.
-	 * @param kind name action of this node
-	 * @param srcClause clause being used
-	 * @param trgClause clause being defined
+	 *
+	 * @param kind       name action of this node
+	 * @param srcClause  clause being used
+	 * @param trgClause  clause being defined
 	 * @param errorPoint location to generate errors for, may be null
-	 * @return true if the match succeeds
 	 */
-	public static boolean checkRootMatch(String kind, ClauseUse srcClause, ClauseUse trgClause, Node errorPoint) {
+	public static void checkRootMatch(String kind, ClauseUse srcClause, ClauseUse trgClause, Node errorPoint) {
 		if (srcClause.getRoot() == null) {
 			if (trgClause.getRoot() != null) {
-				if (errorPoint == null) return false;
+				if (errorPoint == null) return;
 				ErrorHandler.error(Errors.CONTEXT_INTRODUCED, kind, errorPoint);
 			}
 		} else if (trgClause.getRoot() == null) {
-			if (errorPoint == null) return false;
+			if (errorPoint == null) return;
 			ErrorHandler.error(Errors.CONTEXT_DISCARDED, srcClause.getRoot().toString(), errorPoint);
 		} else if (!srcClause.getRoot().equals(trgClause.getRoot())) {
-			if (errorPoint == null) return false;
+			if (errorPoint == null) return;
 			ErrorHandler.error(Errors.CONTEXT_CHANGED, kind, errorPoint);
 		}
-		return true;
 	}
 
 	/**
