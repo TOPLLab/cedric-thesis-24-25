@@ -9,8 +9,6 @@
       <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Derivation.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Derivation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Theorem.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Theorem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/interactive/InteractiveProof.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/interactive/InteractiveProof.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/parser/parser.jj" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sum_interactive.slf" beforeDir="false" afterPath="$PROJECT_DIR$/sum_interactive.slf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +54,7 @@
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.build.tools.auto.reload": "ALL",
-    "settings.editor.selected.configurable": "terminal"
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }</component>
   <component name="RecentsManager">
@@ -100,16 +98,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Derivation.java</url>
-          <line>163</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -189,13 +189,17 @@ public class Theorem extends RuleLike {
 	}
 
 	public Context run(InteractiveProof prf, Context ctx) throws QuitException {
-		// TODO: do the rest of interactive typecheck here too
+		// TODO: do the rest of interactive type check here too
 
-		Context newCtx = this.interactiveTypeCheck(prf, ctx);
+		Context newCtx = this.interactiveTypeCheckSetup(prf, ctx);
 
 		boolean isTheoremFinished = false;
 
 		while (!isTheoremFinished) {
+
+			System.out.println("Theorem Term: " + this.exists.asTerm().toString());
+			System.out.println("Current goal: " + newCtx.currentGoal.toString());
+
 			InputStream inputCommand = prf.getNextCommand();
 
 			DSLToolkitParser parser = new DSLToolkitParser(inputCommand, "UTF-8");
@@ -203,9 +207,10 @@ public class Theorem extends RuleLike {
 			try {
 				Derivation derivation = parser.DerivationHeader();
 
+				// TODO: Should update context with new goal
 				isTheoremFinished = this.addAndTypeCheckDerivation(newCtx, derivation);
 
-				// if it typechecks add the derivation to the theorem
+				// if it type checks add the derivation to the theorem
 				this.getDerivations().add(derivation);
 			} catch (ParseException e) {
 				System.out.println(e.getMessage());
@@ -264,9 +269,7 @@ public class Theorem extends RuleLike {
 		}
 
 		Term theoremTerm = exists.asTerm();
-		System.out.println("Theorem Term: " + theoremTerm.toString());
 		newCtx.currentGoal = theoremTerm;
-		System.out.println("Current goal: " + newCtx.currentGoal.toString());
 
 		newCtx.currentGoalClause = exists;
 		newCtx.outputVars.addAll(theoremTerm.getFreeVariables());
@@ -307,7 +310,7 @@ public class Theorem extends RuleLike {
 		return newCtx;
 	}
 
-	private Context interactiveTypeCheck(InteractiveProof prf, Context ctx) {
+	private Context interactiveTypeCheckSetup(InteractiveProof prf, Context ctx) {
 		if (edu.cmu.cs.sasylf.util.Util.VERBOSE) {
 			System.out.println(getKindTitle() + " " + getName());
 		}
@@ -323,7 +326,6 @@ public class Theorem extends RuleLike {
 		try {
 			newCtx = this.setupTypeChecking(newCtx, oldErrorCount);
 		} catch (SASyLFError e) {
-			// ignore the error; it has already been reported
 			System.out.println(e.getMessage());
 		} finally {
 			int newErrorCount = ErrorHandler.getErrorCount() - oldErrorCount;
