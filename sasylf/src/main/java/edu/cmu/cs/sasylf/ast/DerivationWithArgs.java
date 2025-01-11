@@ -4,6 +4,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.cmu.cs.sasylf.interactive.InteractiveProof;
+import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Constant;
 import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.term.Term;
@@ -115,10 +118,59 @@ public abstract class DerivationWithArgs extends Derivation {
 			Fact f = parseAsDerivation(ctx, c); // maybe this argument refers to a derivation (or derivations)
 			if (f == null) {
 				Element e = c.typecheck(ctx);
-				if (e instanceof Clause) {
-					Clause cl = (Clause)e;
-					if (cl.getElements().size() == 1 && !(cl.getElements().get(0) instanceof Terminal)) {
+				if (e instanceof Clause cl) {
+                    if (cl.getElements().size() == 1 && !(cl.getElements().get(0) instanceof Terminal)) {
 						e = cl.getElements().get(0);
+						Util.verify(!(e instanceof Clause), "clause should have been removed before");
+					} else {
+						ClauseType expected = getClauseTypeExpected(ctx,i);
+						if (expected instanceof SyntaxDeclaration) {
+							e = cl.computeClause(ctx, ((SyntaxDeclaration)expected).getNonTerminal());
+						} else {
+							e = cl.computeClause(ctx, false);
+						}
+					}
+				}
+				if (e instanceof Variable) {
+					ErrorHandler.error(Errors.VAR_UNBOUND, e.toString(), e);
+				}
+				if (!(e.getType() instanceof Syntax)) {
+					ErrorHandler.error(Errors.SYNTAX_EXPECTED, c);
+				}
+				f = e.asFact(ctx, ctx.assumedContext);
+			}
+			if (!ctx.isKnownContext(f.getElement().getRoot())) {
+				ErrorHandler.error(Errors.UNKNOWN_CONTEXT,f.getElement().getRoot().toString(),c);
+			}
+			c.checkBindings(ctx.bindingTypes, c);
+			args.add(f);
+		}
+	}
+
+	/// Runs the type checking for interactive mode for [DerivationWithArgs]
+	/// @param ctx Context to use. Should be cloned by the caller
+	@Override
+	public void run(InteractiveProof prf, Context ctx) throws QuitException, ParseException {
+		super.run(prf, ctx);
+
+		final NonTerminal root = getClause().getRoot();
+		if (!ctx.isKnownContext(root)) {
+			ErrorHandler.error(Errors.UNKNOWN_CONTEXT, root.toString(), root);
+		}
+
+		args.clear(); // needed for idempotency
+		for (int i = 0; i < argStrings.size(); ++i) {
+			Clause c = argStrings.get(i);
+			// remove all (c) parens:
+			while (c.getElements().size() == 1 && c.getElements().getFirst() instanceof Clause) {
+				argStrings.set(i,c = (Clause)c.getElements().getFirst());
+			}
+			Fact f = parseAsDerivation(ctx, c); // maybe this argument refers to a derivation (or derivations)
+			if (f == null) {
+				Element e = c.typecheck(ctx);
+				if (e instanceof Clause cl) {
+                    if (cl.getElements().size() == 1 && !(cl.getElements().getFirst() instanceof Terminal)) {
+						e = cl.getElements().getFirst();
 						Util.verify(!(e instanceof Clause), "clause should have been removed before");
 					} else {
 						ClauseType expected = getClauseTypeExpected(ctx,i);

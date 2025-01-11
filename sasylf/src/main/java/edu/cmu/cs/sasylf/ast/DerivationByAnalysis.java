@@ -13,6 +13,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.cmu.cs.sasylf.interactive.InteractiveProof;
+import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
+import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Application;
 import edu.cmu.cs.sasylf.term.BoundVar;
 import edu.cmu.cs.sasylf.term.FreeVar;
@@ -149,9 +155,110 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 			if (error != null) throw error;
 			
 			generateMissingCaseError(ctx, targetElement, targetTerm, Errors.MISSING_CASE,
-					getArgStrings().get(0), ctx.caseTermMap);
+					getArgStrings().getFirst(), ctx.caseTermMap);
 
 		} finally {
+			ctx.caseTermMap = oldCaseTermMap;
+			ctx.currentCaseAnalysis = oldCase;
+			ctx.currentCaseAnalysisElement = oldElement;
+			ctx.currentGoal = oldGoal ;
+			ctx.currentGoalClause = oldGoalClause;
+		}
+		// this.addToDerivationMap(ctx);
+	}
+
+	/// Runs the type checking for interactive mode for [DerivationByAnalysis]
+	/// @param ctx Context to use. Should be cloned by the caller
+	@Override
+	public void run(InteractiveProof prf, Context ctx) throws QuitException, ParseException {
+		super.run(prf, ctx);
+		computeTargetDerivation(ctx);
+		Util.debug("On line ", getLocation().getLine(), " varFree = ", ctx.varFreeNTmap.keySet());
+
+
+		Term oldCase = ctx.currentCaseAnalysis;
+		Element oldElement = ctx.currentCaseAnalysisElement;
+		Term oldGoal = ctx.currentGoal;
+		Clause oldGoalClause = ctx.currentGoalClause;
+		Map<CanBeCase,Set<Pair<Term,Substitution>>> oldCaseTermMap = ctx.caseTermMap;
+
+		final String targetName = targetDerivation.getName();
+		final Element targetElement = targetDerivation.getElement();
+		ClauseType caseType = (ClauseType)targetElement.getType();
+		final Term targetTerm = ctx.toTerm(targetElement);
+
+		if (caseType.isAbstract()) {
+			if (caseType instanceof NotJudgment) {
+				ErrorHandler.error(Errors.CASE_SUBJECT_NOT,this);
+			} else {
+				ErrorHandler.error(Errors.CASE_SUBJECT_ABSTRACT,caseType.getName(), this);
+			}
+		}
+
+		if (caseType instanceof Judgment) {
+			Util.verify(!(targetDerivation instanceof ClauseAssumption),
+					"DerivationWithArgs is supposed to stop this sort of thing!");
+		} else {
+			// see bad79.slf: exploit2
+			if (targetElement instanceof AssumptionElement) {
+				NonTerminal contextRoot = ctx.assumedContext;
+				NonTerminal root = targetElement.getRoot();
+				if (contextRoot != null && !contextRoot.equals(root)) {
+					Util.debug("targetTerm = ", targetTerm, ", var free = ", ctx.varFreeNTmap);
+					if (!ctx.isVarFree(targetElement)) {
+						ErrorHandler.recoverableError(Errors.CASE_SUBJECT_ROOT_INTERNAL, contextRoot.toString(), targetElement);
+					}
+				}
+			}
+			checkSyntaxAnalysis(ctx, targetName, targetTerm, this);
+		}
+
+		try {
+			ctx.currentCaseAnalysis = targetTerm;
+			ctx.currentCaseAnalysisElement = targetElement;
+			ctx.currentGoal = getElement().asTerm().substitute(ctx.currentSub);
+			ctx.currentGoalClause = getClause();
+
+			Pair<Fact,Integer> isSubderivation = ctx.subderivations.get(targetDerivation);
+			if (isSubderivation != null) debug("found subderivation: ", targetDerivation);
+
+			ctx.caseTermMap = new LinkedHashMap<CanBeCase,Set<Pair<Term,Substitution>>>();
+
+			caseAnalyze(ctx, targetName, targetElement, this, ctx.caseTermMap);
+
+			SASyLFError error = null;
+
+			while (true) {
+				var inputCommand = prf.getNextCommand(ctx);
+				var parser = new DSLToolkitParser(inputCommand, "UTF-8");
+
+				try {
+					// TODO: other by analysis footers
+					parser.InductionJustificationFooter(this);
+					break;
+				} catch (ParseException ignored) {}
+
+				try {
+					Case c = parser.CaseHeader();
+					assert c != null;
+					cases.add(c);
+                    c.run(prf, ctx, isSubderivation);
+				} catch (SASyLFError ex) {
+					error = ex;
+				}
+			}
+
+			if (this instanceof PartialCaseAnalysis) {
+				if (ctx.savedCaseMap == null) ctx.savedCaseMap = new HashMap<String,Map<CanBeCase,Set<Pair<Term,Substitution>>>>();
+				ctx.savedCaseMap.put(targetName, ctx.caseTermMap);
+				return;
+			}
+			if (error != null) throw error;
+
+			generateMissingCaseError(ctx, targetElement, targetTerm, Errors.MISSING_CASE,
+					getArgStrings().getFirst(), ctx.caseTermMap);
+
+        } finally {
 			ctx.caseTermMap = oldCaseTermMap;
 			ctx.currentCaseAnalysis = oldCase;
 			ctx.currentCaseAnalysisElement = oldElement;
@@ -173,9 +280,8 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 		FreeVar fv = null;
 		Term bare = Term.getWrappingAbstractions(targetTerm, null);
 		if (bare instanceof FreeVar) fv = (FreeVar)bare;
-		else if (bare instanceof Application) {
-			Application app = (Application)bare;
-			if (app.getFunction() instanceof FreeVar) {
+		else if (bare instanceof Application app) {
+            if (app.getFunction() instanceof FreeVar) {
 				fv = (FreeVar)app.getFunction();
 				Set<Term> args = new HashSet<Term>();
 				for (Term t : app.getArguments()) {
@@ -193,8 +299,8 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 			ErrorHandler.error(Errors.CASE_SUBJECT_UNKNOWN, ctx.inputVars.toString(), source);
 		}
 	}
-	
-	/// Case analysis methods:
+
+	// Case analysis methods:
 	// These are used also by inversion, and so are factored out.
 	
 	/** Case analyze a target in the current context and store the
@@ -272,9 +378,6 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 
 	/**
 	 * Generate an error report if there are missing cases (if the map contains any cases still).
-	 * @param ctx
-	 * @param targetElement
-	 * @param targetTerm
 	 * @param errorClass error to report
 	 * @param errorClause location to report error on
 	 * @param caseMap map of remaining cases
@@ -303,9 +406,8 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 					}
 					Term missingCase = missing.first.substitute(revSub);
 					Element targetGamma = null;
-					if (targetElement instanceof ClauseUse) {
-						ClauseUse target = (ClauseUse)targetElement;
-						if (target.getConstructor().getAssumeIndex() >= 0) {
+					if (targetElement instanceof ClauseUse target) {
+                        if (target.getConstructor().getAssumeIndex() >= 0) {
 							targetGamma = target.getElements().get(target.getConstructor().getAssumeIndex());
 						}
 					} else if (targetElement instanceof AssumptionElement) {
@@ -333,14 +435,16 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 							}
 						}
 						if (newGammaNT == null) {
-							String newName = gammaNT.getSymbol()+"'";
+                            assert gammaNT != null;
+                            String newName = gammaNT.getSymbol()+"'";
 							int i=0;
 							while (ctx.isKnownContext(newGammaNT = new NonTerminal(newName, gammaNT.getLocation()))) {
 								newName = gammaNT.getSymbol()+i;
 								++i;
 							}
 						}
-						newGammaNT.setType(gammaNT.getType());
+                        assert gammaNT != null;
+                        newGammaNT.setType(gammaNT.getType());
 						targetGamma = newGammaNT;
 					}
 					//XXX: The work to get Gamma' here is ignored in TermPrinter for SyntaxCase: 
@@ -393,5 +497,14 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 		for (Case c : cases) {
 			c.collectQualNames(consumer);
 		}
+	}
+
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		// TODO: describe by case analysis on ...
+
+		return rootNode;
 	}
 }

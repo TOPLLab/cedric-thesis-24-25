@@ -14,6 +14,8 @@ import edu.cmu.cs.sasylf.ast.Theorem;
 import edu.cmu.cs.sasylf.ast.TheoremPart;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
+import edu.cmu.cs.sasylf.parser.Token;
+import edu.cmu.cs.sasylf.util.Pair;
 import edu.cmu.cs.sasylf.util.SASyLFError;
 
 public class InteractiveProof {
@@ -25,29 +27,22 @@ public class InteractiveProof {
   private Context currentContext;
 
   // buffered reader for reading input
-  private BufferedReader d = new BufferedReader(new InputStreamReader(System.in));
+  private final BufferedReader d = new BufferedReader(new InputStreamReader(System.in));
 
   public InteractiveProof(Proof proof) {
     this.currentProof = proof;
     this.currentContext = proof.getCompilationUnit().getContext();
   }
 
-  private void showCommitedContext() {
-    currentContext = currentProof.getCompilationUnit().getContext();
-  }
-
-  private void showCurrentGoal() {
-    if (currentContext.currentGoal != null) {
-      System.out
-          .println("Current goal ==" + currentContext.currentGoal.toString());
-    }
-  }
-
-  public InputStream getNextCommand() throws QuitException {
+  public InputStream getNextCommand(Context ctx) throws QuitException {
     try {
+      System.out.println(ctx.getInteractiveInfo().toPrettyString()); // TODO: Add pretty string option
+
+      // TODO: Remove this print
       System.out.print("> ");
       String input = d.readLine();
 
+      // TODO: This is also CLI specific
       if (input.equals("quit")) {
         throw new QuitException();
       }
@@ -62,14 +57,16 @@ public class InteractiveProof {
   public void run() {
     while (true) {
       try {
-        InputStream inputCommand = getNextCommand();
+        InputStream inputCommand = getNextCommand(currentContext);
         DSLToolkitParser parser = new DSLToolkitParser(inputCommand, "UTF-8");
 
-        Theorem currentTheorem = parser.TheoremHeader(false);
+        Pair<Theorem, Token> pair = parser.TheoremHeader(false);
+        Theorem currentTheorem = pair.first;
 
-        currentContext = currentTheorem.run(this, currentContext);
+        currentContext = currentTheorem.run(this, currentContext, pair.second);
         addTheoremToProof(currentTheorem);
       } catch (ParseException e) {
+        // TODO: Put errors in json object
         System.out.println(e.getMessage());
       } catch (QuitException e) {
         break;
@@ -79,8 +76,8 @@ public class InteractiveProof {
 
   private void typeCheckCurrentProof() {
     try {
-      boolean typechecks = currentProof.getCompilationUnit().typecheck();
-      if (typechecks) {
+      boolean typeChecks = currentProof.getCompilationUnit().typecheck();
+      if (typeChecks) {
         System.out.println("Proof with new theorem type checked ... ");
       }else{
         System.out.println("Proof not valid");

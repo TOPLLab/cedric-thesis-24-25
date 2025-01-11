@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import edu.cmu.cs.sasylf.interactive.InteractiveProof;
+import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
+import edu.cmu.cs.sasylf.parser.ParseException;
+import edu.cmu.cs.sasylf.reduction.InductionSchema;
 import edu.cmu.cs.sasylf.util.DefaultSpan;
 import edu.cmu.cs.sasylf.util.ErrorHandler;
 import edu.cmu.cs.sasylf.util.Location;
@@ -37,16 +42,58 @@ public class Case extends Node {
 	public void typecheck(Context ctx, Pair<Fact,Integer> isSubderivation) {
 		ErrorHandler.recordLastSpan(this);
 		Map<String, Fact> oldMap = ctx.derivationMap;
-		ctx.derivationMap = new HashMap<String, Fact>(oldMap);
+		ctx.derivationMap = new HashMap<>(oldMap);
 
 		Derivation.typecheck(this, ctx, derivations);
 
 		ctx.derivationMap = oldMap;
 	}
 
+	/// Runs the type checking for interactive mode for [Case]
+	/// @param ctx Context to use. Should be cloned by the caller
+	public void run(InteractiveProof prf, Context ctx, Pair<Fact,Integer> isSubderivation) throws ParseException, QuitException {
+		var finalCtx = ctx.clone();
+		ErrorHandler.recordLastSpan(this);
+		Map<String, Fact> oldMap = finalCtx.derivationMap;
+		finalCtx.derivationMap = new HashMap<>(oldMap);
+
+		var newCtx = finalCtx.clone();
+
+		var inputCommand = prf.getNextCommand(newCtx);
+		var parser = new DSLToolkitParser(inputCommand, "UTF-8");
+
+		while (true) {
+			// NOTE: At least one derivation should be in the case
+			var d = parser.DerivationHeader();
+
+			var oldErrorCount = ErrorHandler.getErrorCount();
+			derivations.add(d);
+			d.run(prf, newCtx);
+			d.addToDerivationMap(newCtx);
+			var newErrorCount = ErrorHandler.getErrorCount();
+			if (newErrorCount > oldErrorCount) {
+				derivations.remove(d);
+			} else {
+				finalCtx = newCtx;
+				newCtx = finalCtx.clone();
+			}
+
+			inputCommand = prf.getNextCommand(newCtx);
+			parser = new DSLToolkitParser(inputCommand, "UTF-8");
+
+			try {
+				// TODO: other by analysis footers
+				parser.CaseFooter(this);
+				break;
+			} catch (ParseException ignored) {}
+		}
+
+		ctx.derivationMap = oldMap;
+	}
+
 	// verify: that last derivation is what i.h. requires
 
-	private List<Derivation> derivations = new ArrayList<Derivation>();
+	private List<Derivation> derivations = new ArrayList<>();
 	private final Span span;
 	
 	@Override

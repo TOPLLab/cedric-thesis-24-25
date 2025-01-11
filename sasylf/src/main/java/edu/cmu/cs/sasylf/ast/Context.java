@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.ast.grammar.GrmRule;
 import edu.cmu.cs.sasylf.ast.grammar.GrmUtil;
 import edu.cmu.cs.sasylf.grammar.Grammar;
@@ -30,7 +32,6 @@ public class Context implements Cloneable {
 	// TODO: Create instances of this class rather than mutating it.
 
 	/// The following fields represent global information
-
 	public final ModuleFinder moduleFinder;
 	public final CompUnit compUnit;
 	public Set<String> termSet = new HashSet<String>();
@@ -188,7 +189,7 @@ public class Context implements Cloneable {
 	/**
 	 * Register a production for an LF constant
 	 * @param name name of LF constant
-	 * @param prod defining clause for this production
+	 * @param cd defining clause for this production
 	 */
 	public void setProduction(String name, ClauseDef cd) {
 		prodMap.put(name, cd);
@@ -635,7 +636,7 @@ public class Context implements Cloneable {
 	/**
 	 * Return true if the argument is a relaxation variable 
 	 * and so cannot be matched with anything other than the bound variable already in scope.
-	 * @param name name of nonterminal being checked
+	 * @param nt [NonTerminal] being checked
 	 * @return if the variable is bound already
 	 */
 	public boolean isRelaxationVar(NonTerminal nt) {
@@ -719,4 +720,38 @@ public class Context implements Cloneable {
 
 	private Grammar g;
 	int ruleSize = 0;
+
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		if (this.currentTheorem != null) {
+			rootNode.set("currentTheorem", this.currentTheorem.getInteractiveInfo());
+		}
+
+		if (this.currentGoal != null) {
+			// TODO: Interactive info this
+			rootNode.put("currentGoal", this.currentGoal.substitute(this.currentSub).toString());
+		}
+
+		if (this.derivationMap != null && !derivationMap.isEmpty()) {
+			var derivationsNode = mapper.createObjectNode();
+			for (Map.Entry<String, Fact> derivation : this.derivationMap.entrySet()) {
+				var test1 = derivation.getValue();
+				var test2 = derivation.getValue().getElement();
+				derivationsNode.put(derivation.getKey(), derivation.getValue().getElement().toString());
+			}
+			rootNode.set("derivations", derivationsNode);
+		}
+
+		if (this.caseTermMap != null) {
+			var casesNode = mapper.createArrayNode();
+			for (CanBeCase key : this.caseTermMap.keySet()) {
+				casesNode.add(key.getName());
+			}
+			rootNode.set("cases", casesNode);
+		}
+
+		return rootNode;
+	}
 }

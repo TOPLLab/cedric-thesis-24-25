@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.cmu.cs.sasylf.interactive.InteractiveProof;
+import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.term.Substitution;
 import edu.cmu.cs.sasylf.term.Term;
@@ -76,6 +81,31 @@ public abstract class Derivation extends Fact {
 		return result;
 	}
 
+	/**
+	 * Type check this derivation, and then, whether it raised an error,
+	 * assume it is true and go on.  Here "assume" means add it to the map.
+	 * @param ctx context to use.
+	 * @return whether everything went without error
+	 */
+	public final boolean runAndAssume(InteractiveProof prf, Context ctx) {
+		boolean result = true;
+		try {
+			this.run(prf, ctx);
+		} catch (SASyLFError | QuitException | ParseException error) {
+			result = false;
+		}
+
+		// If the clause doesn't check, then adding this derivation to
+		// the map will cause internal errors later on.
+		// Perhaps in the future, we want to give it a special error type that will
+		// allow later things to work, but it's probably simpler to just omit it from the context.
+		if (!clauseChecked) return result;
+
+		this.addToDerivationMap(ctx);
+
+		return result;
+	}
+
 
 	@Override
 	public void addToDerivationMap(Context ctx) {
@@ -117,7 +147,9 @@ public abstract class Derivation extends Fact {
 	}
 
 	// @Override
-	public void run(Context ctx) {
+	/// Runs the type checking for interactive mode for [Derivation]
+	/// @param ctx Context to use. Should be cloned by the caller
+	public void run(InteractiveProof prf, Context ctx) throws QuitException, ParseException {
 		ErrorHandler.recordLastSpan(this);
 		ctx.checkConsistent(this);
 		clause = clause.typecheck(ctx);
@@ -164,6 +196,41 @@ public abstract class Derivation extends Fact {
 		}
 		boolean match = Derivation.checkMatchWithImplicitCoercions(null, ctx, ctx.currentGoalClause, last.getElement(), "");
 		if(isFinal){ 
+			if (!match) {
+				ErrorHandler.error(Errors.WRONG_RESULT, last);
+				return false;
+			}
+			return true;
+		} else {
+			return match;
+		}
+	}
+
+	public static boolean run(InteractiveProof prf, Node node, Context ctx, List<Derivation> derivations, boolean isFinal) {
+		int n = derivations.size();
+		if (n == 0) {
+			ErrorHandler.error(Errors.NO_DERIVATION, node);
+		}
+
+		boolean finalOK = false;
+		for (int i=0; i < n; ++i) {
+			Derivation d = derivations.get(i);
+			if (d.clause == null) {
+				// we copy over to get the right location for things
+				d.clause = ctx.currentGoalClause.clone();
+				d.clause.setLocation(d.getLocation());
+				d.clause.setEndLocation(d.getLocation().add(PROOF_SIZE));
+			}
+			finalOK = d.runAndAssume(prf, ctx);
+		}
+		if (!finalOK) return false;
+
+		Derivation last = derivations.get(derivations.size()-1);
+		if (last instanceof PartialCaseAnalysis) {
+			ErrorHandler.error(Errors.PARTIAL_CASE_ANALYSIS, last, "do\nproof by");
+		}
+		boolean match = Derivation.checkMatchWithImplicitCoercions(null, ctx, ctx.currentGoalClause, last.getElement(), "");
+		if(isFinal){
 			if (!match) {
 				ErrorHandler.error(Errors.WRONG_RESULT, last);
 				return false;
@@ -386,5 +453,14 @@ public abstract class Derivation extends Fact {
 		}
 		// can't check any more because of relaxation
 		return true;
+	}
+
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		// TODO: describe by rule ...
+
+		return rootNode;
 	}
 }

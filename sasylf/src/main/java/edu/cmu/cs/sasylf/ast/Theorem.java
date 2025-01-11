@@ -2,7 +2,6 @@ package edu.cmu.cs.sasylf.ast;
 
 import static edu.cmu.cs.sasylf.util.Util.debug;
 
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,17 +10,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
+import edu.cmu.cs.sasylf.parser.Token;
 import edu.cmu.cs.sasylf.reduction.InductionSchema;
 import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.term.Substitution;
 import edu.cmu.cs.sasylf.term.Term;
-import edu.cmu.cs.sasylf.util.ErrorHandler;
-import edu.cmu.cs.sasylf.util.Errors;
-import edu.cmu.cs.sasylf.util.Location;
-import edu.cmu.cs.sasylf.util.Pair;
-import edu.cmu.cs.sasylf.util.SASyLFError;
+import edu.cmu.cs.sasylf.util.*;
 import edu.cmu.cs.sasylf.interactive.InteractiveProof;
 import edu.cmu.cs.sasylf.interactive.QuitException;
 
@@ -128,13 +126,10 @@ public class Theorem extends RuleLike {
 					ErrorHandler.recoverableError(Errors.ILLEGAL_ASSUMES, assumes);
 				}
 			}
-			List<String> inputNames = new ArrayList<String>();
 			for (Fact f : foralls) {
 				f.typecheck(ctx);
-				inputNames.add(f.getName());
-				if (f instanceof NonTerminalAssumption) {
-					NonTerminalAssumption sa = (NonTerminalAssumption) f;
-					NonTerminal root = sa.getRoot();
+				if (f instanceof NonTerminalAssumption sa) {
+                    NonTerminal root = sa.getRoot();
 					if (root != null) {
 						if (!root.getType().canAppearIn(sa.getSyntax().typeTerm())) {
 							ErrorHandler.error(Errors.EXTRANEOUS_ASSUMES, f,
@@ -155,9 +150,8 @@ public class Theorem extends RuleLike {
 
 			inductionScheme = null;
 			for (Derivation d : derivations) {
-				if (d instanceof DerivationByInduction) {
-					DerivationByInduction dbi = (DerivationByInduction) d;
-					InductionSchema is = InductionSchema.create(this, dbi.getArgStrings(),
+				if (d instanceof DerivationByInduction dbi) {
+                    InductionSchema is = InductionSchema.create(this, dbi.getArgStrings(),
 							true);
 					if (is != null) {
 						inductionScheme = is;
@@ -173,14 +167,15 @@ public class Theorem extends RuleLike {
 				if (this != firstInGroup || this.andTheorem != null) {
 					ErrorHandler.warning(Errors.INDUCTION_MUTUAL_MISSING, this);
 					inductionScheme = InductionSchema.create(this,
-							foralls.get(0).getElement(), true);
+							foralls.getFirst().getElement(), true);
 				} else {
 					inductionScheme = InductionSchema.nullInduction;
 				}
 			}
 			if (this != firstInGroup) {
 				// for side-effect:
-				inductionScheme.matches(firstInGroup.getInductionSchema(), this, false);
+                assert inductionScheme != null;
+                inductionScheme.matches(firstInGroup.getInductionSchema(), this, false);
 			}
 
 			if (oldErrors == ErrorHandler.getErrorCount())
@@ -188,38 +183,49 @@ public class Theorem extends RuleLike {
 		}
 	}
 
-	public Context run(InteractiveProof prf, Context ctx) throws QuitException {
-		// TODO: do the rest of interactive type check here too
+	/// Runs the interactive mode for [Theorem]
+	/// @param ctx [Context] to use. Does not have to be cloned by the caller
+	/// @return a new updated copy of [ctx]
+	public Context run(InteractiveProof prf, Context ctx, Token t0) throws ParseException, QuitException {
+		var finalCtx = this.interactiveTypeCheckSetup(ctx.clone());
 
-		Context newCtx = this.interactiveTypeCheckSetup(prf, ctx);
+		while (true) {
+			var newCtx = finalCtx.clone();
 
-		boolean isTheoremFinished = false;
-
-		while (!isTheoremFinished) {
-
-			System.out.println("Theorem Term: " + this.exists.asTerm().toString());
-			System.out.println("Current goal: " + newCtx.currentGoal.toString());
-
-			InputStream inputCommand = prf.getNextCommand();
-
-			DSLToolkitParser parser = new DSLToolkitParser(inputCommand, "UTF-8");
+			var inputCommand = prf.getNextCommand(newCtx);
+			var parser = new DSLToolkitParser(inputCommand, "UTF-8");
 
 			try {
-				Derivation derivation = parser.DerivationHeader();
+				parser.TheoremFooter(this, t0, false);
+				break;
+			} catch (ParseException ignored) {}
 
-				// TODO: Should update context with new goal
-				isTheoremFinished = this.addAndTypeCheckDerivation(newCtx, derivation);
+			var derivation = parser.DerivationHeader();
 
-				// if it type checks add the derivation to the theorem
-				this.getDerivations().add(derivation);
-			} catch (ParseException e) {
-				System.out.println(e.getMessage());
+			if (derivation instanceof DerivationByInduction derivationInduction) {
+				InductionSchema is = InductionSchema.create(this, derivationInduction.getArgStrings(),
+						true);
+				if (is != null) {
+					this.inductionScheme = is;
+				} else if (this.inductionScheme == null) {
+					this.inductionScheme = InductionSchema.nullInduction; // prevent cascade
+				}
+			}
+
+			var oldErrorCount = ErrorHandler.getErrorCount();
+			this.getDerivations().add(derivation);
+			derivation.run(prf, newCtx);
+			derivation.addToDerivationMap(newCtx);
+			var newErrorCount = ErrorHandler.getErrorCount();
+			if (newErrorCount > oldErrorCount) {
+				this.getDerivations().remove(derivation);
+				this.inductionScheme = InductionSchema.nullInduction;
+			} else {
+				finalCtx = newCtx;
 			}
 		}
 
-		// TODO: update the current context to include the new derivation
-		// TODO: Allow <END> ( <THEOREM> | <LEMMA> ) after all stuff
-		return newCtx;
+		return finalCtx;
 	}
 
 	private Context setupTypeChecking(Context ctx, int oldErrorCount) {
@@ -227,9 +233,9 @@ public class Theorem extends RuleLike {
 
 		Context newCtx = ctx.clone();
 
-		newCtx.derivationMap = new HashMap<String, Fact>();
-		newCtx.inputVars = new HashSet<FreeVar>();
-		newCtx.outputVars = new HashSet<FreeVar>();
+		newCtx.derivationMap = new HashMap<>();
+		newCtx.inputVars = new HashSet<>();
+		newCtx.outputVars = new HashSet<>();
 		newCtx.currentSub = new Substitution();
 		newCtx.currentTheorem = this;
 		newCtx.assumedContext = null;
@@ -310,11 +316,11 @@ public class Theorem extends RuleLike {
 		return newCtx;
 	}
 
-	private Context interactiveTypeCheckSetup(InteractiveProof prf, Context ctx) {
-		if (edu.cmu.cs.sasylf.util.Util.VERBOSE) {
-			System.out.println(getKindTitle() + " " + getName());
-		}
-		
+	/// Sets up the object for the [run] function same as the [typecheck] function does around the derivation's [typecheck] call
+	/// @param ctx [Context] to use. Should be cloned by caller, is altered directly.
+	private Context interactiveTypeCheckSetup(Context ctx) {
+		debug(getKindTitle() + " " + getName());
+
 		if (!ctx.ruleMap.containsKey(getName())) {
 			ctx.ruleMap.put(getName(), this);
 		} else if (ctx.ruleMap.get(getName()) != this) {
@@ -322,31 +328,24 @@ public class Theorem extends RuleLike {
 		}
 
 		int oldErrorCount = ErrorHandler.getErrorCount();
-		Context newCtx = ctx.clone();
 		try {
-			newCtx = this.setupTypeChecking(newCtx, oldErrorCount);
+			ctx = this.setupTypeChecking(ctx, oldErrorCount);
 		} catch (SASyLFError e) {
 			System.out.println(e.getMessage());
 		} finally {
 			int newErrorCount = ErrorHandler.getErrorCount() - oldErrorCount;
-			if (edu.cmu.cs.sasylf.util.Util.VERBOSE) {
+			if (Util.VERBOSE) {
 				if (newErrorCount > 0) {
 					System.out.println("Error(s) in " + getKind() + " " + getName());
 				}
 			}
 		}
 
-		return newCtx;
-	}
-
-	public boolean addAndTypeCheckDerivation(Context ctx, Derivation derivation) {
-		List<Derivation> derivations = new ArrayList<Derivation>();
-		derivations.add(derivation);
-		return Derivation.typecheck(this, ctx, derivations, false);
+		return ctx;
 	}
 
 	public void typecheck(Context oldCtx) {
-		if (edu.cmu.cs.sasylf.util.Util.VERBOSE) {
+		if (Util.VERBOSE) {
 			System.out.println(getKindTitle() + " " + getName());
 		}
 		
@@ -366,7 +365,7 @@ public class Theorem extends RuleLike {
 			// e.printStackTrace();
 		} finally {
 			int newErrorCount = ErrorHandler.getErrorCount() - oldErrorCount;
-			if (edu.cmu.cs.sasylf.util.Util.VERBOSE) {
+			if (Util.VERBOSE) {
 				if (newErrorCount > 0) {
 					System.out.println("Error(s) in " + getKind() + " " + getName());
 				}
@@ -388,7 +387,7 @@ public class Theorem extends RuleLike {
 			return;
 		if (k == null)
 			k = "theorem";
-		if (k.length() == 0)
+		if (k.isEmpty())
 			k = "theorem";
 		kind = k;
 		kindTitle = Character.toTitleCase(k.charAt(0)) + kind.substring(1);
@@ -447,8 +446,8 @@ public class Theorem extends RuleLike {
 				}
 			}
 		}
-		while (n == 1 && elems.get(0) instanceof Clause) {
-			c = (Clause) elems.get(0);
+		while (n == 1 && elems.getFirst() instanceof Clause) {
+			c = (Clause) elems.getFirst();
 			elems = c.getElements();
 			n = elems.size();
 		}
@@ -458,7 +457,7 @@ public class Theorem extends RuleLike {
 	private String kind = "theorem";
 	private String kindTitle = "Theorem";
 	private NonTerminal assumes = null;
-	private List<Fact> foralls = new ArrayList<Fact>();
+	private final List<Fact> foralls = new ArrayList<Fact>();
 	private Clause exists;
 	private final List<Derivation> derivations;
 	private Theorem andTheorem;
@@ -474,6 +473,29 @@ public class Theorem extends RuleLike {
 		for (Derivation derivation : derivations) {
 			derivation.collectQualNames(consumer);
 		}
+	}
+
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		var forallsNode = mapper.createArrayNode();
+		for (Fact forall : this.getForalls()) {
+			forallsNode.add(forall.getName());
+		}
+		rootNode.set("foralls", forallsNode);
+		rootNode.put("exists", this.getExists().asTerm().toString());
+//
+//		if (this.getDerivations() != null && !this.getDerivations().isEmpty()) {
+//			var derivationsNode = mapper.createObjectNode();
+//			for (Derivation derivation : this.getDerivations()) {
+//				derivationsNode.put(derivation.getName(), derivation.getClause().toString());
+//			}
+//			rootNode.set("derivations", derivationsNode);
+//		}
+
+
+		return rootNode;
 	}
 
 }

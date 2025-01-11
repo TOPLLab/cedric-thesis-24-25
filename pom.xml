@@ -7,6 +7,5 @@
     <packaging>pom</packaging>
     <modules>
         <module>sasylf</module>
-        <!-- TODO: <module>eclipse-plugin</module>-->
     </modules>
 </project>

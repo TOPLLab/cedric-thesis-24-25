@@ -190,7 +190,7 @@ public class Proof {
 
 	/**
 	 * Analyze the SASyLF code in the reader and initialize remaining parts of
-	 * results. This method can called just once.
+	 * results. This method can call just once.
 	 * @param mf may be null
 	 * @param r contents to parse; must not be null
 	 */

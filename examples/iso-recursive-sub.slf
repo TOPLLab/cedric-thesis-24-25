@@ -12,7 +12,7 @@ package examples
 */
 
 
-// This declaraion indicates identifiers that are being used merely for parsing purposes
+// This declaration indicates identifiers that are being used merely for parsing purposes
 terminals unit value
     Unit in lambda Rec fold unfold Top
 

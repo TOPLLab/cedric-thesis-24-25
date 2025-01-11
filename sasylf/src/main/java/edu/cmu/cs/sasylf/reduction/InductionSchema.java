@@ -2,16 +2,9 @@ package edu.cmu.cs.sasylf.reduction;
 
 import java.util.List;
 
-import edu.cmu.cs.sasylf.ast.AssumptionElement;
-import edu.cmu.cs.sasylf.ast.Binding;
-import edu.cmu.cs.sasylf.ast.Clause;
-import edu.cmu.cs.sasylf.ast.Context;
-import edu.cmu.cs.sasylf.ast.Element;
-import edu.cmu.cs.sasylf.ast.Fact;
-import edu.cmu.cs.sasylf.ast.Node;
-import edu.cmu.cs.sasylf.ast.NonTerminal;
-import edu.cmu.cs.sasylf.ast.Terminal;
-import edu.cmu.cs.sasylf.ast.Theorem;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.cmu.cs.sasylf.ast.*;
 import edu.cmu.cs.sasylf.util.ErrorHandler;
 import edu.cmu.cs.sasylf.util.Errors;
 

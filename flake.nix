@@ -14,7 +14,7 @@
 
       perSystem = { self', pkgs, ... }:
         let
-          jdk = pkgs.jdk21;
+          jdk = pkgs.jdk23;
         in
         {
           devShells.default = pkgs.mkShell {
@@ -42,7 +42,7 @@
                 mkdir -p $TMPDIR/.m2/repository
 
                 # Run maven with custom repository location
-                mvn clean package \
+                mvn clean generate-sources package \
                   -pl sasylf \
                   -Dmaven.repo.local=$TMPDIR/.m2/repository
               '';

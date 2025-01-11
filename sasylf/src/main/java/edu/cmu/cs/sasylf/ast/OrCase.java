@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.cmu.cs.sasylf.interactive.InteractiveProof;
+import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Abstraction;
 import edu.cmu.cs.sasylf.term.Application;
 import edu.cmu.cs.sasylf.term.Substitution;
@@ -110,6 +113,72 @@ public class OrCase extends Case {
 		}
 
 		super.typecheck(ctx, isSubderivation);
+	}
+
+	@Override
+	public void run(InteractiveProof prf, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException, QuitException {
+		Context ctx = parent.clone();
+		premise.typecheck(ctx);
+		premise.addToDerivationMap(ctx);
+		premise.getClause().checkBindings(ctx.bindingTypes, this);
+
+		if (!(ctx.currentCaseAnalysisElement instanceof OrClauseUse)) {
+			ErrorHandler.error(Errors.OR_CASE_NOT_APPLICABLE, this);
+		}
+
+		Clause cl = premise.getClause();
+		Util.verify(cl.getType() instanceof Judgment, "should have been handled already");
+
+		Term t = cl.asTerm();
+		t = ctx.toTerm(cl);
+
+		boolean found=false;
+
+		for (ClauseUse cu : ((OrClauseUse)ctx.currentCaseAnalysisElement).getClauses()) {
+			if (t.equals(ctx.toTerm(ContextJudgment.unwrap(cu)))) found = true;
+		}
+		if (!found) {
+			ErrorHandler.error(Errors.CASE_UNNECESSARY, this, "suggestion: remove it");
+		}
+		found= false;
+
+		NonTerminal subjectRoot = ctx.currentCaseAnalysisElement.getRoot();
+		NonTerminal patternRoot = cl.getRoot();
+		if (subjectRoot == null) {
+			if (patternRoot != null) {
+				ErrorHandler.recoverableError(Errors.CASE_CONTEXT_ADDED, patternRoot.toString(), premise);
+			}
+		} else if (patternRoot == null) {
+			if (((Judgment)cl.getType()).getAssume() != null) {
+				ErrorHandler.recoverableError(Errors.CONTEXT_DISCARDED, "" + subjectRoot, premise);
+			}
+		} else if (!subjectRoot.equals(patternRoot)) {
+			ErrorHandler.recoverableError(Errors.CASE_CONTEXT_CHANGED_EX, subjectRoot.toString(), premise);
+		}
+
+		for (Map.Entry<CanBeCase,Set<Pair<Term,Substitution>>> e : ctx.caseTermMap.entrySet()) {
+			if (e.getValue().isEmpty()) continue;
+			// Rule r = (Rule)e.getKey();
+			// Clause p = r.getPremises().get(0);
+			// System.out.println("p.getType = " + r.getJudgment().getName());
+			// System.out.println("cl.getJudgment = " + cl.getType().toString());
+			// if (p.getType() != cl.getType()) continue; // doesn't work with context judgments
+			Pair<Term,Substitution> caseResult = e.getValue().iterator().next();
+			Term pt = getOrClausePremise(caseResult.first);
+			pt = ContextJudgment.invertContextJudgments(ctx, pt);
+			if (pt.equals(t.substitute(caseResult.second))) {
+				e.getValue().remove(caseResult);
+				found = true;
+				ctx.composeSub(caseResult.second);
+				break;
+			}
+		}
+
+		if (!found) {
+			ErrorHandler.error(Errors.CASE_REDUNDANT, this, "suggestion: remove it");
+		}
+
+		super.run(prf, ctx, isSubderivation);
 	}
 
 	Derivation premise;
