@@ -1,10 +1,5 @@
 package edu.cmu.cs.sasylf.interactive;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,57 +14,35 @@ import edu.cmu.cs.sasylf.util.Pair;
 import edu.cmu.cs.sasylf.util.SASyLFError;
 
 public class InteractiveProof {
+  public interface ParseFn<T> {
+    T run(DSLToolkitParser parser) throws ParseException;
+  }
 
   // the currently finished proof
-  private Proof currentProof;
+  private final Proof currentProof;
 
   // current context
   private Context currentContext;
 
-  // buffered reader for reading input
-  private final BufferedReader d = new BufferedReader(new InputStreamReader(System.in));
+  // interface to parser/sysin
+  private final ParserInterface pi = new ParserInterface();
 
   public InteractiveProof(Proof proof) {
     this.currentProof = proof;
     this.currentContext = proof.getCompilationUnit().getContext();
   }
 
-  public InputStream getNextCommand(Context ctx) throws QuitException {
-    try {
-      System.out.println(ctx.getInteractiveInfo().toPrettyString());
-
-      // TODO: Remove this print
-      System.out.print("> ");
-      String input = d.readLine();
-
-      // TODO: This is also CLI specific
-      if (input.equals("quit")) {
-        throw new QuitException();
-      }
-
-      return new ByteArrayInputStream(input.getBytes());
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      return null;
-    }
-  }
-
   public void run() {
     while (true) {
       try {
-        InputStream inputCommand = getNextCommand(currentContext);
-        DSLToolkitParser parser = new DSLToolkitParser(inputCommand, "UTF-8");
-
-        Pair<Theorem, Token> pair = parser.TheoremHeader(false);
+        Pair<Theorem, Token> pair = this.pi.getNextNode(this.currentContext, parser-> parser.TheoremHeader(false));
         Theorem currentTheorem = pair.first;
 
-        currentContext = currentTheorem.run(this, currentContext, pair.second);
+        this.currentContext = currentTheorem.run(this.pi, this.currentContext, pair.second);
         addTheoremToProof(currentTheorem);
       } catch (ParseException e) {
         // TODO: Put errors in json object
         System.out.println(e.getMessage());
-      } catch (QuitException e) {
-        break;
       }
     }
   }

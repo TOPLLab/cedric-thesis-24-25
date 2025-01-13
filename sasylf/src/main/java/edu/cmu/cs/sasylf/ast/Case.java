@@ -8,10 +8,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.interactive.ParserInterface;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
-import edu.cmu.cs.sasylf.reduction.InductionSchema;
 import edu.cmu.cs.sasylf.util.DefaultSpan;
 import edu.cmu.cs.sasylf.util.ErrorHandler;
 import edu.cmu.cs.sasylf.util.Location;
@@ -51,7 +50,7 @@ public class Case extends Node {
 
 	/// Runs the type checking for interactive mode for [Case]
 	/// @param ctx Context to use. Should be cloned by the caller
-	public void run(InteractiveProof prf, Context ctx, Pair<Fact,Integer> isSubderivation) throws ParseException, QuitException {
+	public void run(ParserInterface pi, Context ctx, Pair<Fact,Integer> isSubderivation) throws ParseException {
 		var finalCtx = ctx.clone();
 		ErrorHandler.recordLastSpan(this);
 		Map<String, Fact> oldMap = finalCtx.derivationMap;
@@ -59,33 +58,28 @@ public class Case extends Node {
 
 		var newCtx = finalCtx.clone();
 
-		var inputCommand = prf.getNextCommand(newCtx);
-		var parser = new DSLToolkitParser(inputCommand, "UTF-8");
-
 		while (true) {
 			// NOTE: At least one derivation should be in the case
-			var d = parser.DerivationHeader();
+			var node = newCtx.derivationMap.isEmpty()
+						? pi.getNextNode(newCtx, DSLToolkitParser::DerivationHeader)
+						: pi.getNextNode(newCtx, DSLToolkitParser::DerivationHeader,
+												 parser-> parser.CaseFooter(this));
 
-			var oldErrorCount = ErrorHandler.getErrorCount();
-			derivations.add(d);
-			d.run(prf, newCtx);
-			d.addToDerivationMap(newCtx);
-			var newErrorCount = ErrorHandler.getErrorCount();
-			if (newErrorCount > oldErrorCount) {
-				derivations.remove(d);
-			} else {
-				finalCtx = newCtx;
-				newCtx = finalCtx.clone();
-			}
-
-			inputCommand = prf.getNextCommand(newCtx);
-			parser = new DSLToolkitParser(inputCommand, "UTF-8");
-
-			try {
-				// TODO: other by analysis footers
-				parser.CaseFooter(this);
+			if (node instanceof Derivation d) {
+				var oldErrorCount = ErrorHandler.getErrorCount();
+				derivations.add(d);
+				d.run(pi, newCtx);
+				d.addToDerivationMap(newCtx);
+				var newErrorCount = ErrorHandler.getErrorCount();
+				if (newErrorCount > oldErrorCount) {
+					derivations.remove(d);
+				} else {
+					finalCtx = newCtx;
+					newCtx = finalCtx.clone();
+				}
+			} else if (node instanceof Case) {
 				break;
-			} catch (ParseException ignored) {}
+			}
 		}
 
 		ctx.derivationMap = oldMap;

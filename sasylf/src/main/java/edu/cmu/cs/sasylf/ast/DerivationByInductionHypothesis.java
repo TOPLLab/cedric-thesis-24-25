@@ -1,7 +1,6 @@
 package edu.cmu.cs.sasylf.ast;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.interactive.ParserInterface;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.util.Location;
 
@@ -30,8 +29,8 @@ public class DerivationByInductionHypothesis extends DerivationByIHRule {
 	}
 
 	@Override
-	public void run(InteractiveProof prf, Context ctx) throws ParseException, QuitException {
-		super.run(prf, ctx);
+	public void run(ParserInterface pi, Context ctx) throws ParseException {
+		super.run(pi, ctx);
 
 		this.checkInduction(ctx, ctx.currentTheorem, ctx.currentTheorem);
 	}

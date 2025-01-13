@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.cmu.cs.sasylf.interactive.ParserInterface;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.parser.Token;
@@ -21,7 +22,6 @@ import edu.cmu.cs.sasylf.term.Substitution;
 import edu.cmu.cs.sasylf.term.Term;
 import edu.cmu.cs.sasylf.util.*;
 import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.QuitException;
 
 public class Theorem extends RuleLike {
 	public Theorem(String n, Location l) {
@@ -186,42 +186,40 @@ public class Theorem extends RuleLike {
 	/// Runs the interactive mode for [Theorem]
 	/// @param ctx [Context] to use. Does not have to be cloned by the caller
 	/// @return a new updated copy of [ctx]
-	public Context run(InteractiveProof prf, Context ctx, Token t0) throws ParseException, QuitException {
+	public Context run(ParserInterface pi, Context ctx, Token t0) throws ParseException {
 		var finalCtx = this.interactiveTypeCheckSetup(ctx.clone());
 
 		while (true) {
 			var newCtx = finalCtx.clone();
 
-			var inputCommand = prf.getNextCommand(newCtx);
-			var parser = new DSLToolkitParser(inputCommand, "UTF-8");
+			var node = pi.getNextNode(newCtx,
+					DSLToolkitParser::DerivationHeader,
+					parser -> parser.TheoremFooter(this, t0, false));
 
-			try {
-				parser.TheoremFooter(this, t0, false);
-				break;
-			} catch (ParseException ignored) {}
-
-			var derivation = parser.DerivationHeader();
-
-			if (derivation instanceof DerivationByInduction derivationInduction) {
-				InductionSchema is = InductionSchema.create(this, derivationInduction.getArgStrings(),
-						true);
-				if (is != null) {
-					this.inductionScheme = is;
-				} else if (this.inductionScheme == null) {
-					this.inductionScheme = InductionSchema.nullInduction; // prevent cascade
+			if (node instanceof Derivation d) {
+				if (d instanceof DerivationByInduction di) {
+					InductionSchema is = InductionSchema.create(this, di.getArgStrings(),
+							true);
+					if (is != null) {
+						this.inductionScheme = is;
+					} else if (this.inductionScheme == null) {
+						this.inductionScheme = InductionSchema.nullInduction; // prevent cascade
+					}
 				}
-			}
 
-			var oldErrorCount = ErrorHandler.getErrorCount();
-			this.getDerivations().add(derivation);
-			derivation.run(prf, newCtx);
-			derivation.addToDerivationMap(newCtx);
-			var newErrorCount = ErrorHandler.getErrorCount();
-			if (newErrorCount > oldErrorCount) {
-				this.getDerivations().remove(derivation);
-				this.inductionScheme = InductionSchema.nullInduction;
-			} else {
-				finalCtx = newCtx;
+				var oldErrorCount = ErrorHandler.getErrorCount();
+				this.getDerivations().add(d);
+				d.run(pi, newCtx);
+				d.addToDerivationMap(newCtx);
+				var newErrorCount = ErrorHandler.getErrorCount();
+				if (newErrorCount > oldErrorCount) {
+					this.getDerivations().remove(d);
+					this.inductionScheme = InductionSchema.nullInduction;
+				} else {
+					finalCtx = newCtx;
+				}
+			} else if (node instanceof Theorem) {
+				break;
 			}
 		}
 

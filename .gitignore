@@ -1,3 +1,5 @@
-/bin/
-/org.sasylf*.jar
-/SASyLF*.jar
+**/target/
+result
+.idea/
+.direnv/
+.settings/

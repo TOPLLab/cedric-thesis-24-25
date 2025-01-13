@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.interactive.ParserInterface;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Application;
@@ -170,8 +170,8 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 	/// Runs the type checking for interactive mode for [DerivationByAnalysis]
 	/// @param ctx Context to use. Should be cloned by the caller
 	@Override
-	public void run(InteractiveProof prf, Context ctx) throws QuitException, ParseException {
-		super.run(prf, ctx);
+	public void run(ParserInterface pi, Context ctx) throws ParseException {
+		super.run(pi, ctx);
 		computeTargetDerivation(ctx);
 		Util.debug("On line ", getLocation().getLine(), " varFree = ", ctx.varFreeNTmap.keySet());
 
@@ -229,22 +229,20 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 			SASyLFError error = null;
 
 			while (true) {
-				var inputCommand = prf.getNextCommand(ctx);
-				var parser = new DSLToolkitParser(inputCommand, "UTF-8");
+				// TODO: other by analysis footers
+				var node = pi.getNextNode(ctx,
+						DSLToolkitParser::CaseHeader,
+						parser -> parser.InductionJustificationFooter(this));
 
-				try {
-					// TODO: other by analysis footers
-					parser.InductionJustificationFooter(this);
+				if (node instanceof Case c) {
+					try {
+						cases.add(c);
+						c.run(pi, ctx, isSubderivation);
+					} catch (SASyLFError ex) {
+						error = ex;
+					}
+				} else if (node instanceof Derivation) {
 					break;
-				} catch (ParseException ignored) {}
-
-				try {
-					Case c = parser.CaseHeader();
-					assert c != null;
-					cases.add(c);
-                    c.run(prf, ctx, isSubderivation);
-				} catch (SASyLFError ex) {
-					error = ex;
 				}
 			}
 

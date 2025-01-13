@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.interactive.ParserInterface;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Constant;
 import edu.cmu.cs.sasylf.term.FreeVar;
@@ -150,8 +150,8 @@ public abstract class DerivationWithArgs extends Derivation {
 	/// Runs the type checking for interactive mode for [DerivationWithArgs]
 	/// @param ctx Context to use. Should be cloned by the caller
 	@Override
-	public void run(InteractiveProof prf, Context ctx) throws QuitException, ParseException {
-		super.run(prf, ctx);
+	public void run(ParserInterface pi, Context ctx) throws ParseException {
+		super.run(pi, ctx);
 
 		final NonTerminal root = getClause().getRoot();
 		if (!ctx.isKnownContext(root)) {

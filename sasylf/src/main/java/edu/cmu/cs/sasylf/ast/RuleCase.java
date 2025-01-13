@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.interactive.ParserInterface;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Abstraction;
 import edu.cmu.cs.sasylf.term.Application;
@@ -409,7 +408,7 @@ public class RuleCase extends Case {
 	}
 
 	@Override
-	public void run(InteractiveProof prf, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException, QuitException {
+	public void run(ParserInterface pi, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
 		Context ctx = parent.clone();
 		debug("line "+ this.getLocation().getLine(), " case ", ruleName);
 		debug("    currentSub = ", ctx.currentSub);
@@ -747,7 +746,7 @@ public class RuleCase extends Case {
 		// verify user-written where clauses
 		whereClauses.checkWhereClauses(ctx, adaptedSubjectTerm, rcc, null, conclusion);
 
-		super.run(prf, ctx, isSubderivation);
+		super.run(pi, ctx, isSubderivation);
 	}
 	
 	/**

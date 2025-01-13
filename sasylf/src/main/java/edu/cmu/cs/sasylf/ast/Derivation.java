@@ -11,8 +11,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.QuitException;
+import edu.cmu.cs.sasylf.interactive.ParserInterface;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.term.Substitution;
@@ -87,11 +86,11 @@ public abstract class Derivation extends Fact {
 	 * @param ctx context to use.
 	 * @return whether everything went without error
 	 */
-	public final boolean runAndAssume(InteractiveProof prf, Context ctx) {
+	public final boolean runAndAssume(ParserInterface pi, Context ctx) {
 		boolean result = true;
 		try {
-			this.run(prf, ctx);
-		} catch (SASyLFError | QuitException | ParseException error) {
+			this.run(pi, ctx);
+		} catch (SASyLFError | ParseException error) {
 			result = false;
 		}
 
@@ -149,7 +148,7 @@ public abstract class Derivation extends Fact {
 	// @Override
 	/// Runs the type checking for interactive mode for [Derivation]
 	/// @param ctx Context to use. Should be cloned by the caller
-	public void run(InteractiveProof prf, Context ctx) throws QuitException, ParseException {
+	public void run(ParserInterface pi, Context ctx) throws ParseException {
 		ErrorHandler.recordLastSpan(this);
 		ctx.checkConsistent(this);
 		clause = clause.typecheck(ctx);
@@ -162,7 +161,7 @@ public abstract class Derivation extends Fact {
         assert newClause instanceof Clause;
         clause = (Clause) newClause;
 		clause.checkBindings(ctx.bindingTypes, this);
-		clause.checkVariables(Collections.<String>emptySet(), false);
+		clause.checkVariables(Collections.emptySet(), false);
 
 		clauseChecked = true;
 	}
@@ -206,7 +205,7 @@ public abstract class Derivation extends Fact {
 		}
 	}
 
-	public static boolean run(InteractiveProof prf, Node node, Context ctx, List<Derivation> derivations, boolean isFinal) {
+	public static boolean run(ParserInterface pi, Node node, Context ctx, List<Derivation> derivations, boolean isFinal) {
 		int n = derivations.size();
 		if (n == 0) {
 			ErrorHandler.error(Errors.NO_DERIVATION, node);
@@ -221,7 +220,7 @@ public abstract class Derivation extends Fact {
 				d.clause.setLocation(d.getLocation());
 				d.clause.setEndLocation(d.getLocation().add(PROOF_SIZE));
 			}
-			finalOK = d.runAndAssume(prf, ctx);
+			finalOK = d.runAndAssume(pi, ctx);
 		}
 		if (!finalOK) return false;
 
