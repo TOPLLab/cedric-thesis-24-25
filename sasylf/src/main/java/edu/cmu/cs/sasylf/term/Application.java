@@ -9,7 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.util.Pair;
 import edu.cmu.cs.sasylf.util.Util;
 
@@ -749,6 +752,25 @@ public class Application extends Term {
 			if (arg.contains(other)) return true;
 		}
 		return false;
+	}
+
+	@Override
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		rootNode.put("term", "Application");
+		rootNode.set("function", this.getFunction().getInteractiveInfo());
+
+		var argumentsNode = mapper.createArrayNode();
+		for (Term argument : this.getArguments()) {
+
+			argumentsNode.add(argument.getInteractiveInfo());
+
+		}
+		rootNode.set("arguments", argumentsNode);
+
+		return rootNode;
 	}
 
 

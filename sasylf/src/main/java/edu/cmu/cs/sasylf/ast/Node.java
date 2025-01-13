@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.util.ErrorHandler;
 import edu.cmu.cs.sasylf.util.Location;
 import edu.cmu.cs.sasylf.util.Span;
@@ -58,4 +60,6 @@ public abstract class Node implements Span {
 	public void collectQualNames(Consumer<QualName> consumer) {
 		// nothing
 	}
+	// TODO: Look into putting a base class here
+	//	abstract public ObjectNode getInteractiveInfo();
 }

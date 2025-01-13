@@ -1,5 +1,7 @@
 package edu.cmu.cs.sasylf.ast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.util.Location;
 
 public class VariableAssumption extends SyntaxAssumption {
@@ -20,4 +22,17 @@ public class VariableAssumption extends SyntaxAssumption {
 	}
 
 	private Variable variable;
+
+
+	@Override
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		rootNode.put("name", this.getName());
+		rootNode.set("variable", this.variable.getInteractiveInfo());
+
+
+		return rootNode;
+	}
 }

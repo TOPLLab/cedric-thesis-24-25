@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.util.Pair;
 import edu.cmu.cs.sasylf.util.Util;
 
@@ -393,5 +395,18 @@ public class Abstraction extends Term {
 			}
 		}
 		return body.contains(other);
+	}
+
+	@Override
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		rootNode.put("term", "Abstraction");
+		rootNode.put("varName", this.varName);
+		rootNode.set("varType", this.varType.getInteractiveInfo());
+		rootNode.set("body", this.getBody().getInteractiveInfo());
+
+		return rootNode;
 	}
 }

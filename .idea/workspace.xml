@@ -5,312 +5,63 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7123fe3e-2522-404d-966f-69a18357f6b1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.settings/org.eclipse.m2e.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/result" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/.classpath" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/.settings/org.eclipse.jdt.apt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/.settings/org.eclipse.m2e.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/.classpath" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/.settings/org.eclipse.jdt.apt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/.settings/org.eclipse.m2e.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ErrorCoverage$ExpectedError.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ErrorCoverage.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/Main.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/Proof.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/Version.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndClauseUse.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndJudgment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrClauseUse.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrJudgment$OpTerminal.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrJudgment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AssumptionElement.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Binding.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/BindingAssumption.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/CanBeCase.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Case.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Clause.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseAssumption.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseDef.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseType.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseUse.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/CompUnit.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Context.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ContextJudgment$NoCommonPrefixException.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ContextJudgment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Derivation.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByAnalysis.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByAssumption.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByCaseAnalysis.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByExchange.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByIHRule$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByIHRule.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByInduction.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByInductionHypothesis.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByInversion.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByPrevious.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByRule.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationBySolve.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationBySubstitution.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByTheorem.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationByWeakening.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationPlaceholder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationUnproved.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationWithArgs.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ElemType.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Element.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ElementGenerator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ElementType.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Fact.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Grammar.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Judgment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/JudgmentPart.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ModulePart.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Named.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Node.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NonTerminal.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NonTerminalAssumption.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NotJudgment$NotTerminal.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NotJudgment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/OrCase.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/OrClauseUse.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/OrJudgment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/PackageDeclaration.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Part.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/PartialCaseAnalysis.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/PrintContext.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/QualName.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Relaxation.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/RenameJudgment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/RenameSyntaxDeclaration.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Rule.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/RuleCase.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/RuleLike.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Sugar.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SugarClauseDef.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Syntax.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SyntaxAssumption.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SyntaxCase.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SyntaxDeclaration.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SyntaxPart.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/TermPrinter$PrintException.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/TermPrinter.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Terminal.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/TerminalsPart.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Theorem.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/TheoremPart.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Variable.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/VariableAssumption.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/WhereClause.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/grammar/GrmNonTerminal.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/grammar/GrmRule.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/grammar/GrmTerminal.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/grammar/GrmUtil.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/AcceptSymbol.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/Action.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/ActionType.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/AmbiguousSentenceException.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/Automaton.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/Conflict.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/DuplicateItemSetException.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/Grammar.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/ItemRule.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/ItemSet.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/LRParseTable.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/LRZeroParseTable.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/NonTerminal.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/NotParseableException.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/ParseNode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/ReadSymbol.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/Rule.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/RuleNode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/StartSymbol.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/Symbol.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/Table.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/Terminal.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/grammar/TerminalNode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/interactive/InteractiveProof.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/interactive/QuitException.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/AbstractModuleFinder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/AbstractModuleProvider.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/Module.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/ModuleChangedEvent$EventType.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/ModuleChangedEvent.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/ModuleEventListener.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/ModuleFinder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/ModuleId.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/ModuleProvider.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/NullModuleFinder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/PathModuleFinder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/ResourceModuleFinder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/ResourceModuleProvider.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/RootModuleFinder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/module/RootModuleProvider.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/DSLToolkitParser$JJCalls.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/DSLToolkitParser$LookaheadSuccess.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/DSLToolkitParser.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/DSLToolkitParserConstants.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/DSLToolkitParserTokenManager.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/JavaCharStream.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/ParseException.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/Token.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/TokenMgrError.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/Judgment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/Proof.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/ProofImpl.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/ProofNode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/ProvedNode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/ProvedNodeImpl.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/Prover.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/RootNode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/Rule.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/RuleInstance.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/SolveReport.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/UnprovedNode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/prover/UnprovedNodeImpl.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/reduction/InductionSchema.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/reduction/LexicographicOrder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/reduction/Reduction.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/reduction/StructuralInduction.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/reduction/UnitTests.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/reduction/Unordered$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/reduction/Unordered.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Abstraction.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Application.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Atom.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/BoundVar.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Constant.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/EOCUnificationFailed.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Facade.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar$2.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Substitution.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Term$PairComparator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Term.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/UnificationFailed.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/UnificationIncomplete.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/UnitTests.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/CommentListener.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/DefaultSpan.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/ErrorHandler$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/ErrorHandler.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/ErrorReport.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Errors.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/IdentityArrayMap$HashEntry.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/IdentityArrayMap.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Location.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Marker.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Pair.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/ParseUtil.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/PermutationIterator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Quickfix.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Relation$PairIterator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Relation.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Report.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/SASyLFError.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/SimpleTestSuite.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/SingletonList.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/SingletonSet$MyIterator.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/SingletonSet.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Span.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Status.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/StringSpan.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/TaskReport.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/TokenSpan.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/TransitiveRelation.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/UnitTests.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/UpdatableErrorReport.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/Util.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/VSDocument.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/VSFindReplaceDocumentAdapter.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/VSMarker.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/util/VSRegion.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/.classpath" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/.settings/org.eclipse.jdt.apt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/.settings/org.eclipse.m2e.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/edu/cmu/cs/sasylf/parser/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/.classpath" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/.settings/org.eclipse.jdt.apt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/.settings/org.eclipse.m2e.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/edu/cmu/cs/sasylf/parser/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/.classpath" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/.settings/org.eclipse.jdt.apt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/.settings/org.eclipse.m2e.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/edu/cmu/cs/sasylf/parser/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/.classpath" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/.settings/org.eclipse.jdt.apt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/.settings/org.eclipse.m2e.core.prefs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/edu/cmu/cs/sasylf/parser/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/target/classes/edu/cmu/cs/sasylf/parser/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/classes/target/classes/target/classes/target/classes/target/classes/target/classes/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/generated-sources/edu/cmu/cs/sasylf/parser/DSLToolkitParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/generated-sources/edu/cmu/cs/sasylf/parser/DSLToolkitParserConstants.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/generated-sources/edu/cmu/cs/sasylf/parser/DSLToolkitParserTokenManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/generated-sources/edu/cmu/cs/sasylf/parser/JavaCharStream.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/generated-sources/edu/cmu/cs/sasylf/parser/ParseException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/generated-sources/edu/cmu/cs/sasylf/parser/Token.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/generated-sources/edu/cmu/cs/sasylf/parser/TokenMgrError.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/maven-archiver/pom.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/original-sasylf-1.5.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylf/target/sasylf-1.5.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sasylfcli/sasylf.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.core.resources.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/iso-recursive-sub.slf" beforeDir="false" afterPath="$PROJECT_DIR$/examples/iso-recursive-sub.slf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flake.nix" beforeDir="false" afterPath="$PROJECT_DIR$/flake.nix" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf.iml" beforeDir="false" afterPath="$PROJECT_DIR$/root.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf.local" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/dependency-reduced-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/dependency-reduced-pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/Proof.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/Proof.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Case.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Case.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Context.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Context.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Derivation.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Derivation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationByAnalysis.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationByAnalysis.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationByIHRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationByIHRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationByInduction.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationByInduction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationByInductionHypothesis.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationByInductionHypothesis.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationWithArgs.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationWithArgs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/OrCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/OrCase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/RuleCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/RuleCase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/SyntaxCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/SyntaxCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationBySubstitution.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/DerivationBySubstitution.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Element.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Element.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Fact.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Fact.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Node.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/NonTerminalAssumption.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/NonTerminalAssumption.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/SyntaxAssumption.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/SyntaxAssumption.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Theorem.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Theorem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/VariableAssumption.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/VariableAssumption.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/interactive/InteractiveProof.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/interactive/InteractiveProof.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/parser/parser.jj" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/parser/parser.jj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/reduction/InductionSchema.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/reduction/InductionSchema.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sum_interactive.slf" beforeDir="false" afterPath="$PROJECT_DIR$/sum_interactive.slf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/Abstraction.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/Abstraction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/Application.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/BoundVar.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/BoundVar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/Constant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/FreeVar.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/FreeVar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/Term.java" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/term/Term.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndClauseUse.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndClauseUse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrClauseUse.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrClauseUse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrJudgment$OpTerminal.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrJudgment$OpTerminal.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrJudgment.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AndOrJudgment.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AssumptionElement.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/AssumptionElement.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Binding.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Binding.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/BindingAssumption.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/BindingAssumption.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Clause.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Clause.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseAssumption.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseAssumption.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseDef.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseDef.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseUse.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/ClauseUse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Context.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Context.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Derivation.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Derivation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationBySubstitution.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/DerivationBySubstitution.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Element.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Element.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Fact.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Fact.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Judgment.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Judgment.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Node.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NonTerminal.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NonTerminal.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NonTerminalAssumption.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NonTerminalAssumption.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NotJudgment$NotTerminal.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NotJudgment$NotTerminal.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NotJudgment.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/NotJudgment.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/OrClauseUse.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/OrClauseUse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SugarClauseDef.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SugarClauseDef.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SyntaxAssumption.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/SyntaxAssumption.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Terminal.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Terminal.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Theorem.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Theorem.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Variable.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/Variable.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/VariableAssumption.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/ast/VariableAssumption.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Abstraction.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Abstraction.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Application.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Application.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Atom.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Atom.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/BoundVar.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/BoundVar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Constant.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Constant.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/FreeVar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Term$PairComparator.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Term$PairComparator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Term.class" beforeDir="false" afterPath="$PROJECT_DIR$/sasylf/target/classes/edu/cmu/cs/sasylf/term/Term.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -331,7 +82,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Unnamed.executor": "Debug",
-    "Application.sasylf.executor": "Debug",
+    "Application.sasylf.executor": "Run",
     "Maven.root [clean].executor": "Run",
     "Maven.root [compile].executor": "Run",
     "Maven.root [package].executor": "Run",
@@ -370,15 +121,19 @@
     </task>
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/sasylf/src/main/java/edu/cmu/cs/sasylf/ast/Context.java</url>
-          <line>741</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint enabled="true" type="java-exception">
           <properties>

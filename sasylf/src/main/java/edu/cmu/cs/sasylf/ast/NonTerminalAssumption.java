@@ -1,5 +1,7 @@
 package edu.cmu.cs.sasylf.ast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.util.ErrorHandler;
 import edu.cmu.cs.sasylf.util.Errors;
 import edu.cmu.cs.sasylf.util.Location;
@@ -46,5 +48,4 @@ public class NonTerminalAssumption extends SyntaxAssumption {
 
 	private NonTerminal nonTerminal;
 	private boolean isTheoremArg = false;
-
 }

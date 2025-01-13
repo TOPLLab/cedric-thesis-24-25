@@ -731,15 +731,13 @@ public class Context implements Cloneable {
 
 		if (this.currentGoal != null) {
 			// TODO: Interactive info this
-			rootNode.put("currentGoal", this.currentGoal.substitute(this.currentSub).toString());
+			rootNode.set("currentGoal", this.currentGoal.substitute(this.currentSub).getInteractiveInfo());
 		}
 
 		if (this.derivationMap != null && !derivationMap.isEmpty()) {
-			var derivationsNode = mapper.createObjectNode();
-			for (Map.Entry<String, Fact> derivation : this.derivationMap.entrySet()) {
-				var test1 = derivation.getValue();
-				var test2 = derivation.getValue().getElement();
-				derivationsNode.put(derivation.getKey(), derivation.getValue().getElement().toString());
+			var derivationsNode = mapper.createArrayNode();
+			for (Fact fact : this.derivationMap.values()) {
+				derivationsNode.add(fact.getInteractiveInfo());
 			}
 			rootNode.set("derivations", derivationsNode);
 		}

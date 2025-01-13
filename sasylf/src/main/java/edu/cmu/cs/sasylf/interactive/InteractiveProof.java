@@ -36,7 +36,7 @@ public class InteractiveProof {
 
   public InputStream getNextCommand(Context ctx) throws QuitException {
     try {
-      System.out.println(ctx.getInteractiveInfo().toPrettyString()); // TODO: Add pretty string option
+      System.out.println(ctx.getInteractiveInfo().toPrettyString());
 
       // TODO: Remove this print
       System.out.print("> ");

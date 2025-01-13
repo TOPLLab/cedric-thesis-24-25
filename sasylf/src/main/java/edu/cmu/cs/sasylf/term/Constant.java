@@ -2,6 +2,8 @@ package edu.cmu.cs.sasylf.term;
 
 import java.util.Queue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.util.Pair;
 
 
@@ -27,5 +29,16 @@ public class Constant extends Atom {
 			Term.unifyHelper(current, worklist);
 		else
 			throw new UnificationFailed("Atoms differ: " + this + " and " + other, this, other);
+	}
+
+	@Override
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		rootNode.put("term", "Constant");
+		rootNode.put("name", this.getName());
+
+		return rootNode;
 	}
 }

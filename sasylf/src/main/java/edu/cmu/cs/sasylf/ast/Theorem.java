@@ -481,19 +481,13 @@ public class Theorem extends RuleLike {
 
 		var forallsNode = mapper.createArrayNode();
 		for (Fact forall : this.getForalls()) {
-			forallsNode.add(forall.getName());
+			var forallNode = mapper.createObjectNode();
+			forallNode.put("name", forall.getName());
+			forallNode.set("element", forall.getElement().getInteractiveInfo());
+			forallsNode.add(forallNode);
 		}
 		rootNode.set("foralls", forallsNode);
-		rootNode.put("exists", this.getExists().asTerm().toString());
-//
-//		if (this.getDerivations() != null && !this.getDerivations().isEmpty()) {
-//			var derivationsNode = mapper.createObjectNode();
-//			for (Derivation derivation : this.getDerivations()) {
-//				derivationsNode.put(derivation.getName(), derivation.getClause().toString());
-//			}
-//			rootNode.set("derivations", derivationsNode);
-//		}
-
+		rootNode.set("exists", this.getExists().asTerm().getInteractiveInfo());
 
 		return rootNode;
 	}

@@ -3,6 +3,7 @@ package edu.cmu.cs.sasylf.ast;
 import java.io.PrintWriter;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.util.ErrorHandler;
 import edu.cmu.cs.sasylf.util.Errors;
@@ -47,4 +48,6 @@ public abstract class Fact extends Node {
 			ctx.addVarFree(free,getLocation());
 		}
 	}
+
+	abstract public ObjectNode getInteractiveInfo();
 }

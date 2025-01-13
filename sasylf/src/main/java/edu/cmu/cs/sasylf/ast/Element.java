@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.ast.grammar.GrmTerminal;
 import edu.cmu.cs.sasylf.grammar.Symbol;
 import edu.cmu.cs.sasylf.term.Substitution;
@@ -144,5 +146,14 @@ public abstract class Element extends Node {
 	@Deprecated
 	public Term adaptTermTo(Term term, Term matchTerm, Substitution sub) {
 		return term;
+	}
+
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		rootNode.set("term", this.term.getInteractiveInfo());
+
+		return rootNode;
 	}
 }

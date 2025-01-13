@@ -13,6 +13,10 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.cmu.cs.sasylf.ast.CanBeCase;
+import edu.cmu.cs.sasylf.ast.Fact;
 import edu.cmu.cs.sasylf.util.Pair;
 import edu.cmu.cs.sasylf.util.Util;
 
@@ -595,4 +599,6 @@ public abstract class Term {
 		if (fv != null && fv != other) return contains(fv);
 		return this.equals(other) || containsProper(other);
 	}
+
+	abstract public ObjectNode getInteractiveInfo();
 }

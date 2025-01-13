@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.util.Pair;
 import edu.cmu.cs.sasylf.util.Relation;
 import edu.cmu.cs.sasylf.util.TransitiveRelation;
@@ -289,5 +291,17 @@ public class FreeVar extends Atom {
 			return t.incrFreeDeBruijn(varIncrAmount);
 		else
 			return this;
+	}
+
+	@Override
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		rootNode.put("term", "FreeVar");
+		rootNode.put("name", this.getName());
+		rootNode.put("stamp", this.getStamp());
+
+		return rootNode;
 	}
 }

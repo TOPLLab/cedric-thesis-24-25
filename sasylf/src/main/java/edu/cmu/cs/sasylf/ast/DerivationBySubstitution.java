@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.term.Abstraction;
 import edu.cmu.cs.sasylf.term.BoundVar;
 import edu.cmu.cs.sasylf.term.Facade;

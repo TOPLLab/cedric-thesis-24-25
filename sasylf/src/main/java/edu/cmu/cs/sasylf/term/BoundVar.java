@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.util.Pair;
 import edu.cmu.cs.sasylf.util.Util;
 
@@ -148,6 +150,19 @@ public class BoundVar extends Atom {
 	@Override
 	public Term getType() {
 		return Constant.UNKNOWN_TYPE;
+	}
+
+	@Override
+	public ObjectNode getInteractiveInfo() {
+		var mapper = new ObjectMapper();
+		var rootNode = mapper.createObjectNode();
+
+		rootNode.put("term", "BoundVar");
+		rootNode.put("name", this.getName());
+		rootNode.set("type", this.getType().getInteractiveInfo());
+		rootNode.put("index", this.getIndex());
+
+		return rootNode;
 	}
 	
 }
