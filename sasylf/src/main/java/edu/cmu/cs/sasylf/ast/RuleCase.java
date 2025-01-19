@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import edu.cmu.cs.sasylf.interactive.ParserInterface;
+import edu.cmu.cs.sasylf.interactive.InteractiveParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Abstraction;
 import edu.cmu.cs.sasylf.term.Application;
@@ -408,7 +408,7 @@ public class RuleCase extends Case {
 	}
 
 	@Override
-	public void run(ParserInterface pi, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(InteractiveParser pi, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
 		Context ctx = parent.clone();
 		debug("line "+ this.getLocation().getLine(), " case ", ruleName);
 		debug("    currentSub = ", ctx.currentSub);

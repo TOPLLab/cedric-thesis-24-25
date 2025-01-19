@@ -42,6 +42,8 @@ import edu.cmu.cs.sasylf.ast.*;
 import static edu.cmu.cs.sasylf.util.Util.*;
 import edu.cmu.cs.sasylf.util.*;
 
+import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+
 import java.io.*;
 import java.util.*;
 import java.lang.String;
@@ -311,6 +313,13 @@ public class DSLToolkitParser {
 }
 
 PARSER_END(DSLToolkitParser)
+
+/* REST STRING */
+
+TOKEN :
+{
+<REST_STRING: ~[]>
+}
 
 /* WHITE SPACE */
 
@@ -2004,8 +2013,8 @@ WhereClause WhereClauses() :
    }
 }
 
-Pair<Theorem, Token> TheoremHeader(boolean abstractOK) :
-{ Token tinit = null, t0, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Theorem thm; Derivation d; }
+InteractiveParser.Result<Pair<Theorem, Token>> TheoremHeader(boolean abstractOK) :
+{ Token tinit = null, t0, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Theorem thm; Derivation d; Token rest; }
 {
   (tinit=<ABSTRACT>) ?
   (t0=<THEOREM> | t0=<LEMMA>) s=RuleName() <COLON>
@@ -2023,16 +2032,17 @@ Pair<Theorem, Token> TheoremHeader(boolean abstractOK) :
   <EXISTS> c=ExprToNL()
   	(t=<AND> a=ExprToNL() { AndJudgment.addAnd(c,new Location(t),a); a = null; }
     |t=<OR> a=ExprToNL() {  OrJudgment.addOr(c,new Location(t),a); a = null; }  )*
+    rest=<REST_STRING>
     {
         thm.setExists(c);
-      return new Pair<>(thm, t0);
+      return new InteractiveParser.Result<>(new Pair<>(thm, t0), rest);
     }
 }
 
-Theorem TheoremFooter(Theorem thm, Token t0, boolean abstractOK) :
-{ Token tinit = null, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Derivation d; }
+InteractiveParser.Result<Theorem> TheoremFooter(Theorem thm, Token t0, boolean abstractOK) :
+{ Token tinit = null, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Derivation d; Token rest; }
 {
-  <END> (tp=<THEOREM> | tp=<LEMMA> | sp=RuleName() { tp = null; } )
+  <END> (tp=<THEOREM> | tp=<LEMMA> | sp=RuleName() { tp = null; } ) rest=<REST_STRING>
   {
     if (tp == null) {
         ErrorHandler.recoverableError(Errors.WRONG_END,"'end " + t0.image + "'",
@@ -2044,7 +2054,7 @@ Theorem TheoremFooter(Theorem thm, Token t0, boolean abstractOK) :
     }
     thm.setKind(t0.image);
     if (tp != null) thm.setEndLocation(Location.endOf(tp));
-    return thm;
+    return new InteractiveParser.Result<>(thm, rest);
   }
 }
 
@@ -2085,8 +2095,8 @@ Theorem TheoremDeclaration(boolean abstractOK) :
   }
 }
 
-Derivation DerivationHeader() :
-{ Token t; Token t2; Token a; StringSpan s; QualName q = null; Case ca; Clause c; Clause c2 = null; Derivation d; Token of = null;}
+InteractiveParser.Result<Derivation> DerivationHeader() :
+{ Token t; Token t2; Token a; StringSpan s; QualName q = null; Case ca; Clause c; Clause c2 = null; InteractiveParser.Result<Derivation> d; Token of = null; }
 {
    (
       t=<IDENTIFIER> <COLON> c=Expr()
@@ -2096,7 +2106,7 @@ Derivation DerivationHeader() :
       |
      t=<PROOF> { c = null; })
    <BY> d=JustificationHeader(t, c)
-  { return d; }
+    { return d; }
 // | LOOKAHEAD(<USE> <INVERSION>)
 //   (
 //     t=<USE> t2=<INVERSION> (of=<IDENTIFIER> [<RULE>] q=QualName() [<ON> c2=SimpleExpr()]
@@ -2180,9 +2190,9 @@ Derivation Derivation() :
     
 }
 
-Derivation JustificationHeader(Token startT, Clause c) :
+InteractiveParser.Result<Derivation> JustificationHeader(Token startT, Clause c) :
 { Token t=null; Token t2; Derivation d; DerivationWithArgs da; DerivationByInduction di; Case ca;
-  DerivationByCaseAnalysis dca; StringSpan s; QualName q = null; Element e; Clause cl = null; Token of = null; QualName qn;
+  DerivationByCaseAnalysis dca; StringSpan s; QualName q = null; Element e; Clause cl = null; Token of = null; QualName qn; Token rest;
 }
 {
   // args should include expressions
@@ -2190,17 +2200,20 @@ Derivation JustificationHeader(Token startT, Clause c) :
     [ <ON> cl=SimpleExpr() { da.addArgString(cl); }
       ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* 
     ]
-    { return da; }
+   rest=<REST_STRING>
+    { return new InteractiveParser.Result<>(da, rest); }
    | (t=<THEOREM> | t=<LEMMA>) qn=QualName() { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, new StringSpan(t)); }
      [ <ON> cl=SimpleExpr() { da.addArgString(cl); }
        ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
      ]
-     { return da; }
+   rest=<REST_STRING>
+    { return new InteractiveParser.Result<>(da, rest); }
    | LOOKAHEAD(2) <INDUCTION> <ON> cl=SimpleExpr()
      { di = new DerivationByInduction(startT.image, new Location(startT), c, cl); }
        ( <COMMA> cl=SimpleExpr() { di.addArgString(cl); } )*
      t=<COLON>
-     { di.setEndLocation(Location.endOf(t)); return di; }
+   rest=<REST_STRING>
+    {  di.setEndLocation(Location.endOf(t)); return new InteractiveParser.Result<>(di, rest); }
  //  | LOOKAHEAD(2) <CASE> <ANALYSIS> <ON> cl=SimpleExpr()
  //    { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, cl); }
  //      ( <COMMA> cl=SimpleExpr() { dca.addArgString(cl); } )* 
@@ -2261,7 +2274,8 @@ Derivation JustificationHeader(Token startT, Clause c) :
        }
      }
      ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
-     { return da; }
+   rest=<REST_STRING>
+    { return new InteractiveParser.Result<>(da, rest); }
  //  | <SUBSTITUTION> <ON> t=<IDENTIFIER>
  //    { 
  //      da = new DerivationBySubstitution(startT.image, new Location(startT), c);
@@ -2310,8 +2324,8 @@ Derivation JustificationHeader(Token startT, Clause c) :
 }
 
 
-Derivation InductionJustificationFooter(DerivationByAnalysis di) :
-{ Token t = null; Token of = null;
+InteractiveParser.Result<Derivation> InductionJustificationFooter(DerivationByAnalysis di) :
+{ Token t = null; Token of = null; Token rest;
 }
 {
     of=<END>
@@ -2320,9 +2334,10 @@ Derivation InductionJustificationFooter(DerivationByAnalysis di) :
      { String wrong = t.image;
        if (wrong.equals("analysis")) wrong = "case analysis";
        ErrorHandler.recoverableError(Errors.WRONG_END,"'end induction'",new TokenSpan(t),wrong+"\ninduction"); } )
+       rest=<REST_STRING>
     {
         di.setEndLocation(Location.endOf(t));
-        return di;
+        return new InteractiveParser.Result<>(di, rest);
     }
 }
 
@@ -2456,7 +2471,7 @@ whereClauses=WhereClauses()
 	{ return da; }
 }
 
-Case CaseHeader() :
+InteractiveParser.Result<Case> CaseHeader() :
 { Token first=null, t,t2,t3,u,a; StringSpan s; QualName q;
   Clause cl,ce=null,c2; Case ca; Derivation d;
   List<Derivation> premises = new ArrayList<>();
@@ -2464,6 +2479,7 @@ Case CaseHeader() :
   Clause rhs=null;
   WhereClause whereClauses = null;
   Location endLoc=null;
+  Token rest;
 }
 {
   LOOKAHEAD(2) d=Derivation() {
@@ -2507,15 +2523,16 @@ Case CaseHeader() :
     }
   )
     u=<IS>
+    rest=<REST_STRING>
     {
         ca.setEndLocation(Location.endOf(u));
-        return ca;
+        return new InteractiveParser.Result<>(ca, rest);
     }
 }
 
-Case CaseFooter(Case ca) :
+InteractiveParser.Result<Case> CaseFooter(Case ca) :
 {
-    Token t, u;
+    Token t, u; Token rest;
 }
 {
     t=<END>
@@ -2524,9 +2541,10 @@ Case CaseFooter(Case ca) :
      { String bad = u.image;
        if (bad.equals("analysis")) bad = "case analysis";
        ErrorHandler.recoverableError(Errors.WRONG_END,"'end case'",new TokenSpan(u),bad+"\ncase"); } )
+    rest=<REST_STRING>
     {
         ca.setEndLocation(Location.endOf(u));
-        return ca;
+        return new InteractiveParser.Result<>(ca, rest);
     }
 }
 

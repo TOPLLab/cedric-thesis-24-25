@@ -5,8 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.ParserInterface;
+import edu.cmu.cs.sasylf.interactive.InteractiveParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.reduction.InductionSchema;
 import edu.cmu.cs.sasylf.reduction.Reduction;
@@ -181,7 +180,7 @@ public abstract class DerivationByIHRule extends DerivationWithArgs {
 	}
 
 	@Override
-	public void run(ParserInterface pi, Context ctx) throws ParseException {
+	public void run(InteractiveParser pi, Context ctx) throws ParseException {
 		super.run(pi, ctx);
 		Util.debug("line: ", this.getLocation().getLine());
 

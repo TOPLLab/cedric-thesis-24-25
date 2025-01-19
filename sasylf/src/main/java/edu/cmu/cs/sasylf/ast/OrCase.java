@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.ParserInterface;
+import edu.cmu.cs.sasylf.interactive.InteractiveParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Abstraction;
 import edu.cmu.cs.sasylf.term.Application;
@@ -116,7 +115,7 @@ public class OrCase extends Case {
 	}
 
 	@Override
-	public void run(ParserInterface pi, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(InteractiveParser pi, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
 		Context ctx = parent.clone();
 		premise.typecheck(ctx);
 		premise.addToDerivationMap(ctx);

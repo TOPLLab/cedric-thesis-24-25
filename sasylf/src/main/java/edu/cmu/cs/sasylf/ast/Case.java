@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.ParserInterface;
+import edu.cmu.cs.sasylf.interactive.InteractiveParser;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.util.DefaultSpan;
@@ -50,7 +49,7 @@ public class Case extends Node {
 
 	/// Runs the type checking for interactive mode for [Case]
 	/// @param ctx Context to use. Should be cloned by the caller
-	public void run(ParserInterface pi, Context ctx, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(InteractiveParser pi, Context ctx, Pair<Fact,Integer> isSubderivation) throws ParseException {
 		var finalCtx = ctx.clone();
 		ErrorHandler.recordLastSpan(this);
 		Map<String, Fact> oldMap = finalCtx.derivationMap;
@@ -63,9 +62,10 @@ public class Case extends Node {
 			var node = newCtx.derivationMap.isEmpty()
 						? pi.getNextNode(newCtx, DSLToolkitParser::DerivationHeader)
 						: pi.getNextNode(newCtx, DSLToolkitParser::DerivationHeader,
-												 parser-> parser.CaseFooter(this));
+												 parser -> parser.CaseFooter(this));
+			var d = node.getFirst();
 
-			if (node instanceof Derivation d) {
+			if (d != null) {
 				var oldErrorCount = ErrorHandler.getErrorCount();
 				derivations.add(d);
 				d.run(pi, newCtx);
@@ -77,7 +77,7 @@ public class Case extends Node {
 					finalCtx = newCtx;
 					newCtx = finalCtx.clone();
 				}
-			} else if (node instanceof Case) {
+			} else if (node.getSecond() != null) {
 				break;
 			}
 		}
@@ -87,7 +87,7 @@ public class Case extends Node {
 
 	// verify: that last derivation is what i.h. requires
 
-	private List<Derivation> derivations = new ArrayList<>();
+	private final List<Derivation> derivations = new ArrayList<>();
 	private final Span span;
 	
 	@Override

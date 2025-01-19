@@ -15,8 +15,7 @@ import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import edu.cmu.cs.sasylf.interactive.InteractiveProof;
-import edu.cmu.cs.sasylf.interactive.ParserInterface;
+import edu.cmu.cs.sasylf.interactive.InteractiveParser;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Application;
@@ -170,7 +169,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 	/// Runs the type checking for interactive mode for [DerivationByAnalysis]
 	/// @param ctx Context to use. Should be cloned by the caller
 	@Override
-	public void run(ParserInterface pi, Context ctx) throws ParseException {
+	public void run(InteractiveParser pi, Context ctx) throws ParseException {
 		super.run(pi, ctx);
 		computeTargetDerivation(ctx);
 		Util.debug("On line ", getLocation().getLine(), " varFree = ", ctx.varFreeNTmap.keySet());
@@ -233,15 +232,16 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 				var node = pi.getNextNode(ctx,
 						DSLToolkitParser::CaseHeader,
 						parser -> parser.InductionJustificationFooter(this));
+				var c = node.getFirst();
 
-				if (node instanceof Case c) {
+				if (c != null) {
 					try {
 						cases.add(c);
 						c.run(pi, ctx, isSubderivation);
 					} catch (SASyLFError ex) {
 						error = ex;
 					}
-				} else if (node instanceof Derivation) {
+				} else if (node.getSecond() != null) {
 					break;
 				}
 			}

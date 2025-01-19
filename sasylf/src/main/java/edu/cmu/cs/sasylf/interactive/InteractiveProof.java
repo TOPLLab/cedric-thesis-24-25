@@ -7,17 +7,12 @@ import edu.cmu.cs.sasylf.Proof;
 import edu.cmu.cs.sasylf.ast.Context;
 import edu.cmu.cs.sasylf.ast.Theorem;
 import edu.cmu.cs.sasylf.ast.TheoremPart;
-import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.parser.Token;
 import edu.cmu.cs.sasylf.util.Pair;
 import edu.cmu.cs.sasylf.util.SASyLFError;
 
 public class InteractiveProof {
-  public interface ParseFn<T> {
-    T run(DSLToolkitParser parser) throws ParseException;
-  }
-
   // the currently finished proof
   private final Proof currentProof;
 
@@ -25,7 +20,7 @@ public class InteractiveProof {
   private Context currentContext;
 
   // interface to parser/sysin
-  private final ParserInterface pi = new ParserInterface();
+  private final InteractiveParser pi = new InteractiveParser();
 
   public InteractiveProof(Proof proof) {
     this.currentProof = proof;
@@ -35,8 +30,9 @@ public class InteractiveProof {
   public void run() {
     while (true) {
       try {
-        Pair<Theorem, Token> pair = this.pi.getNextNode(this.currentContext, parser-> parser.TheoremHeader(false));
-        Theorem currentTheorem = pair.first;
+        var node = this.pi.getNextNode(this.currentContext, parser-> parser.TheoremHeader(false));
+        var pair = node.getFirst();
+        var currentTheorem = pair.first;
 
         this.currentContext = currentTheorem.run(this.pi, this.currentContext, pair.second);
         addTheoremToProof(currentTheorem);

@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import edu.cmu.cs.sasylf.interactive.ParserInterface;
+import edu.cmu.cs.sasylf.interactive.InteractiveParser;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.parser.Token;
@@ -21,7 +21,6 @@ import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.term.Substitution;
 import edu.cmu.cs.sasylf.term.Term;
 import edu.cmu.cs.sasylf.util.*;
-import edu.cmu.cs.sasylf.interactive.InteractiveProof;
 
 public class Theorem extends RuleLike {
 	public Theorem(String n, Location l) {
@@ -186,7 +185,7 @@ public class Theorem extends RuleLike {
 	/// Runs the interactive mode for [Theorem]
 	/// @param ctx [Context] to use. Does not have to be cloned by the caller
 	/// @return a new updated copy of [ctx]
-	public Context run(ParserInterface pi, Context ctx, Token t0) throws ParseException {
+	public Context run(InteractiveParser pi, Context ctx, Token t0) throws ParseException {
 		var finalCtx = this.interactiveTypeCheckSetup(ctx.clone());
 
 		while (true) {
@@ -196,7 +195,9 @@ public class Theorem extends RuleLike {
 					DSLToolkitParser::DerivationHeader,
 					parser -> parser.TheoremFooter(this, t0, false));
 
-			if (node instanceof Derivation d) {
+			var d = node.getFirst();
+
+			if (d != null) {
 				if (d instanceof DerivationByInduction di) {
 					InductionSchema is = InductionSchema.create(this, di.getArgStrings(),
 							true);
@@ -218,7 +219,7 @@ public class Theorem extends RuleLike {
 				} else {
 					finalCtx = newCtx;
 				}
-			} else if (node instanceof Theorem) {
+			} else if (node.getSecond() != null) {
 				break;
 			}
 		}
