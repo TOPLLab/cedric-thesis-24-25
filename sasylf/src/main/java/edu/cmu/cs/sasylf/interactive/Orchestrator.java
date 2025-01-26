@@ -1,5 +1,6 @@
 package edu.cmu.cs.sasylf.interactive;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.cmu.cs.sasylf.ast.Context;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
@@ -63,13 +64,15 @@ public class Orchestrator {
                 }
             }
 
-            // TODO: put in json object
-            System.err.println("No parsers succeeded parsing the input.\n\"Input: " +
-                    inputBuffer +
-                    "\"\nThe following exceptions where collected");
+            var mapper = new ObjectMapper();
+            var rootNode = mapper.createObjectNode();
+
+            var errorsNode = mapper.createArrayNode();
             for (ParseException e : exceptions) {
-                System.err.println(e.getMessage());
+                errorsNode.add(e.toString());
             }
+            rootNode.set("errors", errorsNode);
+            System.out.println(rootNode.toPrettyString());
         }
     }
 }

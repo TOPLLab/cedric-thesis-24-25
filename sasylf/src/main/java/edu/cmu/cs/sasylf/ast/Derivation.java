@@ -207,7 +207,7 @@ public abstract class Derivation extends Fact {
 		}
 	}
 
-	public static boolean run(Orchestrator pi, Node node, Context ctx, List<Derivation> derivations, boolean isFinal) {
+	public static boolean run(Orchestrator orch, Node node, Context ctx, List<Derivation> derivations, boolean isFinal) {
 		int n = derivations.size();
 		if (n == 0) {
 			ErrorHandler.error(Errors.NO_DERIVATION, node);
@@ -222,7 +222,7 @@ public abstract class Derivation extends Fact {
 				d.clause.setLocation(d.getLocation());
 				d.clause.setEndLocation(d.getLocation().add(PROOF_SIZE));
 			}
-			finalOK = d.runAndAssume(pi, ctx);
+			finalOK = d.runAndAssume(orch, ctx);
 		}
 		if (!finalOK) return false;
 
