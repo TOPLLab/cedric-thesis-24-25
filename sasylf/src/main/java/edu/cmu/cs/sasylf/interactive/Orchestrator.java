@@ -1,5 +1,6 @@
 package edu.cmu.cs.sasylf.interactive;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.cmu.cs.sasylf.ast.Context;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
@@ -33,6 +34,9 @@ public class Orchestrator {
 
     /// Try all parseFns until one succeeds. If failed, read again
     public final void runNextNode(Context ctx, Delegate...delegates) {
+        final var mapper = new ObjectMapper();
+        JsonNode node;
+
         while (true) {
 
             System.out.println(ctx.getInteractiveInfo().toPrettyString());
@@ -41,16 +45,18 @@ public class Orchestrator {
             // TODO: Keep context per parsed node
             // TODO: if all parser errors happen at end of input, keep input, else throw away.
 
-            var inputBuffer = "";
+            var input = "";
 
             try {
-                // TODO: use rest if present here
-                inputBuffer = reader.readLine();
+                // TODO: use rest string if present here
+                input = reader.readLine();
+                node = mapper.readTree(input);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            final var inputByteStream = new ByteArrayInputStream(inputBuffer.getBytes());
+            final var buffer = node.get("input").asText();
+            final var inputByteStream = new ByteArrayInputStream(buffer.getBytes());
             final var parser = new DSLToolkitParser(inputByteStream, "UTF-8");
 
             var exceptions = new ArrayList<ParseException>();
@@ -64,7 +70,6 @@ public class Orchestrator {
                 }
             }
 
-            var mapper = new ObjectMapper();
             var rootNode = mapper.createObjectNode();
 
             var errorsNode = mapper.createArrayNode();
