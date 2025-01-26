@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Abstraction;
 import edu.cmu.cs.sasylf.term.Application;
@@ -299,7 +299,7 @@ public class SyntaxCase extends Case {
 	}
 
 	@Override
-	public void run(InteractiveParser pi, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(Orchestrator orch, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
 		Context ctx = parent.clone();
 		debug("    ******* case line ", getLocation().getLine());
 		conclusion = conclusion.typecheck(ctx);
@@ -537,7 +537,7 @@ public class SyntaxCase extends Case {
 		// update the current substitution
 		ctx.composeSub(unifyingSub); // modifies in place
 
-		super.run(pi, ctx, isSubderivation);
+		super.run(orch, ctx, isSubderivation);
 
 	}
 

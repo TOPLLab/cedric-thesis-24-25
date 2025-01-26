@@ -11,7 +11,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.term.Substitution;
@@ -86,7 +86,7 @@ public abstract class Derivation extends Fact {
 	 * @param ctx context to use.
 	 * @return whether everything went without error
 	 */
-	public final boolean runAndAssume(InteractiveParser pi, Context ctx) {
+	public final boolean runAndAssume(Orchestrator pi, Context ctx) {
 		boolean result = true;
 		try {
 			this.run(pi, ctx);
@@ -147,8 +147,10 @@ public abstract class Derivation extends Fact {
 
 	// @Override
 	/// Runs the type checking for interactive mode for [Derivation]
-	/// @param ctx Context to use. Should be cloned by the caller
-	public void run(InteractiveParser pi, Context ctx) throws ParseException {
+    ///
+    /// @param orch
+    /// @param ctx  Context to use. Should be cloned by the caller
+    public void run(Orchestrator orch, Context ctx) throws ParseException {
 		ErrorHandler.recordLastSpan(this);
 		ctx.checkConsistent(this);
 		clause = clause.typecheck(ctx);
@@ -205,7 +207,7 @@ public abstract class Derivation extends Fact {
 		}
 	}
 
-	public static boolean run(InteractiveParser pi, Node node, Context ctx, List<Derivation> derivations, boolean isFinal) {
+	public static boolean run(Orchestrator pi, Node node, Context ctx, List<Derivation> derivations, boolean isFinal) {
 		int n = derivations.size();
 		if (n == 0) {
 			ErrorHandler.error(Errors.NO_DERIVATION, node);

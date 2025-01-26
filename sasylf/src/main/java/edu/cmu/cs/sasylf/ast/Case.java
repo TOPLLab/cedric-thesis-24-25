@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.util.DefaultSpan;
@@ -49,37 +49,39 @@ public class Case extends Node {
 
 	/// Runs the type checking for interactive mode for [Case]
 	/// @param ctx Context to use. Should be cloned by the caller
-	public void run(InteractiveParser pi, Context ctx, Pair<Fact,Integer> isSubderivation) throws ParseException {
-		var finalCtx = ctx.clone();
+	public void run(Orchestrator orch, Context ctx, Pair<Fact,Integer> isSubderivation) throws ParseException {
+		final Context[] finalCtx = {ctx.clone()};
 		ErrorHandler.recordLastSpan(this);
-		Map<String, Fact> oldMap = finalCtx.derivationMap;
-		finalCtx.derivationMap = new HashMap<>(oldMap);
+		Map<String, Fact> oldMap = finalCtx[0].derivationMap;
+		finalCtx[0].derivationMap = new HashMap<>(oldMap);
 
-		var newCtx = finalCtx.clone();
-
-		while (true) {
-			// NOTE: At least one derivation should be in the case
-			var node = newCtx.derivationMap.isEmpty()
-						? pi.getNextNode(newCtx, DSLToolkitParser::DerivationHeader)
-						: pi.getNextNode(newCtx, DSLToolkitParser::DerivationHeader,
-												 parser -> parser.CaseFooter(this));
-			var d = node.getFirst();
-
-			if (d != null) {
+		final var derivationHeader = new Orchestrator.Delegate<>(DSLToolkitParser::DerivationHeader) {
+			@Override
+			public void run(Context ctx, Derivation d) throws ParseException {
 				var oldErrorCount = ErrorHandler.getErrorCount();
 				derivations.add(d);
-				d.run(pi, newCtx);
-				d.addToDerivationMap(newCtx);
+				d.run(orch, ctx);
+				d.addToDerivationMap(ctx);
 				var newErrorCount = ErrorHandler.getErrorCount();
 				if (newErrorCount > oldErrorCount) {
 					derivations.remove(d);
 				} else {
-					finalCtx = newCtx;
-					newCtx = finalCtx.clone();
+					finalCtx[0] = ctx;
 				}
-			} else if (node.getSecond() != null) {
-				break;
 			}
+		};
+
+		// Parse at least one derivation
+		orch.runNextNode(finalCtx[0], derivationHeader);
+
+		final boolean[] done = {false};
+		while (!done[0]) {
+			orch.runNextNode(finalCtx[0], derivationHeader, new Orchestrator.Delegate<>(parser -> parser.CaseFooter(this)) {
+				@Override
+				public void run(Context ctx, Case value) {
+					done[0] = true;
+				}
+			});
 		}
 
 		ctx.derivationMap = oldMap;

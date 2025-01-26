@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Abstraction;
 import edu.cmu.cs.sasylf.term.Application;
@@ -115,7 +115,7 @@ public class OrCase extends Case {
 	}
 
 	@Override
-	public void run(InteractiveParser pi, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(Orchestrator orch, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
 		Context ctx = parent.clone();
 		premise.typecheck(ctx);
 		premise.addToDerivationMap(ctx);
@@ -177,7 +177,7 @@ public class OrCase extends Case {
 			ErrorHandler.error(Errors.CASE_REDUNDANT, this, "suggestion: remove it");
 		}
 
-		super.run(pi, ctx, isSubderivation);
+		super.run(orch, ctx, isSubderivation);
 	}
 
 	Derivation premise;

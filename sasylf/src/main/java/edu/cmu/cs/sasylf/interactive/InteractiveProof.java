@@ -20,7 +20,7 @@ public class InteractiveProof {
   private Context currentContext;
 
   // interface to parser/sysin
-  private final InteractiveParser pi = new InteractiveParser();
+  private final Orchestrator pi = new Orchestrator();
 
   public InteractiveProof(Proof proof) {
     this.currentProof = proof;
@@ -29,17 +29,13 @@ public class InteractiveProof {
 
   public void run() {
     while (true) {
-      try {
-        var node = this.pi.getNextNode(this.currentContext, parser-> parser.TheoremHeader(false));
-        var pair = node.getFirst();
-        var currentTheorem = pair.first;
-
-        this.currentContext = currentTheorem.run(this.pi, this.currentContext, pair.second);
-        addTheoremToProof(currentTheorem);
-      } catch (ParseException e) {
-        // TODO: Put errors in json object
-        System.out.println(e.getMessage());
-      }
+        this.pi.runNextNode(this.currentContext, new Orchestrator.Delegate<>(parser-> parser.TheoremHeader(false)) {
+          @Override
+          public void run(Context ctx, Pair<Theorem, Token> pair) throws ParseException {
+            currentContext = pair.first.run(pi, currentContext, pair.second);
+            addTheoremToProof(pair.first);
+          }
+        });
     }
   }
 

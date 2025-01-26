@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.parser.Token;
@@ -183,48 +183,51 @@ public class Theorem extends RuleLike {
 	}
 
 	/// Runs the interactive mode for [Theorem]
-	/// @param ctx [Context] to use. Does not have to be cloned by the caller
+	///
+	/// @param orch
+	/// @param ctx  [Context] to use. Does not have to be cloned by the caller
 	/// @return a new updated copy of [ctx]
-	public Context run(InteractiveParser pi, Context ctx, Token t0) throws ParseException {
-		var finalCtx = this.interactiveTypeCheckSetup(ctx.clone());
+	public Context run(Orchestrator orch, Context ctx, Token t0) throws ParseException {
+		final Context[] finalCtx = {this.interactiveTypeCheckSetup(ctx.clone())};
 
-		while (true) {
-			var newCtx = finalCtx.clone();
+		final boolean[] done = {false};
+		while (!done[0]) {
+			var newCtx = finalCtx[0].clone();
 
-			var node = pi.getNextNode(newCtx,
-					DSLToolkitParser::DerivationHeader,
-					parser -> parser.TheoremFooter(this, t0, false));
+			orch.runNextNode(newCtx, new Orchestrator.Delegate<>(DSLToolkitParser::DerivationHeader) {
+				@Override
+				public void run(Context ctx, Derivation d) throws ParseException {
+					if (d instanceof DerivationByInduction di) {
+						InductionSchema is = InductionSchema.create(Theorem.this, di.getArgStrings(),
+								true);
+						if (is != null) {
+							inductionScheme = is;
+						} else if (inductionScheme == null) {
+							inductionScheme = InductionSchema.nullInduction; // prevent cascade
+						}
+					}
 
-			var d = node.getFirst();
-
-			if (d != null) {
-				if (d instanceof DerivationByInduction di) {
-					InductionSchema is = InductionSchema.create(this, di.getArgStrings(),
-							true);
-					if (is != null) {
-						this.inductionScheme = is;
-					} else if (this.inductionScheme == null) {
-						this.inductionScheme = InductionSchema.nullInduction; // prevent cascade
+					var oldErrorCount = ErrorHandler.getErrorCount();
+					Theorem.this.getDerivations().add(d);
+					d.run(orch, newCtx);
+					d.addToDerivationMap(newCtx);
+					var newErrorCount = ErrorHandler.getErrorCount();
+					if (newErrorCount > oldErrorCount) {
+						getDerivations().remove(d);
+						inductionScheme = InductionSchema.nullInduction;
+					} else {
+						finalCtx[0] = newCtx;
 					}
 				}
-
-				var oldErrorCount = ErrorHandler.getErrorCount();
-				this.getDerivations().add(d);
-				d.run(pi, newCtx);
-				d.addToDerivationMap(newCtx);
-				var newErrorCount = ErrorHandler.getErrorCount();
-				if (newErrorCount > oldErrorCount) {
-					this.getDerivations().remove(d);
-					this.inductionScheme = InductionSchema.nullInduction;
-				} else {
-					finalCtx = newCtx;
+			}, new Orchestrator.Delegate<>(parser -> parser.TheoremFooter(this, t0, false)) {
+				@Override
+				public void run(Context ctx, Theorem thm) throws ParseException {
+					done[0] = true;
 				}
-			} else if (node.getSecond() != null) {
-				break;
-			}
+			});
 		}
 
-		return finalCtx;
+		return finalCtx[0];
 	}
 
 	private Context setupTypeChecking(Context ctx, int oldErrorCount) {

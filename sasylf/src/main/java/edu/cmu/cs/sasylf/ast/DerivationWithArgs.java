@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Constant;
 import edu.cmu.cs.sasylf.term.FreeVar;
@@ -147,10 +147,12 @@ public abstract class DerivationWithArgs extends Derivation {
 	}
 
 	/// Runs the type checking for interactive mode for [DerivationWithArgs]
-	/// @param ctx Context to use. Should be cloned by the caller
-	@Override
-	public void run(InteractiveParser pi, Context ctx) throws ParseException {
-		super.run(pi, ctx);
+    ///
+    /// @param orch
+    /// @param ctx  Context to use. Should be cloned by the caller
+    @Override
+	public void run(Orchestrator orch, Context ctx) throws ParseException {
+		super.run(orch, ctx);
 
 		final NonTerminal root = getClause().getRoot();
 		if (!ctx.isKnownContext(root)) {

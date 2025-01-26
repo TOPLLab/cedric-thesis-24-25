@@ -42,8 +42,6 @@ import edu.cmu.cs.sasylf.ast.*;
 import static edu.cmu.cs.sasylf.util.Util.*;
 import edu.cmu.cs.sasylf.util.*;
 
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
-
 import java.io.*;
 import java.util.*;
 import java.lang.String;
@@ -58,12 +56,12 @@ public class DSLToolkitParser {
 
     /**
      * Add a comment listener to the listeners for all parsers.
-     * @param l listener, must not be null 
+     * @param l listener, must not be null
      */
     public static void addListener(CommentListener l) {
         if (l == null) throw new NullPointerException("listener is null");
         boolean inProgress = true;
-        do { 
+        do {
             CommentListener[] previous = listeners;
             CommentListener[] proposed = new CommentListener[previous.length+1];
             System.arraycopy(previous, 0, proposed, 0, previous.length);
@@ -87,7 +85,7 @@ public class DSLToolkitParser {
      */
     public static boolean remListener(CommentListener l) {
         boolean inProgress = true;
-        do { 
+        do {
             CommentListener[] previous = listeners;
             CommentListener[] proposed = new CommentListener[previous.length-1];
 			boolean found = false;
@@ -112,7 +110,7 @@ public class DSLToolkitParser {
             l.commentRead(t,currentFile);
         }
     }
-    
+
     public Token firstToken = null;
 
     public static CompUnit read(File f) throws IOException, ParseException {
@@ -128,7 +126,7 @@ public class DSLToolkitParser {
             //return null; // unreachable
         }
     }
-    
+
     public static CompUnit read(String filename, InputStream is) throws ParseException {
       DSLToolkitParser parser = new DSLToolkitParser(is,"UTF-8");
       currentFile = filename;
@@ -138,13 +136,13 @@ public class DSLToolkitParser {
     public static CompUnit read(String filename, Reader r) throws ParseException {
       DSLToolkitParser parser = new DSLToolkitParser(r);
       currentFile = filename;
-      return parser.CompilationUnit();   
+      return parser.CompilationUnit();
     }
 
     // If new keywords are added: these must be updated:
     private static final int FIRST_KEYWORD = DSLToolkitParserConstants.PACKAGE;
     private static final int LAST_KEYWORD = DSLToolkitParserConstants.WHERE;
-    
+
     public static String[] allKeywords() {
       String[] result = new String[LAST_KEYWORD-FIRST_KEYWORD+1];
       for (int i= FIRST_KEYWORD; i <= LAST_KEYWORD; ++i) {
@@ -168,7 +166,7 @@ public class DSLToolkitParser {
 	      || t.kind == USE
 	      || t.kind == EXTENDS;
 	}
-	      
+
     /** True if the next token is almost anything but not
      * PIPE
      * LPAREN, RPAREN, LBRACK, RBRACK,
@@ -205,10 +203,10 @@ public class DSLToolkitParser {
 			|| getToken(1).kind == REQUIRES
 			|| getToken(1).kind == PROVIDES
 			|| getToken(1).kind == INTEGER_LITERAL;
-    }    
+    }
 
     boolean isTerm() {
-    	return isTermNoBAR() || getToken(1).kind == PIPE;  
+    	return isTermNoBAR() || getToken(1).kind == PIPE;
     }
 
 	boolean notNL(Token tok) {
@@ -225,7 +223,7 @@ public class DSLToolkitParser {
         boolean result = isTermNoBAR();
         return result && notNL(getToken(1).specialToken);
     }
-  
+
     boolean isTermNoNL() {
     	boolean result = isTerm();
 		return result && notNL(getToken(1).specialToken);
@@ -253,20 +251,20 @@ public class DSLToolkitParser {
 		  (t.kind == MINUS ||
 		   t.kind == PLUS ||
 		   t.kind == TIMES ||
-		   t.kind == IDENTIFIER || 
+		   t.kind == IDENTIFIER ||
 		   t.kind == INTEGER_LITERAL ||
 		   t.kind == OPERATOR ||
 		   t.kind == THEOREM ||
 		   t.kind == LEMMA ||
 		   // list every keyword from Keyword():
-		   t.kind == AND || 
+		   t.kind == AND ||
 		   t.kind == CASE ||
 		   t.kind == CONTRADICTION ||
 		   t.kind == DO ||
 		   t.kind == END ||
 		   t.kind == EXCHANGE ||
 		   t.kind == EXTENDS ||
-		   t.kind == IS || 
+		   t.kind == IS ||
 		   t.kind == INVERSION ||
 		   t.kind == MODULE ||
 		   t.kind == NOT ||
@@ -274,22 +272,22 @@ public class DSLToolkitParser {
 		   t.kind == PROVIDES ||
 		   t.kind == REQUIRES ||
 		   t.kind == SUBSTITUTION ||
-		   t.kind == USE || 
+		   t.kind == USE ||
 		   t.kind == WEAKENING);
     }
 
     boolean isRulePartToken(Token t) {
 		return t.specialToken == null && isRuleNamePiece(t);
     }
-        
+
     boolean isRulePart() {
         return isRulePartToken(getToken(1));
     }
-    
+
     boolean isRulePart2() {
-        return isRuleNamePiece(getToken(1)) && isRulePartToken(getToken(2)); 
+        return isRuleNamePiece(getToken(1)) && isRulePartToken(getToken(2));
     }
-    
+
     NonTerminal getNonTerminal(Token t) {
         return new NonTerminal(t.image, new Location(t));
     }
@@ -305,7 +303,7 @@ public class DSLToolkitParser {
     Terminal getTerminal(Token t, String s) {
         return new Terminal(s, makeSpan(t));
     }
-    
+
     Span makeSpan(Token t) {
         Location loc = new Location(t);
         return new DefaultSpan(loc,loc.add(t.image.length()));
@@ -313,13 +311,6 @@ public class DSLToolkitParser {
 }
 
 PARSER_END(DSLToolkitParser)
-
-/* REST STRING */
-
-TOKEN :
-{
-<REST_STRING: ~[]>
-}
 
 /* WHITE SPACE */
 
@@ -2013,8 +2004,8 @@ WhereClause WhereClauses() :
    }
 }
 
-InteractiveParser.Result<Pair<Theorem, Token>> TheoremHeader(boolean abstractOK) :
-{ Token tinit = null, t0, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Theorem thm; Derivation d; Token rest; }
+Pair<Theorem, Token> TheoremHeader(boolean abstractOK) :
+{ Token tinit = null, t0, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Theorem thm; Derivation d; }
 {
   (tinit=<ABSTRACT>) ?
   (t0=<THEOREM> | t0=<LEMMA>) s=RuleName() <COLON>
@@ -2032,17 +2023,16 @@ InteractiveParser.Result<Pair<Theorem, Token>> TheoremHeader(boolean abstractOK)
   <EXISTS> c=ExprToNL()
   	(t=<AND> a=ExprToNL() { AndJudgment.addAnd(c,new Location(t),a); a = null; }
     |t=<OR> a=ExprToNL() {  OrJudgment.addOr(c,new Location(t),a); a = null; }  )*
-    rest=<REST_STRING>
     {
         thm.setExists(c);
-      return new InteractiveParser.Result<>(new Pair<>(thm, t0), rest);
+      return new Pair<>(thm, t0);
     }
 }
 
-InteractiveParser.Result<Theorem> TheoremFooter(Theorem thm, Token t0, boolean abstractOK) :
-{ Token tinit = null, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Derivation d; Token rest; }
+Theorem TheoremFooter(Theorem thm, Token t0, boolean abstractOK) :
+{ Token tinit = null, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Derivation d; }
 {
-  <END> (tp=<THEOREM> | tp=<LEMMA> | sp=RuleName() { tp = null; } ) rest=<REST_STRING>
+  <END> (tp=<THEOREM> | tp=<LEMMA> | sp=RuleName() { tp = null; } ) 
   {
     if (tp == null) {
         ErrorHandler.recoverableError(Errors.WRONG_END,"'end " + t0.image + "'",
@@ -2054,7 +2044,7 @@ InteractiveParser.Result<Theorem> TheoremFooter(Theorem thm, Token t0, boolean a
     }
     thm.setKind(t0.image);
     if (tp != null) thm.setEndLocation(Location.endOf(tp));
-    return new InteractiveParser.Result<>(thm, rest);
+    return thm;
   }
 }
 
@@ -2095,8 +2085,8 @@ Theorem TheoremDeclaration(boolean abstractOK) :
   }
 }
 
-InteractiveParser.Result<Derivation> DerivationHeader() :
-{ Token t; Token t2; Token a; StringSpan s; QualName q = null; Case ca; Clause c; Clause c2 = null; InteractiveParser.Result<Derivation> d; Token of = null; }
+Derivation DerivationHeader() :
+{ Token t; Token t2; Token a; StringSpan s; QualName q = null; Case ca; Clause c; Clause c2 = null; Derivation d; Token of = null; }
 {
    (
       t=<IDENTIFIER> <COLON> c=Expr()
@@ -2190,7 +2180,7 @@ Derivation Derivation() :
     
 }
 
-InteractiveParser.Result<Derivation> JustificationHeader(Token startT, Clause c) :
+Derivation JustificationHeader(Token startT, Clause c) :
 { Token t=null; Token t2; Derivation d; DerivationWithArgs da; DerivationByInduction di; Case ca;
   DerivationByCaseAnalysis dca; StringSpan s; QualName q = null; Element e; Clause cl = null; Token of = null; QualName qn; Token rest;
 }
@@ -2200,20 +2190,17 @@ InteractiveParser.Result<Derivation> JustificationHeader(Token startT, Clause c)
     [ <ON> cl=SimpleExpr() { da.addArgString(cl); }
       ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* 
     ]
-   rest=<REST_STRING>
-    { return new InteractiveParser.Result<>(da, rest); }
+    { return da; }
    | (t=<THEOREM> | t=<LEMMA>) qn=QualName() { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, new StringSpan(t)); }
      [ <ON> cl=SimpleExpr() { da.addArgString(cl); }
        ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
      ]
-   rest=<REST_STRING>
-    { return new InteractiveParser.Result<>(da, rest); }
+    { return da; }
    | LOOKAHEAD(2) <INDUCTION> <ON> cl=SimpleExpr()
      { di = new DerivationByInduction(startT.image, new Location(startT), c, cl); }
        ( <COMMA> cl=SimpleExpr() { di.addArgString(cl); } )*
      t=<COLON>
-   rest=<REST_STRING>
-    {  di.setEndLocation(Location.endOf(t)); return new InteractiveParser.Result<>(di, rest); }
+    {  di.setEndLocation(Location.endOf(t)); return di; }
  //  | LOOKAHEAD(2) <CASE> <ANALYSIS> <ON> cl=SimpleExpr()
  //    { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, cl); }
  //      ( <COMMA> cl=SimpleExpr() { dca.addArgString(cl); } )* 
@@ -2274,8 +2261,7 @@ InteractiveParser.Result<Derivation> JustificationHeader(Token startT, Clause c)
        }
      }
      ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
-   rest=<REST_STRING>
-    { return new InteractiveParser.Result<>(da, rest); }
+    { return da; }
  //  | <SUBSTITUTION> <ON> t=<IDENTIFIER>
  //    { 
  //      da = new DerivationBySubstitution(startT.image, new Location(startT), c);
@@ -2324,7 +2310,7 @@ InteractiveParser.Result<Derivation> JustificationHeader(Token startT, Clause c)
 }
 
 
-InteractiveParser.Result<Derivation> InductionJustificationFooter(DerivationByAnalysis di) :
+Derivation InductionJustificationFooter(DerivationByAnalysis di) :
 { Token t = null; Token of = null; Token rest;
 }
 {
@@ -2334,10 +2320,9 @@ InteractiveParser.Result<Derivation> InductionJustificationFooter(DerivationByAn
      { String wrong = t.image;
        if (wrong.equals("analysis")) wrong = "case analysis";
        ErrorHandler.recoverableError(Errors.WRONG_END,"'end induction'",new TokenSpan(t),wrong+"\ninduction"); } )
-       rest=<REST_STRING>
     {
         di.setEndLocation(Location.endOf(t));
-        return new InteractiveParser.Result<>(di, rest);
+        return di;
     }
 }
 
@@ -2471,7 +2456,7 @@ whereClauses=WhereClauses()
 	{ return da; }
 }
 
-InteractiveParser.Result<Case> CaseHeader() :
+Case CaseHeader() :
 { Token first=null, t,t2,t3,u,a; StringSpan s; QualName q;
   Clause cl,ce=null,c2; Case ca; Derivation d;
   List<Derivation> premises = new ArrayList<>();
@@ -2523,14 +2508,13 @@ InteractiveParser.Result<Case> CaseHeader() :
     }
   )
     u=<IS>
-    rest=<REST_STRING>
     {
         ca.setEndLocation(Location.endOf(u));
-        return new InteractiveParser.Result<>(ca, rest);
+        return ca;
     }
 }
 
-InteractiveParser.Result<Case> CaseFooter(Case ca) :
+Case CaseFooter(Case ca) :
 {
     Token t, u; Token rest;
 }
@@ -2541,10 +2525,9 @@ InteractiveParser.Result<Case> CaseFooter(Case ca) :
      { String bad = u.image;
        if (bad.equals("analysis")) bad = "case analysis";
        ErrorHandler.recoverableError(Errors.WRONG_END,"'end case'",new TokenSpan(u),bad+"\ncase"); } )
-    rest=<REST_STRING>
     {
         ca.setEndLocation(Location.endOf(u));
-        return new InteractiveParser.Result<>(ca, rest);
+        return ca;
     }
 }
 

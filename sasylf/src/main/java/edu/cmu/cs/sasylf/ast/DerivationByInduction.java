@@ -2,7 +2,7 @@ package edu.cmu.cs.sasylf.ast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.reduction.InductionSchema;
 import edu.cmu.cs.sasylf.reduction.StructuralInduction;
@@ -51,9 +51,11 @@ public class DerivationByInduction extends DerivationByAnalysis {
 	}
 
 	/// Runs the type checking for interactive mode for [DerivationByInduction]
-	/// @param ctx Context to use. Should be cloned by the caller
-	@Override
-	public void run(InteractiveParser pi, Context ctx) throws ParseException {
+    ///
+    /// @param orch
+    /// @param ctx  Context to use. Should be cloned by the caller
+    @Override
+	public void run(Orchestrator orch, Context ctx) throws ParseException {
 		if (!ctx.currentTheorem.getDerivations().contains(this)) {
 			ErrorHandler.error(Errors.INDUCTION_NESTED, this);
 		}
@@ -76,7 +78,7 @@ public class DerivationByInduction extends DerivationByAnalysis {
 		}
         assert is != null;
 // TODO:       System.out.println("Induction variable: " + this.getArgStrings().get(is.hashCode()));
-		super.run(pi, ctx);
+		super.run(orch, ctx);
 	}
 
 	public ObjectNode getInteractiveInfo() {

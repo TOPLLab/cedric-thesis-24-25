@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import edu.cmu.cs.sasylf.interactive.InteractiveParser;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Application;
@@ -167,10 +167,12 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 	}
 
 	/// Runs the type checking for interactive mode for [DerivationByAnalysis]
-	/// @param ctx Context to use. Should be cloned by the caller
+	///
+	/// @param orch
+	/// @param ctx  Context to use. Should be cloned by the caller
 	@Override
-	public void run(InteractiveParser pi, Context ctx) throws ParseException {
-		super.run(pi, ctx);
+	public void run(Orchestrator orch, Context ctx) throws ParseException {
+		super.run(orch, ctx);
 		computeTargetDerivation(ctx);
 		Util.debug("On line ", getLocation().getLine(), " varFree = ", ctx.varFreeNTmap.keySet());
 
@@ -225,25 +227,29 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 
 			caseAnalyze(ctx, targetName, targetElement, this, ctx.caseTermMap);
 
-			SASyLFError error = null;
+			final SASyLFError[] error = {null};
 
-			while (true) {
+			final boolean[] done = {false};
+			while (!done[0]) {
 				// TODO: other by analysis footers
-				var node = pi.getNextNode(ctx,
-						DSLToolkitParser::CaseHeader,
-						parser -> parser.InductionJustificationFooter(this));
-				var c = node.getFirst();
-
-				if (c != null) {
-					try {
-						cases.add(c);
-						c.run(pi, ctx, isSubderivation);
-					} catch (SASyLFError ex) {
-						error = ex;
-					}
-				} else if (node.getSecond() != null) {
-					break;
-				}
+				orch.runNextNode(ctx,
+					new Orchestrator.Delegate<>(DSLToolkitParser::CaseHeader) {
+						@Override
+						public void run(Context ctx, Case c) throws ParseException {
+							try {
+								cases.add(c);
+								c.run(orch, ctx, isSubderivation);
+							} catch (SASyLFError ex) {
+								error[0] = ex;
+							}
+						}
+					},
+					new Orchestrator.Delegate<>(parser -> parser.InductionJustificationFooter(this)) {
+						@Override
+						public void run(Context ctx, Derivation value) throws ParseException {
+							done[0] = true;
+						}
+					});
 			}
 
 			if (this instanceof PartialCaseAnalysis) {
@@ -251,7 +257,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 				ctx.savedCaseMap.put(targetName, ctx.caseTermMap);
 				return;
 			}
-			if (error != null) throw error;
+			if (error[0] != null) throw error[0];
 
 			generateMissingCaseError(ctx, targetElement, targetTerm, Errors.MISSING_CASE,
 					getArgStrings().getFirst(), ctx.caseTermMap);
