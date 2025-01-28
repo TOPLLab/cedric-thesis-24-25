@@ -233,7 +233,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 			while (!done[0]) {
 				// TODO: other by analysis footers
 				orch.runNextNode(ctx,
-					new Orchestrator.Delegate<>(DSLToolkitParser::CaseHeader) {
+					new Orchestrator.Delegate<>(DSLToolkitParser::CasePrologue) {
 						@Override
 						public void run(Context ctx, Case c) throws ParseException {
 							try {
@@ -244,7 +244,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 							}
 						}
 					},
-					new Orchestrator.Delegate<>(parser -> parser.InductionJustificationFooter(this)) {
+					new Orchestrator.Delegate<>(parser -> parser.InductionJustificationEpilogue(this)) {
 						@Override
 						public void run(Context ctx, Derivation value) throws ParseException {
 							done[0] = true;

@@ -194,7 +194,7 @@ public class Theorem extends RuleLike {
 		while (!done[0]) {
 			var newCtx = finalCtx[0].clone();
 
-			orch.runNextNode(newCtx, new Orchestrator.Delegate<>(DSLToolkitParser::DerivationHeader) {
+			orch.runNextNode(newCtx, new Orchestrator.Delegate<>(DSLToolkitParser::DerivationPrologue) {
 				@Override
 				public void run(Context ctx, Derivation d) throws ParseException {
 					if (d instanceof DerivationByInduction di) {
@@ -219,7 +219,7 @@ public class Theorem extends RuleLike {
 						finalCtx[0] = newCtx;
 					}
 				}
-			}, new Orchestrator.Delegate<>(parser -> parser.TheoremFooter(this, t0, false)) {
+			}, new Orchestrator.Delegate<>(parser -> parser.TheoremEpilogue(this, t0, false)) {
 				@Override
 				public void run(Context ctx, Theorem thm) throws ParseException {
 					done[0] = true;

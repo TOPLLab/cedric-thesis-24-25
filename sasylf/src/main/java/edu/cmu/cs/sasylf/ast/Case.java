@@ -55,7 +55,7 @@ public class Case extends Node {
 		Map<String, Fact> oldMap = finalCtx[0].derivationMap;
 		finalCtx[0].derivationMap = new HashMap<>(oldMap);
 
-		final var derivationHeader = new Orchestrator.Delegate<>(DSLToolkitParser::DerivationHeader) {
+		final var derivationPrologue = new Orchestrator.Delegate<>(DSLToolkitParser::DerivationPrologue) {
 			@Override
 			public void run(Context ctx, Derivation d) throws ParseException {
 				var oldErrorCount = ErrorHandler.getErrorCount();
@@ -72,11 +72,11 @@ public class Case extends Node {
 		};
 
 		// Parse at least one derivation
-		orch.runNextNode(finalCtx[0], derivationHeader);
+		orch.runNextNode(finalCtx[0], derivationPrologue);
 
 		final boolean[] done = {false};
 		while (!done[0]) {
-			orch.runNextNode(finalCtx[0], derivationHeader, new Orchestrator.Delegate<>(parser -> parser.CaseFooter(this)) {
+			orch.runNextNode(finalCtx[0], derivationPrologue, new Orchestrator.Delegate<>(parser -> parser.CaseEpilogue(this)) {
 				@Override
 				public void run(Context ctx, Case value) {
 					done[0] = true;

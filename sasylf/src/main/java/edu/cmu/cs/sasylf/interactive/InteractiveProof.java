@@ -29,7 +29,7 @@ public class InteractiveProof {
 
   public void run() {
     while (true) {
-        this.pi.runNextNode(this.currentContext, new Orchestrator.Delegate<>(parser-> parser.TheoremHeader(false)) {
+        this.pi.runNextNode(this.currentContext, new Orchestrator.Delegate<>(parser-> parser.TheoremPrologue(false)) {
           @Override
           public void run(Context ctx, Pair<Theorem, Token> pair) throws ParseException {
             currentContext = pair.first.run(pi, currentContext, pair.second);
