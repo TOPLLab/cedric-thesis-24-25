@@ -20,7 +20,7 @@
           devShells.default = pkgs.mkShell {
             name = "SASyLF";
 
-            buildInputs = with pkgs; [ jdk jdt-language-server maven ];
+            buildInputs = with pkgs; [ jdk jdt-language-server maven nodejs_23 self'.packages.sasylf ];
 
             shellHook = ''
               export JAVA_HOME=${jdk}
@@ -63,7 +63,7 @@
             in
             pkgs.symlinkJoin {
               name = "sasylf";
-              buildInputs = [ self'.packages.sasylf-jar pkgs.makeWrapper ];
+              buildInputs = [ self'.packages.sasylf-jar pkgs.makeWrapper pkgs.zulu23 ];
               paths = [ sasylfScript ];
               postBuild = "wrapProgram $out/bin/sasylf --prefix PATH : $out/bin";
             };

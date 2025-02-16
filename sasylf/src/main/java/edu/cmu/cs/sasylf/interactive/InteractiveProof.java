@@ -20,7 +20,7 @@ public class InteractiveProof {
   private Context currentContext;
 
   // interface to parser/sysin
-  private final Orchestrator pi = new Orchestrator();
+  private final Orchestrator orch = new Orchestrator();
 
   public InteractiveProof(Proof proof) {
     this.currentProof = proof;
@@ -29,10 +29,11 @@ public class InteractiveProof {
 
   public void run() {
     while (true) {
-        this.pi.runNextNode(this.currentContext, new Orchestrator.Delegate<>(parser-> parser.TheoremPrologue(false)) {
+        // TODO: Parse syntax and judgement stuff here instead of `--- LOADING FILE ---`
+        this.orch.runNextNode(this.currentContext, new Orchestrator.Delegate<>(parser-> parser.TheoremPrologue(false)) {
           @Override
           public void run(Context ctx, Pair<Theorem, Token> pair) throws ParseException {
-            currentContext = pair.first.run(pi, currentContext, pair.second);
+            currentContext = pair.first.run(orch, currentContext, pair.second);
             addTheoremToProof(pair.first);
           }
         });
