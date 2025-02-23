@@ -67,7 +67,6 @@ public class Main {
 		PathModuleFinder mf = null;
 		PathModuleFinder defaultMF = new PathModuleFinder("");
 		boolean debug = false;
-		boolean interactive = false;
 		for (int i = 0; i < args.length; ++i) {
 			if (args[i].equals("--debug")) {
 				debug = true;
@@ -81,8 +80,12 @@ public class Main {
 			}
 
 			if (args[i].equals("--interactive")) {
-				interactive = true;
-				continue;
+				var cu = new CompUnit(null, new Location("<interactive>",1,1), null);
+				cu.typecheck();
+				var pf = new Proof("<interactive>", null, cu, 0);
+				InteractiveProof ip = new InteractiveProof(pf);
+				System.out.println("-- Starting interactive proof mode --");
+				ip.run();
 			}
 
 			if (args[i].equals("--lsp")) {
@@ -229,12 +232,6 @@ public class Main {
 			System.setErr(err);
 			if (Proof.getLsp()) {
 				System.out.println(Proof.getJSON());
-			}
-			
-			if (interactive) {
-				InteractiveProof ip = new InteractiveProof(pf);
-				System.out.println("-- Starting interactive proof mode -- ");
-				ip.run();
 			}
 		}
 

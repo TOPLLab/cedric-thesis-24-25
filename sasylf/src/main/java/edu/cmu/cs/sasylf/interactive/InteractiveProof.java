@@ -2,11 +2,11 @@ package edu.cmu.cs.sasylf.interactive;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import edu.cmu.cs.sasylf.Proof;
-import edu.cmu.cs.sasylf.ast.Context;
-import edu.cmu.cs.sasylf.ast.Theorem;
-import edu.cmu.cs.sasylf.ast.TheoremPart;
+import edu.cmu.cs.sasylf.ast.*;
+import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.parser.Token;
 import edu.cmu.cs.sasylf.util.Pair;
@@ -29,12 +29,19 @@ public class InteractiveProof {
 
   public void run() {
     while (true) {
-        // TODO: Parse syntax and judgement stuff here instead of `--- LOADING FILE ---`
-        this.orch.runNextNode(this.currentContext, new Orchestrator.Delegate<>(parser-> parser.TheoremPrologue(false)) {
+        this.orch.runNextNode(this.currentContext, new Orchestrator.Delegate<>(parser -> parser.TheoremPrologue(false)) {
           @Override
           public void run(Context ctx, Pair<Theorem, Token> pair) throws ParseException {
-            currentContext = pair.first.run(orch, currentContext, pair.second);
-            addTheoremToProof(pair.first);
+            currentContext = pair.first.run(orch, ctx, pair.second);
+            List<Theorem> thms = new ArrayList<>();
+            thms.add(pair.first);
+            var part = new TheoremPart(thms);
+            addPartToProof(part);
+          }
+        }, new Orchestrator.Delegate<>(parser -> parser.PartInteractive(false)) {
+          @Override
+          public void run(Context ctx, Part part) {
+            addPartToProof(part);
           }
         });
     }
@@ -44,21 +51,19 @@ public class InteractiveProof {
     try {
       boolean typeChecks = currentProof.getCompilationUnit().typecheck();
       if (typeChecks) {
-        System.out.println("Proof with new theorem type checked ... ");
+        System.out.println("Proof valid");
       }else{
         System.out.println("Proof not valid");
       }
     } catch (SASyLFError e) {
       System.err.println(
-          "Error while check compilation unit ... : " + e.getMessage());
+          "Error while check compilation unit: " + e.getMessage());
       System.exit(-1);
     }
   }
 
-  private void addTheoremToProof(Theorem theorem) {
-    List<Theorem> lst = new ArrayList<Theorem>();
-    lst.add(theorem);
-    currentProof.getCompilationUnit().addChunk(new TheoremPart(lst));
+  private void addPartToProof(Part part) {
+    currentProof.getCompilationUnit().addChunk(part);
     typeCheckCurrentProof();
     // reset the current context to the context of the current proof
     currentContext = currentProof.getCompilationUnit().getContext();

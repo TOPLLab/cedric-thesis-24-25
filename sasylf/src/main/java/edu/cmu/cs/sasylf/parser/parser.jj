@@ -1605,6 +1605,19 @@ Part Part(boolean abstractOK) :
   | LOOKAHEAD(2) theorems=Theorems(abstractOK) { return new TheoremPart(theorems); }
 }
 
+Part PartInteractive(boolean abstractOK) :
+{
+  List<Syntax> syntax; Judgment j;
+  Set<String> terms;
+  List<Judgment> judges = new ArrayList<>();
+  }
+{
+    terms=TerminalsDeclaration() { return new TerminalsPart(terms); }
+  | LOOKAHEAD(2) syntax=Syntax(abstractOK) { return new SyntaxPart(syntax); }
+  | LOOKAHEAD(2) ( LOOKAHEAD(2) j=JudgmentDeclaration(abstractOK) {  judges.add(j); } ) +
+  	{ return new JudgmentPart(judges);}
+}
+
 List<Theorem> Theorems(boolean abstractOK) :
 { Theorem thm, lastThm;
   List<Theorem> theorems = new ArrayList<>(); }

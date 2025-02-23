@@ -5,7 +5,7 @@ syntax
 n ::= z 
   | s n 
 
-judgment sum: n + n = n 
+judgment sum: n + n = n
 
  --------------- sum-z
     z + n = n 
@@ -35,4 +35,14 @@ theorem sum-z-rh: forall n exists n + (z) = n.
     end induction
 end theorem
 
+*/
+
+/*
+{"input":"terminals z s"}
+{"input":"syntax n ::= z | s n"}
+{"input":"judgment sum: n + n = n\n--------------- sum-z\nz + n = n\nn1 + n2 = n3\n--------------- sum-s\ns n1 + n2 = s n3"}
+{"input":"theorem n_plus_1_equals_s_n : forall n exists (s (z)) + n = (s n)."}
+{"input":"d1: (z) + n = n by rule sum-z"}
+{"input":"d2: (s (z)) + n = (s n) by rule sum-s on d1"}
+{"input":"end theorem"}
 */
