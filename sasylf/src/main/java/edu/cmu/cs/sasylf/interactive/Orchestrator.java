@@ -15,14 +15,14 @@ public class Orchestrator {
     }
 
     public abstract static class Delegate<T> {
-        ParseFn<T> parser;
+        ParseFn<T> parserFn;
 
-        public Delegate(ParseFn<T> parser) {
-            this.parser = parser;
+        public Delegate(ParseFn<T> parserFn) {
+            this.parserFn = parserFn;
         }
 
         void finalize(Context ctx, DSLToolkitParser parser) throws ParseException {
-            var v = this.parser.run(parser);
+            var v = this.parserFn.run(parser);
             this.run(ctx, v);
         }
 

@@ -6,7 +6,7 @@ let process: ChildProcess | null = null;
 
 export function activate(context: vscode.ExtensionContext) {
 	const jarPath = path.join(__dirname, "bin", "SASyLF.jar");
-	process = spawn("java", ["-jar", jarPath, "--interactive", "--stdin"]);
+	process = spawn("java", ["-jar", jarPath, "--interactive"]);
 
 	process.stdout?.on("data", (data) => {
 		console.log(`Output: ${data}`);
@@ -22,11 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Congratulations, your extension "interactive-sasylf" is now active!');
 
-	const disposable = vscode.commands.registerCommand('interactive-sasylf.helloWorld', () => {
+	const disposable = vscode.commands.registerCommand('interactive-sasylf.runToCursor', () => {
 		vscode.window.showInformationMessage('Hello World from Interactive SASyLF!');
 	});
 
 	context.subscriptions.push(disposable);
+	vscode.commands.executeCommand("interactive-sasylf.runToCursork");
 }
 
 // This method is called when your extension is deactivated
