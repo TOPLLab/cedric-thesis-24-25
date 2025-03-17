@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onLanguage:sasylf"
   ],
   "main": "./dist/extension.js",
   "contributes": {
