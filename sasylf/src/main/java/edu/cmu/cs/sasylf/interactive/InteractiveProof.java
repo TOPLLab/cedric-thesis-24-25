@@ -47,26 +47,13 @@ public class InteractiveProof {
     }
   }
 
-  private void typeCheckCurrentProof() {
-    try {
-      boolean typeChecks = currentProof.getCompilationUnit().typecheck();
-      if (typeChecks) {
-        System.out.println("Proof valid");
-      }else{
-        System.out.println("Proof not valid");
-      }
-    } catch (SASyLFError e) {
-      System.err.println(
-          "Error while check compilation unit: " + e.getMessage());
-      System.exit(-1);
-    }
-  }
-
   private void addPartToProof(Part part) {
     currentProof.getCompilationUnit().addChunk(part);
-    typeCheckCurrentProof();
-    // reset the current context to the context of the current proof
-    currentContext = currentProof.getCompilationUnit().getContext();
+    // TODO do this and other context related stuff in orchestrator so that it can be rolled back correctly
+    if (currentProof.getCompilationUnit().typecheck()) {
+      // reset the current context to the context of the current proof
+      currentContext = currentProof.getCompilationUnit().getContext();
+    }
   }
 
 }

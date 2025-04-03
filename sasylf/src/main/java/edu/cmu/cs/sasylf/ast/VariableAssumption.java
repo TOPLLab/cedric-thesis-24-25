@@ -29,6 +29,7 @@ public class VariableAssumption extends SyntaxAssumption {
 		var mapper = new ObjectMapper();
 		var rootNode = mapper.createObjectNode();
 
+		rootNode.put("fact", "VariableAssumption");
 		rootNode.put("name", this.getName());
 		rootNode.set("variable", this.variable.getInteractiveInfo());
 

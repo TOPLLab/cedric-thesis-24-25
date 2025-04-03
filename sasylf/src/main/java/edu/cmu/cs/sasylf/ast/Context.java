@@ -730,7 +730,6 @@ public class Context implements Cloneable {
 		}
 
 		if (this.currentGoal != null) {
-			// TODO: Interactive info this
 			rootNode.set("currentGoal", this.currentGoal.substitute(this.currentSub).getInteractiveInfo());
 		}
 

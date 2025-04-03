@@ -103,6 +103,7 @@ public abstract class SyntaxAssumption extends Fact {
 		var mapper = new ObjectMapper();
 		var rootNode = mapper.createObjectNode();
 
+		rootNode.put("fact", "SyntaxAssumption");
 		rootNode.put("name", this.getName());
 		rootNode.set("context", this.getElement().getInteractiveInfo());
 

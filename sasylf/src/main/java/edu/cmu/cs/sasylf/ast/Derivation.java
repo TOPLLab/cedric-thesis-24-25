@@ -461,6 +461,7 @@ public abstract class Derivation extends Fact {
 		var rootNode = mapper.createObjectNode();
 
 		// TODO: describe [by ...] (by overriding in subclasses, DerivationByInduction, etc.)
+		rootNode.put("fact", "Derivation");
 		rootNode.put("name", this.getName());
 		rootNode.set("clause", this.getClause().getInteractiveInfo());
 
