@@ -16,8 +16,8 @@ const decorations = {
 };
 
 export class DecorationsView {
-	activePendingDecorations: vscode.Range[];
-	activeSuccessDecorations: vscode.Range[];
+	private activePendingDecorations: vscode.Range[];
+	private activeSuccessDecorations: vscode.Range[];
 
 	constructor() {
 		this.activePendingDecorations = [];

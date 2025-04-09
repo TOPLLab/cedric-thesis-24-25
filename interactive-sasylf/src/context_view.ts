@@ -2,8 +2,8 @@ import { AbstractionTerm, ApplicationTerm, BoundVarTerm, ConstantTerm, Context, 
 import * as vscode from 'vscode';
 
 export class ContextView {
-	panel: vscode.WebviewPanel;
-	disposeHandlers: (() => void)[];
+	private panel: vscode.WebviewPanel;
+	private disposeHandlers: (() => void)[];
 
 	constructor() {
 		this.panel = vscode.window.createWebviewPanel("context", "Sasylf Context", vscode.ViewColumn.Two, {});
@@ -13,7 +13,7 @@ export class ContextView {
 		});
 	}
 
-	public close() {
+	public dispose() {
 		this.panel.dispose();
 	}
 

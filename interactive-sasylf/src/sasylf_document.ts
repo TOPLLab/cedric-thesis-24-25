@@ -19,8 +19,21 @@ export class SasylfDocument {
 
 	public close() {
 		this.process.close();
-		this.ctxView?.close();
+		this.ctxView?.dispose();
 		this.ctxView = null;
+	}
+
+	public restart() {
+		this.process.close();
+		this.process = new SasylfProcess();
+		if (this.ctxView) {
+			this.ctxView.dispose();
+			this.openContextView();
+		}
+		this.decorations = new DecorationsView();
+		for (const editor of this.editors) {
+			this.decorations.render(editor);
+		}
 	}
 
 	public setEditors(editors: vscode.TextEditor[]) {
@@ -72,6 +85,7 @@ export class SasylfDocument {
 		});
 
 		this.openContextView();
+
 		for (const editor of this.editors) {
 			this.decorations.render(editor);
 		}

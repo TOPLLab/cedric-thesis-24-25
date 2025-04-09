@@ -4,12 +4,12 @@ import path from 'path';
 import { Context } from '@/types/context';
 
 export class SasylfProcess {
-	lastPosition: vscode.Position;
-	currentPosition: vscode.Position;
-	ps: ChildProcess;
-	pendingHandler: ((range: vscode.Range) => void) | null;
-	successHandler: ((range: vscode.Range, ctx: Context) => void) | null;
-	failureHandler: ((range: vscode.Range) => void) | null;
+	private lastPosition: vscode.Position;
+	private currentPosition: vscode.Position;
+	private ps: ChildProcess;
+	private pendingHandler: ((range: vscode.Range) => void) | null;
+	private successHandler: ((range: vscode.Range, ctx: Context) => void) | null;
+	private failureHandler: ((range: vscode.Range) => void) | null;
 
 	constructor() {
 		const javaVersionPs = spawnSync("java", ["--version"]);

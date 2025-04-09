@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('interactive-sasylf.restartCurrentProcess', () => {
-		throw new Error("Unimplemented");
+		dm!.restart();
 	}));
 }
 

@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import { SasylfDocument } from '@/sasylf_document';
 
 export class DocumentManager {
-	documents: Map<String, SasylfDocument>;
-	currentDocument: String | null;
+	private documents: Map<String, SasylfDocument>;
+	private currentDocument: String | null;
 
 	constructor(context: vscode.ExtensionContext) {
 		this.currentDocument = null;
@@ -65,6 +65,14 @@ export class DocumentManager {
 			return;
 		}
 		this.getCurrentDocument()?.openContextView();
+	}
+
+	public restart() {
+		if (!this.getCurrentDocument()) {
+			vscode.window.showWarningMessage("No SASyLF file active");
+			return;
+		}
+		this.getCurrentDocument()?.restart();
 	}
 
 	private getCurrentDocument(): SasylfDocument | null {
