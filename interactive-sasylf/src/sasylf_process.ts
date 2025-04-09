@@ -1,17 +1,30 @@
-import { ChildProcess, spawn } from 'child_process';
-import path from 'path';
 import * as vscode from 'vscode';
+import { ChildProcess, spawn, spawnSync } from 'child_process';
+import path from 'path';
 import { Context } from '@/types/context';
 
-export class Sasylf {
+export class SasylfProcess {
 	lastPosition: vscode.Position;
 	currentPosition: vscode.Position;
 	ps: ChildProcess;
-	pendingHandlers: ((range: vscode.Range) => void)[];
-	successHandlers: ((range: vscode.Range, ctx: Context) => void)[];
-	failureHandlers: ((range: vscode.Range) => void)[];
+	pendingHandler: ((range: vscode.Range) => void) | null;
+	successHandler: ((range: vscode.Range, ctx: Context) => void) | null;
+	failureHandler: ((range: vscode.Range) => void) | null;
 
 	constructor() {
+		const javaVersionPs = spawnSync("java", ["--version"]);
+		if (javaVersionPs.error) {
+			vscode.window.showErrorMessage("Please ensure java 17 or later is installed and available in PATH.");
+			throw new Error("No Java Runtime found");
+		}
+
+		const javaVersion = javaVersionPs.stdout.toString().split(' ', 2)[1];
+		const javaMajor = javaVersion.split('.', 1)[0];
+		if (parseInt(javaMajor) < 17) {
+			vscode.window.showErrorMessage(`The interactive SASyLF plugin needs a java runtime of at least 17 or later. You are currently hosting version ${javaVersion}`);
+			throw new Error("Outdated Java Runtime");
+		}
+
 		console.debug("Starting sasylf process");
 		const jarPath = path.join(__dirname, "lib", "SASyLF.jar");
 		this.ps = spawn("java", ["-jar", jarPath, "--interactive"]);
@@ -26,49 +39,41 @@ export class Sasylf {
 		this.lastPosition = new vscode.Position(0, 0);
 		this.currentPosition = this.lastPosition;
 
-		this.pendingHandlers = [];
-		this.successHandlers = [];
-		this.failureHandlers = [];
+		this.pendingHandler = null;
+		this.successHandler = null;
+		this.failureHandler = null;
 	}
 
-	public onPending(handler: (range: vscode.Range) => void): () => void {
-		this.pendingHandlers.push(handler);
-
-		return () => {
-			this.pendingHandlers = this.pendingHandlers.filter((h) => h !== handler);
-		};
+	public onPending(handler: (range: vscode.Range) => void) {
+		this.pendingHandler = handler;
 	}
 
 	private handlePending(range: vscode.Range) {
-		this.pendingHandlers.forEach((h) => h(range));
+		this.pendingHandler?.(range);
 	}
 
-	public onSuccess(handler: (range: vscode.Range, ctx: Context) => void): () => void {
-		this.successHandlers.push(handler);
-
-		return () => {
-			this.successHandlers = this.successHandlers.filter((h) => h !== handler);
-		};
+	public onSuccess(handler: (range: vscode.Range, ctx: Context) => void) {
+		this.successHandler = handler;
 	}
 
 	private handleSucces(range: vscode.Range, ctx: Context) {
-		this.successHandlers.forEach((h) => h(range, ctx));
+		this.successHandler?.(range, ctx);
 	}
 
-	public onFailure(handler: (range: vscode.Range) => void): () => void {
-		this.failureHandlers.push(handler);
-
-		return () => {
-			this.failureHandlers = this.failureHandlers.filter((h) => h !== handler);
-		};
+	public onFailure(handler: (range: vscode.Range) => void) {
+		this.failureHandler = handler;
 	}
 
 	private handleFailure(range: vscode.Range) {
-		this.failureHandlers.forEach((h) => h(range));
+		this.failureHandler?.(range);
 	}
 
 	public close() {
 		this.ps.kill();
+
+		this.pendingHandler = null;
+		this.successHandler = null;
+		this.failureHandler = null;
 	}
 
 	public runToCursor() {

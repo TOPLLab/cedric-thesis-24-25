@@ -22,6 +22,10 @@
       {
         "command": "interactive-sasylf.openContextView",
         "title": "SASyLF: Open Context View"
+      },
+      {
+        "command": "interactive-sasylf.restartCurrentProcess",
+        "title": "SASyLF: Restart Current Process"
       }
     ],
     "languages": [

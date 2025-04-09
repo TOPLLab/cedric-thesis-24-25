@@ -15,23 +15,41 @@ const decorations = {
 	}),
 };
 
-export function setPending(editor: vscode.TextEditor, range: vscode.Range) {
-	editor.setDecorations(decorations.pending, [range]);
-}
+export class DecorationsView {
+	activePendingDecorations: vscode.Range[];
+	activeSuccessDecorations: vscode.Range[];
 
-export function setSuccess(editor: vscode.TextEditor, range: vscode.Range) {
-	editor.setDecorations(decorations.success, [range]);
-}
+	constructor() {
+		this.activePendingDecorations = [];
+		this.activeSuccessDecorations = [];
+	}
 
-export function setFailure(editor: vscode.TextEditor, range: vscode.Range) {
-	throw new Error("Unimplemented");
+	setPending(editor: vscode.TextEditor, range: vscode.Range) {
+		this.activePendingDecorations.push(range);
+		this.render(editor);
+	}
 
-	// const diagnostics = vscode.languages.createDiagnosticCollection("myExtension");
+	setSuccess(editor: vscode.TextEditor, range: vscode.Range) {
+		this.activeSuccessDecorations.push(range);
+		this.render(editor);
+	}
 
-	// const editor = vscode.window.activeTextEditor;
-	// if (editor) {
-	// 	const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(1, 0));
-	// 	const diagnostic = new vscode.Diagnostic(range, "Syntax error", vscode.DiagnosticSeverity.Warning);
-	// 	diagnostics.set(editor.document.uri, [diagnostic]);
-	// }
+	setFailure(editor: vscode.TextEditor, range: vscode.Range) {
+		throw new Error("Unimplemented");
+
+		// const diagnostics = vscode.languages.createDiagnosticCollection("myExtension");
+
+		// const editor = vscode.window.activeTextEditor;
+		// if (editor) {
+		// 	const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(1, 0));
+		// 	const diagnostic = new vscode.Diagnostic(range, "Syntax error", vscode.DiagnosticSeverity.Warning);
+		// 	diagnostics.set(editor.document.uri, [diagnostic]);
+		// }
+	}
+
+	render(editor: vscode.TextEditor) {
+		console.debug("Rendering decorations");
+		editor.setDecorations(decorations.pending, this.activePendingDecorations);
+		editor.setDecorations(decorations.success, this.activeSuccessDecorations);
+	}
 }
