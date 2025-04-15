@@ -33,7 +33,12 @@ export class ContextView {
 		const theoremHtml = ctx.currentTheorem ? `<div>Current Theorem: ${this.renderTheorem(ctx.currentTheorem)}</div>` : ``;
 		const goalHtml = ctx.currentGoal ? `<div>Current Goal: ${this.renderTerm(ctx.currentGoal)}</div>` : ``;
 		const casesHtml = ctx.cases ? `<div>Current Cases: ${this.renderCases(ctx.cases)}</div>` : ``;
-		const derivationsHtmls = ctx.derivations ? `<div>Available Facts: ${ctx.derivations.map((d) => this.renderFact(d))}</div>` : ``;
+		const derivationsHtmls = ctx.derivations ? `
+			<div>Available Facts:
+			<ul> 
+				${ctx.derivations.map((d) => `<li>${this.renderFact(d)}</li>`).join('')}
+			</ul>
+		</div>` : ``;
 
 		this.panel.webview.html = `
 		<!DOCTYPE html>
