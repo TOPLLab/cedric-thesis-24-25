@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { ChildProcess, spawn, spawnSync } from 'child_process';
 import path from 'path';
 import { Context } from '@/types/context';
+import { Errors } from '@/types/errors';
+import { SasylfResponse as Response } from '@/types/response';
 
 export class SasylfProcess {
 	private lastPosition: vscode.Position;
@@ -9,7 +11,7 @@ export class SasylfProcess {
 	private ps: ChildProcess;
 	private pendingHandler: ((range: vscode.Range) => void) | null;
 	private successHandler: ((range: vscode.Range, ctx: Context) => void) | null;
-	private failureHandler: ((range: vscode.Range) => void) | null;
+	private failureHandler: ((range: vscode.Range, errors: Errors) => void) | null;
 
 	constructor() {
 		const javaVersionPs = spawnSync("java", ["--version"]);
@@ -60,12 +62,12 @@ export class SasylfProcess {
 		this.successHandler?.(range, ctx);
 	}
 
-	public onFailure(handler: (range: vscode.Range) => void) {
+	public onFailure(handler: (range: vscode.Range, errors: Errors) => void) {
 		this.failureHandler = handler;
 	}
 
-	private handleFailure(range: vscode.Range) {
-		this.failureHandler?.(range);
+	private handleFailure(range: vscode.Range, errors: Errors) {
+		this.failureHandler?.(range, errors);
 	}
 
 	public close() {
@@ -100,13 +102,17 @@ export class SasylfProcess {
 		this.ps.stdin?.write('\n');
 	}
 
-	private finalizeRunToCursor(ctx: Context) {
-		console.log(ctx);
-		// TODO: only commit when correct, changes need to be made in sasylf-jar
+	private finalizeRunToCursor(res: Response) {
+		console.debug("Response:", res);
 		let range = new vscode.Range(this.lastPosition, this.currentPosition);
+
+		if (res.type === "errors") {
+			this.handleFailure(range, res.errors);
+			return;
+		}
+
 		this.lastPosition = this.currentPosition;
-		this.handleSucces(range, ctx);
-		// TODO: Set range to succes or failed
+		this.handleSucces(range, res.context);
 	}
 
 	private handleStdOut(data: any) {
@@ -115,6 +121,9 @@ export class SasylfProcess {
 			this.finalizeRunToCursor(res);
 		} catch (error) {
 			vscode.window.showErrorMessage(`Could not parse the output of the sasylf process as a json object.\n${error}`);
+
+			let range = new vscode.Range(this.lastPosition, this.currentPosition);
+			this.handleFailure(range, [data.toString()]);
 		}
 	}
 

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { Errors } from '@/types/errors';
 
 const decorations = {
 	pending: vscode.window.createTextEditorDecorationType({
@@ -30,26 +31,26 @@ export class DecorationsView {
 	}
 
 	setSuccess(editor: vscode.TextEditor, range: vscode.Range) {
+		this.activePendingDecorations = this.activePendingDecorations.filter(r => !r.isEqual(range));
 		this.activeSuccessDecorations.push(range);
 		this.render(editor);
 	}
 
-	setFailure(editor: vscode.TextEditor, range: vscode.Range) {
-		throw new Error("Unimplemented");
-
-		// const diagnostics = vscode.languages.createDiagnosticCollection("myExtension");
-
-		// const editor = vscode.window.activeTextEditor;
-		// if (editor) {
-		// 	const range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(1, 0));
-		// 	const diagnostic = new vscode.Diagnostic(range, "Syntax error", vscode.DiagnosticSeverity.Warning);
-		// 	diagnostics.set(editor.document.uri, [diagnostic]);
-		// }
+	setFailure(editor: vscode.TextEditor, range: vscode.Range, errors: Errors) {
+		const collection = vscode.languages.createDiagnosticCollection("SASyLF Interactive");
+		collection.clear();
+		this.activePendingDecorations = this.activePendingDecorations.filter(r => !r.isEqual(range));
+		this.activeSuccessDecorations = this.activeSuccessDecorations.filter(r => !r.isEqual(range));
+		const diagnostics = errors.map(error => new vscode.Diagnostic(range, error, vscode.DiagnosticSeverity.Error));
+		collection.set(editor.document.uri, diagnostics);
+		this.render(editor);
 	}
 
 	render(editor: vscode.TextEditor) {
 		console.debug("Rendering decorations");
 		editor.setDecorations(decorations.pending, this.activePendingDecorations);
 		editor.setDecorations(decorations.success, this.activeSuccessDecorations);
+		const collection = vscode.languages.createDiagnosticCollection("SASyLF Interactive");
+		collection.clear();
 	}
 }

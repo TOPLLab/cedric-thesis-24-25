@@ -5,9 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.cmu.cs.sasylf.ast.Context;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
+import edu.cmu.cs.sasylf.util.ErrorHandler;
+import edu.cmu.cs.sasylf.util.ErrorReport;
+import edu.cmu.cs.sasylf.util.Report;
+import edu.cmu.cs.sasylf.util.SASyLFError;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Orchestrator {
     public interface ParseFn<T> {
@@ -32,14 +37,51 @@ public class Orchestrator {
 
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
+    private void logContext(Context ctx) {
+        final var mapper = new ObjectMapper();
+        var ctxNode = mapper.createObjectNode();
+
+        ctxNode.put("type", "context");
+        ctxNode.set("context", ctx.getInteractiveInfo());
+        System.out.println(ctxNode);
+    }
+
+    private void logErrorReports(List<Report> reports) {
+        final var mapper = new ObjectMapper();
+
+        var rootNode = mapper.createObjectNode();
+
+        var reportsNode = mapper.createArrayNode();
+        for (var r : reports) {
+            reportsNode.add(r.toString());
+        }
+        rootNode.put("type", "reports");
+        rootNode.set("reports", reportsNode);
+        System.out.println(rootNode);
+    }
+
+    private void logParseExceptions(List<ParseException> exceptions) {
+        final var mapper = new ObjectMapper();
+
+        var rootNode = mapper.createObjectNode();
+
+        var errorsNode = mapper.createArrayNode();
+        for (var e : exceptions) {
+            errorsNode.add(e.toString());
+        }
+        rootNode.put("type", "errors");
+        rootNode.set("errors", errorsNode);
+        System.out.println(rootNode);
+    }
+
     /// Try all parseFns until one succeeds. If failed, read again
     public final void runNextNode(Context ctx, Delegate...delegates) {
         final var mapper = new ObjectMapper();
         JsonNode node;
 
-        while (true) {
+        this.logContext(ctx);
 
-            System.out.println(ctx.getInteractiveInfo().toPrettyString());
+        while (true) {
 
             // TODO: Keep parsed stuff
             // TODO: Keep context per parsed node
@@ -64,20 +106,14 @@ public class Orchestrator {
             for (final var parseFn : delegates) {
                 try {
                     parseFn.finalize(ctx.clone(), parser);
+                    this.logContext(ctx);
                     return;
                 } catch (ParseException e) {
                     exceptions.add(e);
                 }
             }
 
-            var rootNode = mapper.createObjectNode();
-
-            var errorsNode = mapper.createArrayNode();
-            for (ParseException e : exceptions) {
-                errorsNode.add(e.toString());
-            }
-            rootNode.set("errors", errorsNode);
-            System.out.println(rootNode.toPrettyString());
+            this.logParseExceptions(exceptions);
         }
     }
 }

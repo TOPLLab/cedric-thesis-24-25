@@ -84,7 +84,6 @@ public class Main {
 				cu.typecheck();
 				var pf = new Proof("<interactive>", null, cu, 0);
 				InteractiveProof ip = new InteractiveProof(pf);
-				System.out.println("-- Starting interactive proof mode --");
 				ip.run();
 			}
 

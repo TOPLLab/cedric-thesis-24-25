@@ -18,7 +18,7 @@ judgment sum: n + n = n
 theorem n_plus_1_equals_s_n : forall n exists (s (z)) + n = (s n).
     d1: (z) + n = n		by rule sum-z
     d2: (s (z)) + n = (s n)	by rule sum-s on d1
-end theorem
+    end theorem
 
 theorem sum-z-rh: forall n exists n + (z) = n.
     d1: n + (z) = n by induction on n:

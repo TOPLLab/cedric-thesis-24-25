@@ -18,7 +18,6 @@ export class DocumentManager {
 		}));
 
 		// It also has to be done for documents already opened.
-		console.debug(vscode.workspace.textDocuments);
 		vscode.workspace.textDocuments.forEach(document => {
 			this.loadDocument(document);
 		});
@@ -138,13 +137,11 @@ export class DocumentManager {
 		}
 
 		if (editor.document.languageId !== 'sasylf') {
-			console.debug("Not sasylf");
 			return;
 		}
 
 		this.currentDocument = editor.document.uri.toString();
 		this.loadDocument(editor.document);
 		this.getCurrentDocument()!.activate();
-		console.debug("Active document set");
 	}
 }

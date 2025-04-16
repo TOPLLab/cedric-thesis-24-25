@@ -39,7 +39,6 @@ export class SasylfDocument {
 	public setEditors(editors: vscode.TextEditor[]) {
 		this.editors = editors;
 		for (const editor of this.editors) {
-			console.log(editor === vscode.window.activeTextEditor);
 			this.decorations.render(editor);
 		}
 	}
@@ -78,9 +77,9 @@ export class SasylfDocument {
 			}
 		});
 
-		this.process.onFailure((range) => {
+		this.process.onFailure((range, errors) => {
 			for (const editor of this.editors) {
-				this.decorations.setFailure(editor, range);
+				this.decorations.setFailure(editor, range, errors);
 			}
 		});
 
