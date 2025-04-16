@@ -30,15 +30,35 @@ export class ContextView {
 	}
 
 	public renderContext(ctx: Context) {
-		const theoremHtml = ctx.currentTheorem ? `<div>Current Theorem: ${this.renderTheorem(ctx.currentTheorem)}</div>` : ``;
-		const goalHtml = ctx.currentGoal ? `<div>Current Goal: ${this.renderTerm(ctx.currentGoal)}</div>` : ``;
-		const casesHtml = ctx.cases ? `<div>Current Cases: ${this.renderCases(ctx.cases)}</div>` : ``;
-		const derivationsHtmls = ctx.derivations ? `
-			<div>Available Facts:
-			<ul> 
-				${ctx.derivations.map((d) => `<li>${this.renderFact(d)}</li>`).join('')}
-			</ul>
+		const theoremHtml = ctx.currentTheorem ? `
+		<div>
+			<p>
+				Theorem:</br>
+				<span style="padding-left: 1rem; color: var(--vscode-terminal-ansiGreen);">${this.renderTheorem(ctx.currentTheorem)}</span>
+			</p>
+		</div>
+		` : ``;
+
+		const goalHtml = ctx.currentGoal ? `
+		<div>
+			<p>
+				Goal:</br>
+				<span style="padding-left: 1rem; color: var(--vscode-terminal-ansiGreen);">${this.renderTerm(ctx.currentGoal)}</span>
+			</p>
+		<div>
+		` : ``;
+
+		const casesHtml = ctx.cases ? `
+		<div>
+			<p>
+				Cases:
+			</p>
+			<div style="color: var(--vscode-terminal-ansiGreen);">
+				${this.renderCases(ctx.cases)}
+			</div>
 		</div>` : ``;
+		const derivationsHtmls = ctx.derivations ? ctx.derivations.map((d) => `<p>${this.renderFact(d)}</p>`).join('\n') : ``;
+		const line = (ctx.currentTheorem || ctx.currentGoal || ctx.cases) && ctx.derivations ? `<hr style="margin: .5rem 0; background-color: var(--vscode-editor-foreground); height: 1.5px; border: 0;"/>` : ``;
 
 		this.panel.webview.html = `
 		<!DOCTYPE html>
@@ -49,11 +69,14 @@ export class ContextView {
 				<title>React Webview</title>
 			</head>
 			<body>
-				<div>
+				<div style="font-size: calc(var(--vscode-editor-font-size) * 1.2);">
+					${derivationsHtmls}
+					
+					${line}
+
 					${theoremHtml}
 					${goalHtml}
 					${casesHtml}
-					${derivationsHtmls}
 				</div>
 			</body>
 		</html>`;
@@ -82,7 +105,7 @@ export class ContextView {
 			case "Constant":
 				return this.renderConstant(term);
 			default:
-				vscode.window.showErrorMessage(`Unable to render term: ${JSON.stringify(term)}`);
+				vscode.window.showErrorMessage(`<span style="color: var(--vscode-terminal-ansiRed);">Unable to render term: ${JSON.stringify(term)}<span>`);
 				return `Unable to render term`;
 		}
 	}
@@ -133,20 +156,21 @@ export class ContextView {
 	}
 
 	private renderDerivation(derivation: DerivationFact): string {
-		return `${derivation.name}: ${this.renderElement(derivation.clause)}`;
+		return `<span style="color: var(--vscode-terminal-ansiBlue);">${derivation.name}</span> : <span style="color: var(--vscode-terminal-ansiGreen);">${this.renderElement(derivation
+			.clause)}</span>`;
 	}
 
 	private renderSyntaxAssumption(syntaxAssumption: SyntaxAssumptionFact): string {
-		return `${syntaxAssumption.name}: ${this.renderElement(syntaxAssumption
-			.context)}`;
+		return `<span style="color: var(--vscode-terminal-ansiBlue);">${syntaxAssumption.name}</span> : <span style="color: var(--vscode-terminal-ansiGreen);">${this.renderElement(syntaxAssumption
+			.context)}</span>`;
 	}
 
 	private renderVariableAssumption(variableAssumption: VariableAssumptionFact): string {
-		return `${variableAssumption.name}: ${this.renderElement(variableAssumption
-			.variable)}`;
+		return `<span style="color: var(--vscode-terminal-ansiBlue);">${variableAssumption.name}</span> : <span style="color: var(--vscode-terminal-ansiGreen);">${this.renderElement(variableAssumption
+			.variable)}</span>`;
 	}
 
 	private renderCases(cases: string[]): string {
-		return cases.join(", ");
+		return `<ul>${cases.map(c => `<li>${c}</li>`).join("")}</ul>`;
 	}
 }
