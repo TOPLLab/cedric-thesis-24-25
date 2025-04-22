@@ -16,14 +16,14 @@ export class SasylfProcess {
 	constructor() {
 		const javaVersionPs = spawnSync("java", ["--version"]);
 		if (javaVersionPs.error) {
-			vscode.window.showErrorMessage("Please ensure java 17 or later is installed and available in PATH.");
+			vscode.window.showErrorMessage("Please ensure java 21 or later is installed and available in PATH.");
 			throw new Error("No Java Runtime found");
 		}
 
 		const javaVersion = javaVersionPs.stdout.toString().split(' ', 2)[1];
 		const javaMajor = javaVersion.split('.', 1)[0];
-		if (parseInt(javaMajor) < 17) {
-			vscode.window.showErrorMessage(`The interactive SASyLF plugin needs a java runtime of at least 17 or later. You are currently hosting version ${javaVersion}`);
+		if (parseInt(javaMajor) < 21) {
+			vscode.window.showErrorMessage(`The interactive SASyLF plugin needs a java runtime of at least 21 or later. You are currently hosting version ${javaVersion}`);
 			throw new Error("Outdated Java Runtime");
 		}
 
