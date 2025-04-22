@@ -29,7 +29,7 @@ public class DerivationByInductionHypothesis extends DerivationByIHRule {
 	}
 
 	@Override
-	public void run(Orchestrator orch, Context ctx) throws ParseException {
+	public void run(Orchestrator orch, Context ctx) {
 		super.run(orch, ctx);
 
 		this.checkInduction(ctx, ctx.currentTheorem, ctx.currentTheorem);

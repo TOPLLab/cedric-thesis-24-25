@@ -180,7 +180,7 @@ public abstract class DerivationByIHRule extends DerivationWithArgs {
 	}
 
 	@Override
-	public void run(Orchestrator orch, Context ctx) throws ParseException {
+	public void run(Orchestrator orch, Context ctx) {
 		super.run(orch, ctx);
 		Util.debug("line: ", this.getLocation().getLine());
 

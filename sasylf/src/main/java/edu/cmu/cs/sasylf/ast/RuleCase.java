@@ -408,7 +408,7 @@ public class RuleCase extends Case {
 	}
 
 	@Override
-	public void run(Orchestrator orch, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(Orchestrator orch, Context parent, Pair<Fact,Integer> isSubderivation) {
 		Context ctx = parent.clone();
 		debug("line "+ this.getLocation().getLine(), " case ", ruleName);
 		debug("    currentSub = ", ctx.currentSub);

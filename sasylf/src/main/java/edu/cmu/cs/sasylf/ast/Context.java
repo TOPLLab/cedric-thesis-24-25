@@ -117,6 +117,23 @@ public class Context implements Cloneable {
 		return result;
 	}
 
+
+	/** Load data into this context
+	 */
+	public void load(Context ctx) {
+		if (ctx.derivationMap != null) this.derivationMap = new HashMap<>(ctx.derivationMap);
+		if (ctx.bindingTypes != null) this.bindingTypes = new HashMap<>(ctx.bindingTypes);
+		this.currentSub = new Substitution(ctx.currentSub);
+		if (ctx.inputVars != null) this.inputVars = new HashSet<>(ctx.inputVars);
+		if (ctx.outputVars != null) this.outputVars = new HashSet<>(ctx.outputVars);
+		this.subderivations = new HashMap<>(ctx.subderivations);
+		if (ctx.caseTermMap != null) this.caseTermMap = new HashMap<>(ctx.caseTermMap);
+		if (ctx.savedCaseMap != null) this.savedCaseMap = new HashMap<>(ctx.savedCaseMap);
+		this.varFreeNTmap = new HashMap<>(ctx.varFreeNTmap);
+		if (ctx.knownContexts != null) this.knownContexts = new HashSet<>(ctx.knownContexts);
+		if (ctx.relaxationMap != null) this.relaxationMap = new HashMap<>(ctx.relaxationMap);
+		if (ctx.relaxationVars != null) this.relaxationVars = new HashSet<>(ctx.relaxationVars);
+	}
 	/**
 	 * get the representation of this element as an LF term,
 	 * substituting with the current substitution.

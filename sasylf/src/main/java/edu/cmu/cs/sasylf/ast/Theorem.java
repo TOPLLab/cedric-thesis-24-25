@@ -187,7 +187,7 @@ public class Theorem extends RuleLike {
 	/// @param orch
 	/// @param ctx  [Context] to use. Does not have to be cloned by the caller
 	/// @return a new updated copy of [ctx]
-	public Context run(Orchestrator orch, Context ctx, Token t0) throws ParseException {
+	public Context run(Orchestrator orch, Context ctx, Token t0) {
 		final Context[] finalCtx = {this.interactiveTypeCheckSetup(ctx.clone())};
 
 		final boolean[] done = {false};
@@ -196,7 +196,7 @@ public class Theorem extends RuleLike {
 
 			orch.runNextNode(newCtx, new Orchestrator.Delegate<>(DSLToolkitParser::DerivationPrologue) {
 				@Override
-				public void run(Context ctx, Derivation d) throws ParseException {
+				public void run(Context ctx, Derivation d) {
 					if (d instanceof DerivationByInduction di) {
 						InductionSchema is = InductionSchema.create(Theorem.this, di.getArgStrings(),
 								true);
@@ -221,7 +221,7 @@ public class Theorem extends RuleLike {
 				}
 			}, new Orchestrator.Delegate<>(parser -> parser.TheoremEpilogue(this, t0, false)) {
 				@Override
-				public void run(Context ctx, Theorem thm) throws ParseException {
+				public void run(Context ctx, Theorem thm) {
 					done[0] = true;
 				}
 			});

@@ -55,7 +55,7 @@ public class DerivationByInduction extends DerivationByAnalysis {
     /// @param orch
     /// @param ctx  Context to use. Should be cloned by the caller
     @Override
-	public void run(Orchestrator orch, Context ctx) throws ParseException {
+	public void run(Orchestrator orch, Context ctx) {
 		if (!ctx.currentTheorem.getDerivations().contains(this)) {
 			ErrorHandler.error(Errors.INDUCTION_NESTED, this);
 		}

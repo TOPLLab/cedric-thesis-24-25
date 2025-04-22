@@ -171,7 +171,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 	/// @param orch
 	/// @param ctx  Context to use. Should be cloned by the caller
 	@Override
-	public void run(Orchestrator orch, Context ctx) throws ParseException {
+	public void run(Orchestrator orch, Context ctx) {
 		super.run(orch, ctx);
 		computeTargetDerivation(ctx);
 		Util.debug("On line ", getLocation().getLine(), " varFree = ", ctx.varFreeNTmap.keySet());
@@ -235,7 +235,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 				orch.runNextNode(ctx,
 					new Orchestrator.Delegate<>(DSLToolkitParser::CasePrologue) {
 						@Override
-						public void run(Context ctx, Case c) throws ParseException {
+						public void run(Context ctx, Case c) {
 							try {
 								cases.add(c);
 								c.run(orch, ctx, isSubderivation);
@@ -246,14 +246,14 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 					},
 					new Orchestrator.Delegate<>(parser -> parser.InductionJustificationEpilogue(this)) {
 						@Override
-						public void run(Context ctx, Derivation value) throws ParseException {
+						public void run(Context ctx, Derivation value) {
 							done[0] = true;
 						}
 					});
 			}
 
 			if (this instanceof PartialCaseAnalysis) {
-				if (ctx.savedCaseMap == null) ctx.savedCaseMap = new HashMap<String,Map<CanBeCase,Set<Pair<Term,Substitution>>>>();
+				if (ctx.savedCaseMap == null) ctx.savedCaseMap = new HashMap<>();
 				ctx.savedCaseMap.put(targetName, ctx.caseTermMap);
 				return;
 			}

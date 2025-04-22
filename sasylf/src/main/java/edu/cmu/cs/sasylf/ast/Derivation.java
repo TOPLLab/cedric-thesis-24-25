@@ -90,7 +90,7 @@ public abstract class Derivation extends Fact {
 		boolean result = true;
 		try {
 			this.run(pi, ctx);
-		} catch (SASyLFError | ParseException error) {
+		} catch (SASyLFError error) {
 			result = false;
 		}
 
@@ -150,7 +150,7 @@ public abstract class Derivation extends Fact {
     ///
     /// @param orch
     /// @param ctx  Context to use. Should be cloned by the caller
-    public void run(Orchestrator orch, Context ctx) throws ParseException {
+    public void run(Orchestrator orch, Context ctx) {
 		ErrorHandler.recordLastSpan(this);
 		ctx.checkConsistent(this);
 		clause = clause.typecheck(ctx);

@@ -115,7 +115,7 @@ public class OrCase extends Case {
 	}
 
 	@Override
-	public void run(Orchestrator orch, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(Orchestrator orch, Context parent, Pair<Fact,Integer> isSubderivation) {
 		Context ctx = parent.clone();
 		premise.typecheck(ctx);
 		premise.addToDerivationMap(ctx);

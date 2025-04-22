@@ -151,7 +151,7 @@ public abstract class DerivationWithArgs extends Derivation {
     /// @param orch
     /// @param ctx  Context to use. Should be cloned by the caller
     @Override
-	public void run(Orchestrator orch, Context ctx) throws ParseException {
+	public void run(Orchestrator orch, Context ctx) {
 		super.run(orch, ctx);
 
 		final NonTerminal root = getClause().getRoot();

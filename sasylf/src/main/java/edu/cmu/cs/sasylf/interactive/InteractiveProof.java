@@ -19,7 +19,7 @@ public class InteractiveProof {
   // current context
   private Context currentContext;
 
-  // interface to parser/sysin
+  // interface to parser/stdin
   private final Orchestrator orch = new Orchestrator();
 
   public InteractiveProof(Proof proof) {
@@ -33,9 +33,9 @@ public class InteractiveProof {
           @Override
           public void run(Context ctx, Pair<Theorem, Token> pair) throws ParseException {
             currentContext = pair.first.run(orch, ctx, pair.second);
-            List<Theorem> thms = new ArrayList<>();
-            thms.add(pair.first);
-            var part = new TheoremPart(thms);
+            List<Theorem> theorems = new ArrayList<>();
+            theorems.add(pair.first);
+            var part = new TheoremPart(theorems);
             addPartToProof(part);
           }
         }, new Orchestrator.Delegate<>(parser -> parser.PartInteractive(false)) {

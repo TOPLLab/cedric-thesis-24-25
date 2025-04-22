@@ -49,7 +49,7 @@ public class Case extends Node {
 
 	/// Runs the type checking for interactive mode for [Case]
 	/// @param ctx Context to use. Should be cloned by the caller
-	public void run(Orchestrator orch, Context ctx, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(Orchestrator orch, Context ctx, Pair<Fact,Integer> isSubderivation) {
 		final Context[] finalCtx = {ctx.clone()};
 		ErrorHandler.recordLastSpan(this);
 		Map<String, Fact> oldMap = finalCtx[0].derivationMap;
@@ -57,7 +57,7 @@ public class Case extends Node {
 
 		final var derivationPrologue = new Orchestrator.Delegate<>(DSLToolkitParser::DerivationPrologue) {
 			@Override
-			public void run(Context ctx, Derivation d) throws ParseException {
+			public void run(Context ctx, Derivation d) {
 				var oldErrorCount = ErrorHandler.getErrorCount();
 				derivations.add(d);
 				d.run(orch, ctx);

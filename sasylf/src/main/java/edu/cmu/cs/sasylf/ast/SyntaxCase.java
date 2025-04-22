@@ -299,7 +299,7 @@ public class SyntaxCase extends Case {
 	}
 
 	@Override
-	public void run(Orchestrator orch, Context parent, Pair<Fact,Integer> isSubderivation) throws ParseException {
+	public void run(Orchestrator orch, Context parent, Pair<Fact,Integer> isSubderivation) {
 		Context ctx = parent.clone();
 		debug("    ******* case line ", getLocation().getLine());
 		conclusion = conclusion.typecheck(ctx);
