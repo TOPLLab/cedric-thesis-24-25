@@ -98,6 +98,7 @@ export class SasylfProcess {
 		let req = {
 			input: textInRange
 		};
+		console.debug("Sending request", req);
 		this.ps.stdin?.write(JSON.stringify(req));
 		this.ps.stdin?.write('\n');
 	}

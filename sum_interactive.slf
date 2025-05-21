@@ -8,11 +8,11 @@ n ::= z
 judgment sum: n + n = n
 
  --------------- sum-z
-    z + n1 = n1
+    z + n = n
 
 
    n1 + n2 = n3
- --------------- sum-s 
+ --------------- sum-s
   s n1 + n2 = s n3
 
 theorem n_plus_1_equals_s_n : forall n exists (s (z)) + n = (s n).
