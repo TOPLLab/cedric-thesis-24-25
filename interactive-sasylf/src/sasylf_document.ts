@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { SasylfProcess } from '@/sasylf_process';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
+import { parseIntoAtoms } from '@/basic_parser';
 
 export class SasylfDocument {
 	private process: SasylfProcess;
@@ -45,6 +46,15 @@ export class SasylfDocument {
 
 	public runToCursor() {
 		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			return;
+		}
+
+		let range = new vscode.Range(new vscode.Position(0, 0), editor.selection.active);
+		const textUptoCursor = editor.document.getText(range);
+
+		console.log(parseIntoAtoms(textUptoCursor, false)); // TODO: handle inthm correctly
+
 		if (!editor) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
