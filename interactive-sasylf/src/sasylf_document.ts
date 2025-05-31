@@ -3,6 +3,7 @@ import { SasylfProcess } from '@/sasylf_process';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
 import { parseIntoAtoms } from '@/basic_parser';
+import assert from 'assert';
 
 export class SasylfDocument {
 	private process: SasylfProcess;
@@ -47,18 +48,20 @@ export class SasylfDocument {
 	public runToCursor() {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
+			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
 		}
 
 		let range = new vscode.Range(new vscode.Position(0, 0), editor.selection.active);
 		const textUptoCursor = editor.document.getText(range);
 
-		console.log(parseIntoAtoms(textUptoCursor, false)); // TODO: handle inthm correctly
-
-		if (!editor) {
-			vscode.window.showWarningMessage("No SASyLF file active");
+		if (range.isEmpty) {
 			return;
 		}
+
+		const parsed = parseIntoAtoms(range.start, textUptoCursor, false);
+		assert(range.end.isEqual(parsed[parsed.length - 1].range.end));
+		// TODO: refactor process to use the parsed lines
 		this.process.runToCursor();
 	}
 

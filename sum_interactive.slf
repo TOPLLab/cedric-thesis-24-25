@@ -31,6 +31,8 @@ theorem sum-z-rh: forall n exists n + (z) = n.
         case s n' is
             d3: n' + (z) = n'	by induction hypothesis on n'
             d4: (s n') + (z) = (s n')	by rule sum-s on d3
-        end case
+        end 
+        
+        case
     end induction
 end theorem
