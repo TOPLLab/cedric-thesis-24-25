@@ -10,6 +10,7 @@ export class SasylfDocument {
 	private editors: vscode.TextEditor[];
 	private ctxView: ContextView | null;
 	private decorations: DecorationsView;
+	private lastPosition: vscode.Position;
 
 	constructor() {
 		this.process = new SasylfProcess();
@@ -17,6 +18,7 @@ export class SasylfDocument {
 		this.ctxView = null;
 		this.decorations = new DecorationsView();
 		this.openContextView();
+		this.lastPosition = new vscode.Position(0, 0);
 	}
 
 	public close() {
@@ -52,17 +54,32 @@ export class SasylfDocument {
 			return;
 		}
 
-		let range = new vscode.Range(new vscode.Position(0, 0), editor.selection.active);
-		const textUptoCursor = editor.document.getText(range);
+		const parsed = parseIntoAtoms(
+			new vscode.Position(0, 0),
+			editor.document.getText(),
+			false);
 
-		if (range.isEmpty) {
+		const filtered = parsed
+			.filter(i =>
+				i.range.end.isBefore(editor.selection.end)
+				|| i.range.contains(editor.selection.end));
+
+		this.process.stageInput(...filtered);
+	}
+
+	public runAll() {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
 		}
 
-		const parsed = parseIntoAtoms(range.start, textUptoCursor, false);
-		assert(range.end.isEqual(parsed[parsed.length - 1].range.end));
-		// TODO: refactor process to use the parsed lines
-		this.process.runToCursor();
+		const parsed = parseIntoAtoms(
+			new vscode.Position(0, 0),
+			editor.document.getText(),
+			false);
+
+		this.process.stageInput(...parsed);
 	}
 
 	public openContextView() {

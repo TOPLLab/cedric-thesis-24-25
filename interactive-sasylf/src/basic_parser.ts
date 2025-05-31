@@ -1,10 +1,7 @@
 import assert from 'assert';
 import * as vscode from 'vscode';
+import { SasylfInput } from '@/sasylf_process';
 
-export type SasylfInput = {
-	range: vscode.Range
-	input: string
-}
 
 enum AtomWord {
 	END_THEOREM = "end theorem",

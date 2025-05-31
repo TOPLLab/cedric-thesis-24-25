@@ -5,9 +5,14 @@ import { Context } from '@/types/context';
 import { Errors } from '@/types/errors';
 import { SasylfResponse as Response } from '@/types/response';
 
+export type SasylfInput = {
+	range: vscode.Range
+	input: string
+}
+
 export class SasylfProcess {
-	private lastPosition: vscode.Position;
-	private currentPosition: vscode.Position;
+	private stagedInput: SasylfInput[];
+	private pendingInput: SasylfInput | null;
 	private ps: ChildProcess;
 	private pendingHandler: ((range: vscode.Range) => void) | null;
 	private successHandler: ((range: vscode.Range, ctx: Context) => void) | null;
@@ -38,9 +43,8 @@ export class SasylfProcess {
 		this.ps.stdout?.on("data", (data) => this.handleStdOut(data));
 		this.ps.stderr?.on("data", (data) => this.handleStdErr(data));
 
-		this.lastPosition = new vscode.Position(0, 0);
-		this.currentPosition = this.lastPosition;
-
+		this.stagedInput = [];
+		this.pendingInput = null;
 		this.pendingHandler = null;
 		this.successHandler = null;
 		this.failureHandler = null;
@@ -60,6 +64,8 @@ export class SasylfProcess {
 
 	private handleSucces(range: vscode.Range, ctx: Context) {
 		this.successHandler?.(range, ctx);
+		this.pendingInput = null;
+		this.sendNextInput();
 	}
 
 	public onFailure(handler: (range: vscode.Range, errors: Errors) => void) {
@@ -68,63 +74,76 @@ export class SasylfProcess {
 
 	private handleFailure(range: vscode.Range, errors: Errors) {
 		this.failureHandler?.(range, errors);
+		this.pendingInput = null;
 	}
 
 	public close() {
 		this.ps.kill();
 
+		this.stagedInput = [];
+		this.pendingInput = null;
 		this.pendingHandler = null;
 		this.successHandler = null;
 		this.failureHandler = null;
 	}
 
-	public runToCursor() {
-		const editor = vscode.window.activeTextEditor;
-		if (!editor) {
+	public stageInput(...input: SasylfInput[]) {
+		this.stagedInput.push(...input);
+		this.sendNextInput();
+	}
+
+	/// Send next value in the staged input to the process.
+	/// If there's already a pending input, this will do nothing.
+	/// If there's no staged input left, this will do nothing.
+	private sendNextInput() {
+		if (this.pendingInput !== null) {
 			return;
 		}
-		this.currentPosition = editor.selection.active;
 
-		let range = new vscode.Range(this.lastPosition, this.currentPosition);
-		let textInRange = vscode.window.activeTextEditor?.document.getText(range);
-
-		if (textInRange === undefined) {
-			this.currentPosition = this.lastPosition;
+		if (this.stagedInput.length === 0) {
 			return;
 		}
 
-		this.handlePending(range);
+		this.pendingInput = this.stagedInput[0];
+		this.stagedInput = this.stagedInput.slice(1);
+		this.handlePending(this.pendingInput.range);
 
 		let req = {
-			input: textInRange
+			input: this.pendingInput.input
 		};
+
 		console.debug("Sending request", req);
 		this.ps.stdin?.write(JSON.stringify(req));
 		this.ps.stdin?.write('\n');
 	}
 
-	private finalizeRunToCursor(res: Response) {
+	private finalizeInput(res: Response) {
 		console.debug("Response:", res);
-		let range = new vscode.Range(this.lastPosition, this.currentPosition);
 
-		if (res.type === "errors") {
-			this.handleFailure(range, res.errors);
+		if (this.pendingInput === null) {
 			return;
 		}
 
-		this.lastPosition = this.currentPosition;
-		this.handleSucces(range, res.context);
+		if (res.type === "errors") {
+			this.handleFailure(this.pendingInput.range, res.errors);
+			return;
+		}
+
+		this.handleSucces(this.pendingInput.range, res.context);
 	}
 
 	private handleStdOut(data: any) {
 		try {
 			const res = JSON.parse(data.toString());
-			this.finalizeRunToCursor(res);
+			this.finalizeInput(res);
 		} catch (error) {
 			vscode.window.showErrorMessage(`Could not parse the output of the sasylf process as a json object.\n${error}`);
 
-			let range = new vscode.Range(this.lastPosition, this.currentPosition);
-			this.handleFailure(range, [data.toString()]);
+			if (this.pendingInput === null) {
+				return;
+			}
+
+			this.handleFailure(this.pendingInput.range, [data.toString()]);
 		}
 	}
 
