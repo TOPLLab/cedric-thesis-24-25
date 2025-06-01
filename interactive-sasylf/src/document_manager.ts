@@ -51,30 +51,38 @@ export class DocumentManager {
 	}
 
 	public runToCursor() {
-		if (!this.getCurrentDocument()) {
+		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
 		}
-		this.getCurrentDocument()?.runToCursor();
+		this.getCurrentDocumentHandler()?.runToCursor();
+	}
+
+	public runNext() {
+		if (!this.getCurrentDocumentHandler()) {
+			vscode.window.showWarningMessage("No SASyLF file active");
+			return;
+		}
+		this.getCurrentDocumentHandler()?.runNext();
 	}
 
 	public openContextView() {
-		if (!this.getCurrentDocument()) {
+		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
 		}
-		this.getCurrentDocument()?.openContextView();
+		this.getCurrentDocumentHandler()?.openContextView();
 	}
 
 	public restart() {
-		if (!this.getCurrentDocument()) {
+		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
 		}
-		this.getCurrentDocument()?.restart();
+		this.getCurrentDocumentHandler()?.restart();
 	}
 
-	private getCurrentDocument(): SasylfDocument | null {
+	private getCurrentDocumentHandler(): SasylfDocument | null {
 		if (!this.currentDocument) {
 			return null;
 		}
@@ -123,6 +131,7 @@ export class DocumentManager {
 			console.debug("Document not tracked.");
 			return;
 		}
+		doc.deactivate();
 		doc.close();
 		this.documents.delete(uri);
 		console.debug("Document unloaded");
@@ -130,6 +139,7 @@ export class DocumentManager {
 
 	private changeActiveDocument(editor: vscode.TextEditor | null) {
 		console.debug("Chaning active document");
+		this.getCurrentDocumentHandler()?.deactivate();
 		this.currentDocument = null;
 
 		if (!editor) {
@@ -142,6 +152,6 @@ export class DocumentManager {
 
 		this.currentDocument = editor.document.uri.toString();
 		this.loadDocument(editor.document);
-		this.getCurrentDocument()!.activate();
+		this.getCurrentDocumentHandler()!.activate();
 	}
 }

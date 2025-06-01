@@ -17,7 +17,11 @@
     "commands": [
       {
         "command": "interactive-sasylf.runToCursor",
-        "title": "SASyLF: Run To Cursor"
+        "title": "SASyLF: Run To Step Under Cursor"
+      },
+      {
+        "command": "interactive-sasylf.runNext",
+        "title": "SASyLF: Run Next Step"
       },
       {
         "command": "interactive-sasylf.openContextView",

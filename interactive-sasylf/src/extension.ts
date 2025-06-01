@@ -10,6 +10,10 @@ export function activate(context: vscode.ExtensionContext) {
 		dm!.runToCursor();
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('interactive-sasylf.runNext', () => {
+		dm!.runNext();
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('interactive-sasylf.openContextView', () => {
 		dm!.openContextView();
 	}));

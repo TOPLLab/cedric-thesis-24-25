@@ -3,7 +3,6 @@ import { SasylfProcess } from '@/sasylf_process';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
 import { parseIntoAtoms } from '@/basic_parser';
-import assert from 'assert';
 
 export class SasylfDocument {
 	private process: SasylfProcess;
@@ -23,12 +22,14 @@ export class SasylfDocument {
 
 	public close() {
 		this.process.close();
+		this.process.removeAllListeners();
 		this.ctxView?.dispose();
 		this.ctxView = null;
 	}
 
 	public restart() {
 		this.process.close();
+		this.process.removeAllListeners();
 		this.process = new SasylfProcess();
 		if (this.ctxView) {
 			this.ctxView.dispose();
@@ -61,10 +62,35 @@ export class SasylfDocument {
 
 		const filtered = parsed
 			.filter(i =>
-				i.range.end.isBefore(editor.selection.end)
-				|| i.range.contains(editor.selection.end));
+				i.range.start.isAfterOrEqual(this.lastPosition)
+				&& (i.range.end.isBefore(editor.selection.end)
+					|| i.range.contains(editor.selection.end)));
+
+		this.lastPosition = filtered[filtered.length - 1].range.end;
 
 		this.process.stageInput(...filtered);
+	}
+
+	public runNext() {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showWarningMessage("No SASyLF file active");
+			return;
+		}
+
+		const parsed = parseIntoAtoms(
+			new vscode.Position(0, 0),
+			editor.document.getText(),
+			false);
+
+		const item = parsed.find(v => v.range.start.isEqual(this.lastPosition));
+		if (item === undefined) {
+			return;
+		}
+
+		this.lastPosition = item.range.end;
+
+		this.process.stageInput(item);
 	}
 
 	public runAll() {
@@ -93,21 +119,27 @@ export class SasylfDocument {
 		this.ctxView.reveal();
 	}
 
+	public deactivate() {
+		this.process.removeAllListeners();
+	}
+
 	public activate() {
-		this.process.onPending((range) => {
+		this.process.on('pending', (range) => {
 			for (const editor of this.editors) {
 				this.decorations.setPending(editor, range);
 			}
 		});
 
-		this.process.onSuccess((range, ctx) => {
+		this.process.on('success', (range, ctx) => {
 			this.ctxView?.renderContext(ctx);
 			for (const editor of this.editors) {
 				this.decorations.setSuccess(editor, range);
 			}
 		});
 
-		this.process.onFailure((range, errors) => {
+		this.process.on('failure', (range, errors) => {
+			this.lastPosition = range.start; // Reset the last position to just before the failure
+
 			for (const editor of this.editors) {
 				this.decorations.setFailure(editor, range, errors);
 			}

@@ -4,21 +4,25 @@ import path from 'path';
 import { Context } from '@/types/context';
 import { Errors } from '@/types/errors';
 import { SasylfResponse as Response } from '@/types/response';
+import { EventEmitter } from 'node:events';
 
 export type SasylfInput = {
 	range: vscode.Range
 	input: string
 }
 
-export class SasylfProcess {
+export class SasylfProcess extends EventEmitter<{
+	'pending': [vscode.Range]
+	'success': [vscode.Range, Context]
+	'failure': [vscode.Range, Errors]
+}> {
 	private stagedInput: SasylfInput[];
 	private pendingInput: SasylfInput | null;
 	private ps: ChildProcess;
-	private pendingHandler: ((range: vscode.Range) => void) | null;
-	private successHandler: ((range: vscode.Range, ctx: Context) => void) | null;
-	private failureHandler: ((range: vscode.Range, errors: Errors) => void) | null;
 
 	constructor() {
+		super();
+
 		const javaVersionPs = spawnSync("java", ["--version"]);
 		if (javaVersionPs.error) {
 			vscode.window.showErrorMessage("Please ensure java 21 or later is installed and available in PATH.");
@@ -45,35 +49,20 @@ export class SasylfProcess {
 
 		this.stagedInput = [];
 		this.pendingInput = null;
-		this.pendingHandler = null;
-		this.successHandler = null;
-		this.failureHandler = null;
-	}
-
-	public onPending(handler: (range: vscode.Range) => void) {
-		this.pendingHandler = handler;
 	}
 
 	private handlePending(range: vscode.Range) {
-		this.pendingHandler?.(range);
-	}
-
-	public onSuccess(handler: (range: vscode.Range, ctx: Context) => void) {
-		this.successHandler = handler;
+		this.emit('pending', range);
 	}
 
 	private handleSucces(range: vscode.Range, ctx: Context) {
-		this.successHandler?.(range, ctx);
+		this.emit('success', range, ctx);
 		this.pendingInput = null;
 		this.sendNextInput();
 	}
 
-	public onFailure(handler: (range: vscode.Range, errors: Errors) => void) {
-		this.failureHandler = handler;
-	}
-
 	private handleFailure(range: vscode.Range, errors: Errors) {
-		this.failureHandler?.(range, errors);
+		this.emit('failure', range, errors);
 		this.pendingInput = null;
 	}
 
@@ -82,13 +71,13 @@ export class SasylfProcess {
 
 		this.stagedInput = [];
 		this.pendingInput = null;
-		this.pendingHandler = null;
-		this.successHandler = null;
-		this.failureHandler = null;
 	}
 
 	public stageInput(...input: SasylfInput[]) {
 		this.stagedInput.push(...input);
+		for (const inp of input) {
+			this.handlePending(inp.range);
+		}
 		this.sendNextInput();
 	}
 
@@ -106,14 +95,13 @@ export class SasylfProcess {
 
 		this.pendingInput = this.stagedInput[0];
 		this.stagedInput = this.stagedInput.slice(1);
-		this.handlePending(this.pendingInput.range);
 
-		let req = {
+		let req = JSON.stringify({
 			input: this.pendingInput.input
-		};
+		});
 
 		console.debug("Sending request", req);
-		this.ps.stdin?.write(JSON.stringify(req));
+		this.ps.stdin?.write(req);
 		this.ps.stdin?.write('\n');
 	}
 
