@@ -12,13 +12,14 @@ export type SasylfInput = {
 }
 
 export class SasylfProcess extends EventEmitter<{
-	'pending': [vscode.Range]
-	'success': [vscode.Range, Context]
-	'failure': [vscode.Range, Errors]
+	'pending': [range: vscode.Range]
+	'success': [range: vscode.Range, ctx: Context]
+	'failure': [range: vscode.Range, errors: Errors]
 }> {
 	private stagedInput: SasylfInput[];
-	private pendingInput: SasylfInput | null;
+	private comittedInput: SasylfInput | null;
 	private ps: ChildProcess;
+	private buffer: string;
 
 	constructor() {
 		super();
@@ -48,7 +49,8 @@ export class SasylfProcess extends EventEmitter<{
 		this.ps.stderr?.on("data", (data) => this.handleStdErr(data));
 
 		this.stagedInput = [];
-		this.pendingInput = null;
+		this.comittedInput = null;
+		this.buffer = "";
 	}
 
 	private handlePending(range: vscode.Range) {
@@ -57,81 +59,91 @@ export class SasylfProcess extends EventEmitter<{
 
 	private handleSucces(range: vscode.Range, ctx: Context) {
 		this.emit('success', range, ctx);
-		this.pendingInput = null;
+		this.comittedInput = null;
 		this.sendNextInput();
 	}
 
 	private handleFailure(range: vscode.Range, errors: Errors) {
 		this.emit('failure', range, errors);
-		this.pendingInput = null;
+		this.comittedInput = null;
+		this.stagedInput = [];
 	}
 
 	public close() {
 		this.ps.kill();
 
 		this.stagedInput = [];
-		this.pendingInput = null;
+		this.comittedInput = null;
 	}
 
 	public stageInput(...input: SasylfInput[]) {
+		const hasToStart = this.stagedInput.length === 0;
 		this.stagedInput.push(...input);
 		for (const inp of input) {
 			this.handlePending(inp.range);
 		}
-		this.sendNextInput();
+		if (hasToStart) {
+			this.sendNextInput();
+		}
 	}
 
 	/// Send next value in the staged input to the process.
 	/// If there's already a pending input, this will do nothing.
 	/// If there's no staged input left, this will do nothing.
 	private sendNextInput() {
-		if (this.pendingInput !== null) {
+		if (this.comittedInput !== null || this.stagedInput.length === 0) {
 			return;
 		}
 
-		if (this.stagedInput.length === 0) {
-			return;
-		}
-
-		this.pendingInput = this.stagedInput[0];
+		this.comittedInput = this.stagedInput[0];
 		this.stagedInput = this.stagedInput.slice(1);
 
 		let req = JSON.stringify({
-			input: this.pendingInput.input
+			input: this.comittedInput.input
 		});
 
 		console.debug("Sending request", req);
-		this.ps.stdin?.write(req);
-		this.ps.stdin?.write('\n');
+		this.ps.stdin?.write(`${req}\n`);
 	}
 
 	private finalizeInput(res: Response) {
 		console.debug("Response:", res);
 
-		if (this.pendingInput === null) {
+		if (this.comittedInput === null) {
 			return;
 		}
 
 		if (res.type === "errors") {
-			this.handleFailure(this.pendingInput.range, res.errors);
+			this.handleFailure(this.comittedInput.range, res.errors);
 			return;
 		}
 
-		this.handleSucces(this.pendingInput.range, res.context);
+		this.handleSucces(this.comittedInput.range, res.context);
 	}
 
 	private handleStdOut(data: any) {
-		try {
-			const res = JSON.parse(data.toString());
-			this.finalizeInput(res);
-		} catch (error) {
-			vscode.window.showErrorMessage(`Could not parse the output of the sasylf process as a json object.\n${error}`);
+		this.buffer += data.toString(); // Append the new chunk to the buffer
 
-			if (this.pendingInput === null) {
-				return;
+		let delimiterIndex: number;
+		while ((delimiterIndex = this.buffer.indexOf("\n")) !== -1) {
+			const message = this.buffer.substring(0, delimiterIndex).trim();
+			this.buffer = this.buffer.substring(delimiterIndex + 1);
+
+			console.log("Received complete message:", message);
+
+			try {
+				const res = JSON.parse(message);
+				// TODO: consider the message ID
+				this.finalizeInput(res);
+			} catch (error) {
+				vscode.window.showErrorMessage(`Could not parse the output of the sasylf process as a json object.\n${error}`);
+
+				if (this.comittedInput === null) {
+					return;
+				}
+
+				this.handleFailure(this.comittedInput.range, [message]);
 			}
-
-			this.handleFailure(this.pendingInput.range, [data.toString()]);
 		}
 	}
 

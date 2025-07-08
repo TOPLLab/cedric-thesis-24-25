@@ -19,30 +19,32 @@ const decorations = {
 export class DecorationsView {
 	private activePendingDecorations: vscode.Range[];
 	private activeSuccessDecorations: vscode.Range[];
+	private collection: vscode.DiagnosticCollection;
 
 	constructor() {
 		this.activePendingDecorations = [];
 		this.activeSuccessDecorations = [];
+		this.collection = vscode.languages.createDiagnosticCollection("SASyLF Interactive");
 	}
 
 	setPending(editor: vscode.TextEditor, range: vscode.Range) {
+		this.collection.clear();
 		this.activePendingDecorations.push(range);
 		this.render(editor);
 	}
 
 	setSuccess(editor: vscode.TextEditor, range: vscode.Range) {
+		this.collection.clear();
 		this.activePendingDecorations = this.activePendingDecorations.filter(r => !r.isEqual(range));
 		this.activeSuccessDecorations.push(range);
 		this.render(editor);
 	}
 
 	setFailure(editor: vscode.TextEditor, range: vscode.Range, errors: Errors) {
-		const collection = vscode.languages.createDiagnosticCollection("SASyLF Interactive");
-		collection.clear();
-		this.activePendingDecorations = this.activePendingDecorations.filter(r => !r.isEqual(range));
-		this.activeSuccessDecorations = this.activeSuccessDecorations.filter(r => !r.isEqual(range));
+		this.collection.clear();
+		this.activePendingDecorations = [];
 		const diagnostics = errors.map(error => new vscode.Diagnostic(range, error, vscode.DiagnosticSeverity.Error));
-		collection.set(editor.document.uri, diagnostics);
+		this.collection.set(editor.document.uri, diagnostics);
 		this.render(editor);
 	}
 
@@ -50,7 +52,5 @@ export class DecorationsView {
 		console.debug("Rendering decorations");
 		editor.setDecorations(decorations.pending, this.activePendingDecorations);
 		editor.setDecorations(decorations.success, this.activeSuccessDecorations);
-		const collection = vscode.languages.createDiagnosticCollection("SASyLF Interactive");
-		collection.clear();
 	}
 }

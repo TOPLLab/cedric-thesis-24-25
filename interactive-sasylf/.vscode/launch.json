@@ -13,8 +13,9 @@
 			"autoAttachChildProcesses": true,
 			"preLaunchTask": {
 				"type": "npm",
-				"script": "watch"
-			}
+				"script": "compile"
+			},
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"]
 		},
 		{
 			"name": "Language Server E2E Test",

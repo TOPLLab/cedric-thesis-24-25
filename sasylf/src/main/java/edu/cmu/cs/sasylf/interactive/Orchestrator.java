@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class Orchestrator {
+    private int messageId = 0;
     public interface ParseFn<T> {
         T run(DSLToolkitParser parser) throws ParseException;
     }
@@ -42,6 +43,7 @@ public class Orchestrator {
         final var mapper = new ObjectMapper();
         var ctxNode = mapper.createObjectNode();
 
+        ctxNode.put("id", this.messageId++);
         ctxNode.put("type", "context");
         ctxNode.set("context", ctx.getInteractiveInfo());
         System.out.println(ctxNode);
@@ -107,7 +109,6 @@ public class Orchestrator {
             for (final var parseFn : delegates) {
                 try {
                     parseFn.finalize(ctx.clone(), parser);
-                    this.logContext(ctx);
                     return;
                 } catch (ParseException e) {
                     exceptions.add(e);

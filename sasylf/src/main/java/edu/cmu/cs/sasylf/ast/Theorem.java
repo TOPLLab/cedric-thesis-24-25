@@ -209,14 +209,14 @@ public class Theorem extends RuleLike {
 
 					var oldErrorCount = ErrorHandler.getErrorCount();
 					Theorem.this.getDerivations().add(d);
-					d.run(orch, newCtx);
-					d.addToDerivationMap(newCtx);
+					d.run(orch, ctx);
+					d.addToDerivationMap(ctx);
 					var newErrorCount = ErrorHandler.getErrorCount();
 					if (newErrorCount > oldErrorCount) {
 						getDerivations().remove(d);
 						inductionScheme = InductionSchema.nullInduction;
 					} else {
-						finalCtx[0] = newCtx;
+						finalCtx[0] = ctx;
 					}
 				}
 			}, new Orchestrator.Delegate<>(parser -> parser.TheoremEpilogue(this, t0, false)) {
