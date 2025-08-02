@@ -32,16 +32,7 @@ function getAtomWordsAndIndexes(input: string): [AtomWord, number][] {
 	return Object
 		.values(AtomWord)
 		.map((word): [AtomWord, number] => {
-			// Comments have to be masked because otherwise, the matching of `word` might match a word in the comment
-			const maskedInput = input
-				.replace(
-					/\/\/(.*)$/gm,
-					(_, p1) => `//${p1.replace(/./g, '-')}`
-				).replace(
-					/\/\*(.*?)\*\//gs,
-					(_, p1) => `/*${p1.replace(/[^\n]/g, '-')}*/`
-				);
-			const index = maskedInput.indexOf(word);
+			const index = input.indexOf(word);
 			return [word, index];
 		})
 		.sort(([aw, a], [bw, b]) => a !== b ? a - b : bw.length - aw.length) // break ties by keeping the longest atom
@@ -76,6 +67,16 @@ function getFirstAtomIndex(atom: AtomWord, input: string): number | null {
 
 export function parseIntoAtoms(position: vscode.Position, input: string, inTheorem: boolean): SasylfInput[] {
 	// NOTE: To keep the positions/ranges correct, at no point may a part of the input string be lost.
+
+	// Mask comments in the input
+	input = input
+		.replace(
+			/\/\/.*$/gm,
+			(match) => match.replace(/./g, ' ')
+		).replace(
+			/\/\*.*?\*\//gs,
+			(match) => match.replace(/[^\n]/g, '-')
+		);
 
 	var result: SasylfInput[] = [];
 	var currentPos = position.with(); // `.with()` makes a clone.
@@ -159,7 +160,7 @@ function parseInsideTheorem(position: vscode.Position, input: string): [string, 
 	// First put special stuff such as `case ... is` and `end case` on their own line and don't touch again. 
 	// (`case ... is` may be separated by newlines, `end case` has to be captured to not interfere with `case ... is`)
 	const rEndCase = /end\s+case\s*/;
-	const rCaseIs = /case(?:(?!is)(?:.|\s))+is\s*/;
+	const rCaseIs = /case(?:.|\s)+?is\s*/;
 
 	const parts = input
 		.split(new RegExp(`(${rEndCase.source}|${rCaseIs.source})`, 'g'))
