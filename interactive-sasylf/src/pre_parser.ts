@@ -162,8 +162,8 @@ function parseInsideTheorem(position: vscode.Position, input: string): [string, 
 
 	// First put special stuff such as `case ... is` and `end case` on their own line and don't touch again. 
 	// (`case ... is` may be separated by newlines, `end case` has to be captured to not interfere with `case ... is`)
-	const rEndCase = /end\s+case\s*/;
-	const rCaseIs = /case(?:.|\s)+?is\s*/;
+	const rEndCase = /\bend\b\s+\bcase\b\s*/;
+	const rCaseIs = /\bcase\b(?:.|\s)+?\bis\b\s*/;
 
 	const parts = input
 		.split(new RegExp(`(${rEndCase.source}|${rCaseIs.source})`, 'g'))

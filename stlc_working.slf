@@ -1,0 +1,135 @@
+terminals
+    fn
+    true false
+    if then else
+    Bool
+    value
+    stepsorvalue
+
+syntax
+
+e ::= true
+    | false
+    | if e then e else e
+    | fn x : tau => e[x]
+    | x
+    | e e
+
+tau ::= Bool
+      | tau -> tau
+
+Gamma ::= *
+        | Gamma, x : tau
+
+judgment value : e value
+
+---------- val-true
+true value
+
+----------- val-false
+false value
+
+---------------------- val-fn
+fn x : tau => e1[x] value
+
+judgment step : e -> e
+
+// Steps for application
+
+   e1 -> e1'
+--------------- c-app-l
+e1 e2 -> e1' e2
+
+   e1 value
+   e2 -> e2'
+--------------- c-app-r
+e1 e2 -> e1' e2
+
+             e2 value 
+-------------------------------- r-app
+(fn x : tau => e[x]) e2 -> e[e2]
+
+// Steps for if expressions
+
+                   e1 -> e1'
+----------------------------------------------- r-if-clause
+if e1 then e2 else e3 -> if e1' then e2 else e3
+
+----------------------------- r-if-true
+if true then e1 else e2 -> e1
+
+------------------------------ r-if-false
+if false then e1 else e2 -> e2
+
+judgment has-type : Gamma |- e : tau
+assumes Gamma
+
+-------------------- t-true
+Gamma |- true : Bool
+
+--------------------- t-false
+Gamma |- false : Bool
+
+Gamma |- e1 : Bool
+Gamma |- e2 : tau
+Gamma |- e3 : tau
+------------------------------------ t-if
+Gamma |- if e1 then e2 else e3 : tau
+
+------------------------ t-var
+Gamma, x : tau |- x: tau
+
+Gamma, x1 : tau |- e[x1] : tau'
+----------------------------------------- t-fn
+Gamma |- fn x : tau => e[x] : tau -> tau'
+
+Gamma |- e1 : tau -> tau'
+Gamma |- e2 : tau
+------------------------- t-app
+Gamma |- e1 e2 : tau'
+
+/* Progress */
+
+judgment stepsorvalue : e stepsorvalue
+
+e value
+-------------- stepval-value
+e stepsorvalue
+
+e -> e'
+-------------- stepval-step
+e stepsorvalue5
+
+theorem progress : forall dt : * |- e : tau exists e stepsorvalue.
+    dsv : e stepsorvalue by induction on dt :
+        case rule
+            ---------------------- t-true
+            dtb : * |- true : Bool
+        is 
+            dv : true value by rule val-true
+            dsv : true stepsorvalue by rule stepval-value on dv
+        end case
+
+        case rule
+            ---------------------- t-false
+            dtb : * |- false : Bool
+        is 
+            dv : false value by rule val-false
+            dsv : false stepsorvalue by rule stepval-value on dv
+        end case
+
+        case rule
+            de1b : * |- e' : Bool
+            de2t : * |- e'' : tau'
+            de3t : * |- e''' : tau'
+            -------------------------------------- t-if
+            dit : * |- if e' then e'' else e''' : tau'
+        end case
+
+
+
+        case rule 
+            dext: *, x:tau'' |- e'[x] : tau'
+            ------------------------------------------------ t-fn
+            dfnt: * |- fn x : tau'' => e'[x] : tau'' -> tau'
+        is

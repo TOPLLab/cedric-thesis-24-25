@@ -60,6 +60,6 @@ export class DecorationsView {
 		this.activeSuccessDecorations = [];
 		editor.setDecorations(decorations.pending, this.activePendingDecorations);
 		editor.setDecorations(decorations.success, this.activeSuccessDecorations);
-
+		this.collection.set(editor.document.uri, []);
 	}
 }

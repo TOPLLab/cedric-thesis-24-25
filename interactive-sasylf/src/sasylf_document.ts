@@ -7,7 +7,7 @@ import { parseIntoAtoms } from '@/pre_parser';
 export class SasylfDocument {
 	private process: SasylfProcess;
 	private editors: vscode.TextEditor[];
-	private ctxView: ContextView;
+	private ctxView: ContextView | null;
 	private decorations: DecorationsView;
 	private lastPosition: vscode.Position;
 
@@ -23,6 +23,8 @@ export class SasylfDocument {
 	public close() {
 		this.process.removeAllListeners();
 		this.process.close();
+		this.ctxView?.dispose();
+		this.ctxView = null;
 	}
 
 	/**
@@ -30,7 +32,8 @@ export class SasylfDocument {
 	 */
 	public restart() {
 		this.deactivate();
-		this.close();
+		this.process.removeAllListeners();
+		this.process.close();
 		this.process = new SasylfProcess();
 		this.lastPosition = new vscode.Position(0, 0);
 
@@ -94,8 +97,8 @@ export class SasylfDocument {
 	}
 
 	public changedAt(position: vscode.Position) {
-		// If change not in committed part, early return
-		if (!new vscode.Range(new vscode.Position(0, 0), this.lastPosition).contains(position)) {
+		const runRange = new vscode.Range(new vscode.Position(0, 0), this.lastPosition);
+		if (!runRange.contains(position)) {
 			return;
 		}
 
@@ -116,7 +119,7 @@ export class SasylfDocument {
 		const filtered = parsed
 			.filter(i =>
 				i.range.start.isAfterOrEqual(this.lastPosition)
-				&& i.range.end.isBefore(position));
+				&& i.range.end.isBeforeOrEqual(position));
 
 
 		this.lastPosition = filtered[filtered.length - 1].range.end;
@@ -144,7 +147,7 @@ export class SasylfDocument {
 	}
 
 	public revealContextView() {
-		this.ctxView.reveal();
+		this.ctxView?.reveal();
 	}
 
 	public activate() {
@@ -162,14 +165,12 @@ export class SasylfDocument {
 		});
 
 		this.process.on('failure', (range, errors) => {
-			this.lastPosition = range.start; // Reset the last position to just before the failure
-
 			for (const editor of this.editors) {
 				this.decorations.setFailure(editor, range, errors);
 			}
 		});
 
-		this.ctxView.reveal();
+		this.ctxView?.reveal();
 
 		for (const editor of this.editors) {
 			this.decorations.render(editor);

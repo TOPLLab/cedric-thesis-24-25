@@ -23,6 +23,12 @@ export class ContextView extends EventEmitter<{
 		this.panel.reveal(undefined, true);
 	}
 
+	public dispose() {
+		this.panel.dispose();
+		this.emit("dispose");
+		this.removeAllListeners();
+	}
+
 	public renderContext(ctx: Context) {
 		const theoremHtml = ctx.currentTheorem ? `
 		<div>
