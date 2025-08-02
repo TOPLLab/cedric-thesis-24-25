@@ -509,6 +509,6 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 
 		// TODO: describe by case analysis on ...
 
-		return rootNode;
+		return super.getInteractiveInfo();
 	}
 }

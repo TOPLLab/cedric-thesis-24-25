@@ -3,6 +3,7 @@ package edu.cmu.cs.sasylf.ast;
 import static edu.cmu.cs.sasylf.util.Util.debug;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -483,13 +484,14 @@ public class Theorem extends RuleLike {
 
 		var forallsNode = mapper.createArrayNode();
 		for (Fact forall : this.getForalls()) {
-			var forallNode = mapper.createObjectNode();
-			forallNode.put("name", forall.getName());
-			forallNode.set("element", forall.getElement().getInteractiveInfo());
-			forallsNode.add(forallNode);
+			forallsNode.add(forall.getInteractiveInfo());
 		}
 		rootNode.set("foralls", forallsNode);
-		rootNode.set("exists", this.getExists().asTerm().getInteractiveInfo());
+
+		var sw = new StringWriter();
+		var pw = new PrintWriter(sw);
+		this.getExists().prettyPrint(pw);
+		rootNode.put("exists", sw.toString());
 
 		return rootNode;
 	}

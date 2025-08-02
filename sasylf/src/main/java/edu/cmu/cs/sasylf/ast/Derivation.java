@@ -3,6 +3,7 @@ package edu.cmu.cs.sasylf.ast;
 import static edu.cmu.cs.sasylf.util.Util.debug;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.interactive.Orchestrator;
-import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.FreeVar;
 import edu.cmu.cs.sasylf.term.Substitution;
 import edu.cmu.cs.sasylf.term.Term;
@@ -463,7 +463,16 @@ public abstract class Derivation extends Fact {
 		// TODO: describe [by ...] (by overriding in subclasses, DerivationByInduction, etc.)
 		rootNode.put("fact", "Derivation");
 		rootNode.put("name", this.getName());
-		rootNode.set("clause", this.getClause().getInteractiveInfo());
+
+		var esw = new StringWriter();
+		var epw = new PrintWriter(esw);
+		this.getElement().prettyPrint(epw);
+		rootNode.put("element", esw.toString());
+
+		var csw = new StringWriter();
+		var cpw = new PrintWriter(csw);
+		this.getClause().prettyPrint(cpw);
+		rootNode.put("clause", csw.toString());
 
 
 		return rootNode;

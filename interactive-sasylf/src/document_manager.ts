@@ -74,6 +74,7 @@ export class DocumentManager {
 		this.getCurrentDocumentHandler()?.revealContextView();
 	}
 
+	// FIXME:
 	public restart() {
 		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");

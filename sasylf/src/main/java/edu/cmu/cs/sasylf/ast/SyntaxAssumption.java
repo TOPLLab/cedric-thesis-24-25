@@ -1,6 +1,7 @@
 package edu.cmu.cs.sasylf.ast;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -105,8 +106,16 @@ public abstract class SyntaxAssumption extends Fact {
 
 		rootNode.put("fact", "SyntaxAssumption");
 		rootNode.put("name", this.getName());
-		rootNode.set("context", this.getElement().getInteractiveInfo());
 
+		var esw = new StringWriter();
+		var epw = new PrintWriter(esw);
+		this.getElement().prettyPrint(epw);
+		rootNode.put("element", esw.toString());
+
+		var csw = new StringWriter();
+		var cpw = new PrintWriter(csw);
+		this.getElement().prettyPrint(cpw);
+		rootNode.put("context", csw.toString());
 
 		return rootNode;
 	}

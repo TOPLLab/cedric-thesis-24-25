@@ -82,11 +82,12 @@ public class DerivationByInduction extends DerivationByAnalysis {
 	}
 
 	public ObjectNode getInteractiveInfo() {
-		var mapper = new ObjectMapper();
-		var rootNode = mapper.createObjectNode();
+//		var mapper = new ObjectMapper();
+//		var rootNode = mapper.createObjectNode();
 
 		// TODO: describe by induction on ...
 
-		return rootNode;
+//		return rootNode;
+		return super.getInteractiveInfo();
 	}
 }

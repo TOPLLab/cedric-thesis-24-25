@@ -1,5 +1,7 @@
 package edu.cmu.cs.sasylf.ast;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -747,7 +749,10 @@ public class Context implements Cloneable {
 		}
 
 		if (this.currentGoal != null) {
-			rootNode.set("currentGoal", this.currentGoal.substitute(this.currentSub).getInteractiveInfo());
+			var goal = this.currentGoal.substitute(this.currentSub);
+			var tp = new TermPrinter(this, this.currentTheorem.getAssumes(), new Location("",0 ,0),false);
+			var goalStr = tp.toString(goal, false);
+			rootNode.put("currentGoal", goalStr);
 		}
 
 		if (this.derivationMap != null && !derivationMap.isEmpty()) {
@@ -764,6 +769,13 @@ public class Context implements Cloneable {
 				casesNode.add(key.getName());
 			}
 			rootNode.set("cases", casesNode);
+		}
+
+		if (this.currentCaseAnalysisElement != null) {
+			var sw = new StringWriter();
+			var pw = new PrintWriter(sw);
+			this.currentCaseAnalysisElement.prettyPrint(pw);
+			rootNode.put("currentCaseAnalysisElement", sw.toString());
 		}
 
 		return rootNode;
