@@ -98,13 +98,22 @@ case rule
 	dtt : * |- true : Bool
 is
 
-	dv : e value by rule val-unit
-	dsv : "("")" stepsorvalue by rule stepsorvalue-value on dv
+	dv : e value by rule val-true
+	dsv : true stepsorvalue by rule stepsorvalue-value on dv
+
+end case
+
+case rule
+	---------------------- t-false
+	dtt : * |- false : Bool
+is
+
+	dv : e value by rule val-false
+	dsv : false stepsorvalue by rule stepsorvalue-value on dv
 
 end case
 
 // case t-var impossible - conclusion doesn't unify with dt
-
 
 case rule
 

@@ -7,38 +7,38 @@ import { parseIntoAtoms } from '@/pre_parser';
 export class SasylfDocument {
 	private process: SasylfProcess;
 	private editors: vscode.TextEditor[];
-	private ctxView: ContextView | null;
+	private ctxView: ContextView;
 	private decorations: DecorationsView;
 	private lastPosition: vscode.Position;
 
 	constructor() {
 		this.process = new SasylfProcess();
 		this.editors = [];
-		this.ctxView = null;
+		this.ctxView = new ContextView();
+		this.ctxView.reveal();
 		this.decorations = new DecorationsView();
-		this.openContextView();
 		this.lastPosition = new vscode.Position(0, 0);
 	}
 
 	public close() {
-		this.process.close();
 		this.process.removeAllListeners();
-		this.ctxView?.dispose();
-		this.ctxView = null;
+		this.process.close();
 	}
 
+	/**
+	 * Assume the pane is activated, otherwise the restart call would never happen
+	 */
 	public restart() {
 		this.deactivate();
-		this.process.close();
+		this.close();
 		this.process = new SasylfProcess();
-		if (this.ctxView) {
-			this.ctxView.dispose();
-			this.openContextView();
-		}
-		this.decorations = new DecorationsView();
+		this.lastPosition = new vscode.Position(0, 0);
+
 		for (const editor of this.editors) {
-			this.decorations.render(editor);
+			this.decorations.clear(editor);
 		}
+
+		this.activate();
 	}
 
 	public setEditors(editors: vscode.TextEditor[]) {
@@ -108,19 +108,12 @@ export class SasylfDocument {
 		this.process.stageInput(...parsed);
 	}
 
-	public openContextView() {
-		if (!this.ctxView) {
-			this.ctxView = new ContextView();
-			this.ctxView.onDidDispose(() => {
-				this.ctxView = null;
-			});
-		}
-
-		this.ctxView.reveal();
-	}
-
 	public deactivate() {
 		this.process.removeAllListeners();
+	}
+
+	public revealContextView() {
+		this.ctxView.reveal();
 	}
 
 	public activate() {
@@ -145,7 +138,7 @@ export class SasylfDocument {
 			}
 		});
 
-		this.openContextView();
+		this.ctxView.reveal();
 
 		for (const editor of this.editors) {
 			this.decorations.render(editor);

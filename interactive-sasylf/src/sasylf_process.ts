@@ -147,6 +147,14 @@ export class SasylfProcess extends EventEmitter<{
 	}
 
 	private handleStdErr(data: any) {
-		vscode.window.showErrorMessage(`An error occured in the sasylf process.\n${data.toString()}`);
+		console.debug("Error:", data);
+
+		// vscode.window.showErrorMessage(`An error occured in the sasylf process.\n${data.toString()}`);
+
+		if (this.comittedInput === null) {
+			return;
+		}
+
+		this.handleFailure(this.comittedInput.range, [data]);
 	}
 }

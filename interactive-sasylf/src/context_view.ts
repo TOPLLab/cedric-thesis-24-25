@@ -1,35 +1,26 @@
 import { AbstractionTerm, ApplicationTerm, BoundVarTerm, ConstantTerm, Context, DerivationFact, Element, Fact, FreeVarTerm, SyntaxAssumptionFact, Term, Theorem, VariableAssumptionFact } from '@/types/context';
+import EventEmitter from 'node:events';
 import * as vscode from 'vscode';
 
-export class ContextView {
+export class ContextView extends EventEmitter<{
+	'dispose': []
+}> {
 	private panel: vscode.WebviewPanel;
-	private disposeHandlers: (() => void)[];
 
 	constructor() {
+		super();
+
 		this.panel = vscode.window.createWebviewPanel("context", "Sasylf Context", {
 			viewColumn: vscode.ViewColumn.Two,
 			preserveFocus: true,
 		}, {});
-		this.disposeHandlers = [];
 		this.panel.onDidDispose(() => {
-			this.disposeHandlers.forEach((h) => h());
+			this.emit('dispose');
 		});
-	}
-
-	public dispose() {
-		this.panel.dispose();
 	}
 
 	public reveal() {
 		this.panel.reveal(undefined, true);
-	}
-
-	public onDidDispose(handler: () => void): () => void {
-		this.disposeHandlers.push(handler);
-
-		return () => {
-			this.disposeHandlers = this.disposeHandlers.filter((h) => h !== handler);
-		};
 	}
 
 	public renderContext(ctx: Context) {

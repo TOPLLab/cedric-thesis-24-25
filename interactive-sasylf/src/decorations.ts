@@ -53,4 +53,13 @@ export class DecorationsView {
 		editor.setDecorations(decorations.pending, this.activePendingDecorations);
 		editor.setDecorations(decorations.success, this.activeSuccessDecorations);
 	}
+
+	clear(editor: vscode.TextEditor) {
+		console.debug("Clearing decorations");
+		this.activePendingDecorations = [];
+		this.activeSuccessDecorations = [];
+		editor.setDecorations(decorations.pending, this.activePendingDecorations);
+		editor.setDecorations(decorations.success, this.activeSuccessDecorations);
+
+	}
 }

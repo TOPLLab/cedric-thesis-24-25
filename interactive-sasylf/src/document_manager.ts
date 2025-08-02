@@ -71,7 +71,7 @@ export class DocumentManager {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
 		}
-		this.getCurrentDocumentHandler()?.openContextView();
+		this.getCurrentDocumentHandler()?.revealContextView();
 	}
 
 	public restart() {
