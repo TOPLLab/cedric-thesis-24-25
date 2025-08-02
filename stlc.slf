@@ -125,6 +125,25 @@ theorem progress : forall dt : * |- e : tau exists e stepsorvalue.
             -------------------------------------- t-if
             dit : * |- if e1 then e2 else e3 : tau'
         is
-            de1bsv : e1 stepsorvalue by induction hypothesis on de1b
-            
-            dsv : e stepsorvalue by case analysis on de1b :
+            dsv : (if e1 then e2 else e3) stepsorvalue by unproved
+        end case
+
+        case rule
+            dext : *, x1 : tau'' |- e1[x1] : tau'
+            --------------------------------------------- t-fn
+            dfnt : * |- fn x : tau'' => e1[x] : tau'' -> tau'
+        is
+            dv : fn x : tau'' => e'[x] value by rule val-fn
+            dsv : fn x : tau'' => e'[x] stepsorvalue by rule stepval-value on dv
+        end case
+
+        case rule
+            de1t : * |- e1 : tau'' -> tau'
+            de2t : * |- e2 : tau''
+            ------------------------- t-app
+            dappt: * |- e1 e2 : tau'
+        is
+            dsv : e1 e2 stepsorvalue by unproved
+        end case
+    end induction
+end theorem

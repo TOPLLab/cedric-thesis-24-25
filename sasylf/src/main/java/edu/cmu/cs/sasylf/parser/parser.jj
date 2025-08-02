@@ -2282,10 +2282,10 @@ Derivation JustificationPrologue(Token startT, Clause c) :
  //    }
  //    ( <COMMA> t=<IDENTIFIER> { da.addArgString(clauseFor(t)); } )* 
  //    { return da; }
- //  | t=<UNPROVED>
- //    { d = new DerivationUnproved(startT.image, new Location(startT), c);
- //      d.setEndLocation(Location.endOf(t)); 
- //      return d; }
+   | t=<UNPROVED>
+     { d = new DerivationUnproved(startT.image, new Location(startT), c);
+       d.setEndLocation(Location.endOf(t));
+       return d; }
  //  | t=<SOLVE>
  //    { d = new DerivationBySolve(startT.image, new Location(startT), c);
  //      d.setEndLocation(Location.endOf(t)); 
