@@ -29,17 +29,34 @@ function calculatePosition(start: vscode.Position, str: string): vscode.Position
 
 /// Get all `AtomWord`s in the string and their index
 function getAtomWordsAndIndexes(input: string): [AtomWord, number][] {
-	return Object.values(AtomWord).map((word): [AtomWord, number] => {
-		const index = input.indexOf(word);
-		return [word, index];
-	})
+	return Object
+		.values(AtomWord)
+		.map((word): [AtomWord, number] => {
+			// Comments have to be masked because otherwise, the matching of `word` might match a word in the comment
+			const maskedInput = input
+				.replace(
+					/\/\/(.*)$/gm,
+					(_, p1) => `//${p1.replace(/./g, '-')}`
+				).replace(
+					/\/\*(.*?)\*\//gs,
+					(_, p1) => `/*${p1.replace(/[^\n]/g, '-')}*/`
+				);
+			const index = maskedInput.indexOf(word);
+			return [word, index];
+		})
 		.sort(([aw, a], [bw, b]) => a !== b ? a - b : bw.length - aw.length) // break ties by keeping the longest atom
 		.filter(([_a, a]) => a !== -1);
 }
 
 /// Get the first `AtomWord` in the string and it's index
 function getFirstAtomWordAndIndex(input: string): [AtomWord, number] | null {
-	return getAtomWordsAndIndexes(input)[0] ?? null;
+	const result = getAtomWordsAndIndexes(input);
+
+	if (input.startsWith("//") || input.startsWith("/*")) {
+		return result[1] ?? null;
+	}
+
+	return result[0] ?? null;
 }
 
 /// Get the index of the first occurence of a certain `AtomWord`
@@ -142,11 +159,11 @@ function parseInsideTheorem(position: vscode.Position, input: string): [string, 
 	// First put special stuff such as `case ... is` and `end case` on their own line and don't touch again. 
 	// (`case ... is` may be separated by newlines, `end case` has to be captured to not interfere with `case ... is`)
 	const rEndCase = /end\s+case\s*/;
-	const rCaseIs = /case\s+.*\s+is\s*/;
+	const rCaseIs = /case(?:(?!is)(?:.|\s))+is\s*/;
 
 	const parts = input
 		.split(new RegExp(`(${rEndCase.source}|${rCaseIs.source})`, 'g'))
-		.filter(s => s !== '') // Remove empty strings (this is OK by **)
+		.filter(s => !!s && s !== '') // Remove undefined and empty strings (this is OK by **)
 		.map<[string, boolean]>(p => { // Mark which parts NOT to touch (true === final)
 			if (new RegExp(`^${rEndCase.source}$`).test(p)) {
 				return [p, true];

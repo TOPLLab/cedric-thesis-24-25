@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { SasylfProcess } from '@/sasylf_process';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
-import { parseIntoAtoms } from '@/basic_parser';
+import { parseIntoAtoms } from '@/pre_parser';
 
 export class SasylfDocument {
 	private process: SasylfProcess;
@@ -28,8 +28,8 @@ export class SasylfDocument {
 	}
 
 	public restart() {
+		this.deactivate();
 		this.process.close();
-		this.process.removeAllListeners();
 		this.process = new SasylfProcess();
 		if (this.ctxView) {
 			this.ctxView.dispose();

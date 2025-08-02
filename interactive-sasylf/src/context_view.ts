@@ -6,7 +6,10 @@ export class ContextView {
 	private disposeHandlers: (() => void)[];
 
 	constructor() {
-		this.panel = vscode.window.createWebviewPanel("context", "Sasylf Context", vscode.ViewColumn.Two, {});
+		this.panel = vscode.window.createWebviewPanel("context", "Sasylf Context", {
+			viewColumn: vscode.ViewColumn.Two,
+			preserveFocus: true,
+		}, {});
 		this.disposeHandlers = [];
 		this.panel.onDidDispose(() => {
 			this.disposeHandlers.forEach((h) => h());
@@ -18,7 +21,7 @@ export class ContextView {
 	}
 
 	public reveal() {
-		this.panel.reveal();
+		this.panel.reveal(undefined, true);
 	}
 
 	public onDidDispose(handler: () => void): () => void {
@@ -111,7 +114,7 @@ export class ContextView {
 	}
 
 	private renderAbstraction(app: AbstractionTerm): string {
-		return `λ${app.varName}:${app.varType}.${this.renderTerm(app.body)}`;
+		return `λ${app.varName}:${this.renderTerm(app.varType)}.${this.renderTerm(app.body)}`;
 	}
 
 	private renderApplication(app: ApplicationTerm): string {
@@ -150,7 +153,7 @@ export class ContextView {
 			case "VariableAssumption":
 				return this.renderVariableAssumption(fact);
 			default:
-				vscode.window.showErrorMessage(`Unable to render fact: ${JSON.stringify(fact)}`);
+				vscode.window.showErrorMessage(`<span style="color: var(--vscode-terminal-ansiRed);">Unable to render fact: ${JSON.stringify(fact)}<span>`);
 				return `Unable to render fact`;
 		}
 	}

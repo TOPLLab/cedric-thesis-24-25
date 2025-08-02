@@ -1,0 +1,421 @@
+terminals fn true false in value stepsorvalue if then else Bool
+
+syntax
+
+e ::= fn x : tau => e[x]
+	| true
+	| false
+	| x
+	| e e
+	| if e then e else e
+
+tau ::= Bool
+ 	  | tau -> tau
+
+Gamma ::= *
+        | Gamma, x : tau
+
+
+judgment value: e value
+
+---------- val-true
+true value
+
+----------- val-false
+false value
+
+------------------------- val-fn
+fn x : tau => e1[x] value
+
+judgment reduce: e -> e
+
+e1 -> e1'
+---------------- c-app-l
+e1 e2 -> e1' e2
+
+e1 value
+e2 -> e2'
+------------------- c-app-r
+(e1 e2) -> (e1 e2')
+
+e2 value
+-------------------------------- r-app
+(fn x : tau => e[x]) e2 -> e[e2]
+
+----------------------------- r-if-true
+if true then e1 else e2 -> e1
+
+------------------------------- r-if-false
+if false then e1 else e2 -> e2
+
+e1 -> e1'
+----------------------------------------------- r-if
+if e1 then e1 else e2 -> if e1' then e1 else e2
+
+judgment has-type: Gamma |- e : tau
+assumes Gamma
+
+-------------------------- t-true
+Gamma |- true : Bool
+
+-------------------------- t-false
+Gamma |- false : Bool
+
+------------------------- t-var
+Gamma, x:tau |- x : tau
+
+Gamma, x1:tau |- e[x1] : tau'
+--------------------------------------------- t-fn
+Gamma |- fn x : tau => e[x] : tau -> tau'
+
+Gamma |- e1 : tau' -> tau
+Gamma |- e2 : tau'
+---------------------------------- t-app
+Gamma |- e1 e2 : tau
+
+Gamma |- e1 : Bool
+Gamma |- e2 : tau
+Gamma |- e3 : tau
+---------------------------------- t-if
+Gamma |- if e1 then e2 else e3 : tau
+
+judgment stepsorvalue: e stepsorvalue
+
+e value
+--------------- stepsorvalue-value
+e stepsorvalue
+
+e -> e'
+--------------- stepsorvalue-steps
+e stepsorvalue
+
+theorem progress : forall dt : * |- e : tau exists e stepsorvalue.
+
+dsv : e stepsorvalue by induction on dt :
+
+case rule
+	---------------------- t-true
+	dtt : * |- true : Bool
+is
+
+	dv : e value by rule val-unit
+	dsv : "("")" stepsorvalue by rule stepsorvalue-value on dv
+
+end case
+
+// case t-var impossible - conclusion doesn't unify with dt
+
+
+case rule
+
+	dext: *, x:tau'' |- e'[x] : tau'
+	------------------------------------------------- t-fn
+	dfnt: * |- fn x : tau'' => e'[x] : tau'' -> tau'
+
+is
+
+	dv : fn x : tau'' => e'[x] value by rule val-fn
+	dsv : fn x : tau'' => e'[x] stepsorvalue by rule stepsorvalue-value on dv
+
+end case
+
+case rule
+
+	dp1t: (*) |- e1 : tau' -> tau
+	dp2t: (*) |- e2 : tau'
+	---------------------------------- t-app
+	dappt: (*) |- (e1 e2) : tau
+
+is
+
+/** This example shows how we can use the induction hypothesis.
+ * Note that this is only legal because dp1t is a subderivation of dt.
+ */
+
+	dp1sv: e1 stepsorvalue by induction hypothesis on dp1t
+	dp2sv: e2 stepsorvalue by induction hypothesis on dp2t
+	
+	dsv : e stepsorvalue by case analysis on dp1sv :
+
+	case rule
+
+		dp1v : e1 value
+		---------------------- stepsorvalue-value
+		dp1sv' : e1 stepsorvalue
+
+	is
+	
+		dsv : e stepsorvalue by case analysis on dp2sv :
+	
+		case rule
+		
+			dp2v : e2 value
+			---------------------- stepsorvalue-value
+			dp2sv' : e2 stepsorvalue
+		
+		is
+		
+			dsv : e stepsorvalue by case analysis on dp1t :
+			
+			case rule
+			
+				dpp1t' : *, x:tau' |- e1'[x] : tau
+				---------------------------------------------------- t-fn
+				dp1t' : * |- fn x : tau' => e1'[x] : tau' -> tau
+			
+			is
+			
+				ds : (fn x : tau' => e1'[x]) e2 -> e1'[e2] by rule r-app on dp2v
+				dsv : e stepsorvalue by rule stepsorvalue-steps on ds
+				
+			end case
+			
+			case rule
+			
+				dp1t1' : (*) |- e11 : tau'' -> (tau' -> tau)
+				dp1t2' : (*) |- e12 : tau''
+				--------------------------------------------- t-app
+				tp1t' : (*) |- e11 e12 : tau' -> tau
+			
+			is
+				dsv : e stepsorvalue by case analysis on dp1v :
+				
+				end case analysis
+								
+			end case
+			
+			// other cases don't unify with conclusion
+			
+			end case analysis
+
+		end case
+		
+		case rule
+		
+			dp2s : e2 -> e2'
+			---------------- stepsorvalue-steps
+			dp2sv' :  e2 stepsorvalue
+		
+		is
+		
+			ds : e1 e2 -> e1 e2' by rule c-app-r on dp1v, dp2s
+			dsv : e1 e2 stepsorvalue by rule stepsorvalue-steps on ds
+		
+		end case
+		end case analysis
+	end case
+	
+	case rule
+	
+		dp1s : e1 -> e1'
+		-------------------------- stepsorvalue-steps
+		dp1sv' :  e1 stepsorvalue
+	
+	is
+	
+		ds : e1 e2 -> e1' e2 by rule c-app-l on dp1s
+		dsv : e1 e2 stepsorvalue by rule stepsorvalue-steps on ds
+	
+	end case
+	end case analysis
+end case
+end induction
+end theorem
+
+
+/************************ PRESERVATION **************************************/
+
+
+theorem preservation: forall dt: * |- e : tau forall ds: e -> e' exists * |- e' : tau.
+
+dt' : * |- e' : tau by induction on ds:
+
+case rule
+
+	d1 : e1 -> e1'
+	----------------------- c-app-l
+	d2 : e1 e2 -> e1' e2
+
+is
+
+	dt' : * |- e' : tau by case analysis on dt :
+	
+	case rule
+	
+		d3 : * |- e1 : tau' -> tau
+		d4 : * |- e2 : tau'
+		---------------------------------- t-app
+		d5 : * |- (e1 e2) : tau
+	
+	is
+	
+		d6 : * |- e1' : tau' -> tau by induction hypothesis on d3, d1
+		dt' : * |- e1' e2 : tau by rule t-app on d6, d4
+	
+	end case
+	// other cases do not unify with form of e = (e1 e2)
+	end case analysis
+
+end case
+
+case rule
+
+	d1 : e1 value
+	d2 : e2 -> e2'
+	----------------------- c-app-r
+	d3 : e1 e2 -> e1 e2'
+
+is
+
+	dt' : * |- e' : tau by case analysis on dt :
+
+	case rule
+	
+		d4 : * |- e1 : tau' -> tau
+		d5 : * |- e2 : tau'
+		---------------------------------- t-app
+		d6 : * |- e1 e2 : tau
+	
+	is
+	
+		d7 : * |- e2' : tau' by induction hypothesis on d5, d2
+		dt' : * |- e1 e2' : tau by rule t-app on d4, d7
+	
+	end case
+	// other cases do not unify with form of e = (e1 e2)
+	end case analysis
+
+end case
+
+case rule
+
+	d1 : e2 value
+	------------------------------------------- r-app
+	d2 : (fn x : tau' => e1[x]) e2 -> e1[e2]
+
+is
+
+	dt' : * |- e' : tau by case analysis on dt :
+
+	case rule
+
+		d4 : * |- fn x : tau' => e1[x] : tau'' -> tau
+		d5 : * |- e2 : tau''
+		---------------------------------------------------------- t-app
+		d6 : * |- (fn x : tau' => e1[x]) e2 : tau
+	
+	is
+	
+		dt' : * |- e' : tau by case analysis on d4 :
+	
+		case rule
+		
+			d7: *, x:tau' |- e1[x] : tau
+			------------------------------------------------- t-fn
+			d8: * |- fn x : tau' => e1[x] : tau' -> tau
+		
+		is
+		
+			/** Substitution preserves typing!  No lemma to prove.
+			 */
+			
+			d9: * |- e1[e2] : tau by substitution on d7, d5
+		
+		end case
+		// other cases do not unify with fn expression
+		end case analysis
+	
+	end case
+	// other cases do not unify with form of e = (e1 e2)
+	end case analysis
+
+end case
+end induction
+end theorem
+
+
+/************************ SUBSTITUTION **********************************/
+
+/* Just for fun, we prove a substitution lemma.  Note that this is
+ * UNNECESSARY in SASyLF and in fact is NOT USED in the proof above--instead,
+ * the proof above uses the built-in substitution mechanism that is justified
+ * by the LF type theory behind SASyLF.  However, sometimes one may have to
+ * prove substitution explicitly, and this example shows how it can be done.
+ *
+ * Additionally, some instructors may find it pedagogically useful to ask
+ * students to prove substitution explicitly even though it is built into the
+ * type theory of the tool.
+ */
+
+theorem subst : assumes Gamma
+                forall dt : (Gamma, x:tau') |- e[x] : tau 
+				forall dt' : Gamma |- e' : tau'
+				exists Gamma |- e[e'] : tau.
+
+d1 : Gamma |- e[e'] : tau by induction on dt :
+
+	case rule
+
+		------------------------------------ t-unit
+		d2 : (Gamma, x:tau') |- ("("")") : (unit)
+
+		is
+	
+		d3 : Gamma |- ("("")") : (unit)		by rule t-unit
+
+	end case
+	
+	case rule
+	
+		------------------------- t-var
+		d2 : (Gamma, x:tau) |- x : tau
+
+		is
+		
+		d3 : Gamma |- e' : tau					by dt'
+
+	end case
+	
+	case rule
+	
+		-------------------------------------------- t-var
+		_ : (Gamma', x1:tau, x:tau') |- x1 : tau
+
+		is
+		
+		d3 : Gamma', x1:tau |- x1 : tau		by rule t-var
+
+	end case
+	
+	case rule
+		d2: ((Gamma, x:tau'), x1:tau'') |- e1[x][x1] : tau'''
+		------------------------------------------------------------------------ t-fn
+		d3: (Gamma, x:tau') |- (fn x1 : tau'' => e1[x][x1]) : (tau'' -> tau''')
+
+		is
+		
+		d2': ((Gamma, x1:tau''), x:tau') |- e1[x][x1] : tau''' by exchange on d2
+		dt'': (Gamma, x1:tau'') |- e' : tau' by weakening on dt'
+		d4 : (Gamma, x1:tau'') |- e1[e'][x1] : tau'''	by induction hypothesis on d2', dt''
+		d5 : Gamma |- (fn x1 : tau'' => e1[e'][x1]) : (tau'' -> tau''') by rule t-fn on d4
+
+	end case 
+	
+	case rule
+
+		d2: (Gamma, x:tau') |- e1[x] : (tau'' -> tau)
+		d3: (Gamma, x:tau') |- e2[x] : tau''
+		-------------------------------------- t-app
+		d4: (Gamma, x:tau') |- (e1[x] e2[x]) : tau
+		
+		is
+		
+		d5 : Gamma |- e1[e'] : (tau'' -> tau)	by induction hypothesis on d2, dt'
+		d6 : Gamma |- e2[e'] : tau''			by induction hypothesis on d3, dt'
+		d7 : Gamma |- (e1[e'] e2[e']) : tau	by rule t-app on d5, d6
+		
+	end case
+end induction
+end theorem
+
+

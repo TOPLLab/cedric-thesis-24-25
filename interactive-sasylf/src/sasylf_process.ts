@@ -42,7 +42,7 @@ export class SasylfProcess extends EventEmitter<{
 		this.ps = spawn("java", ["-jar", jarPath, "--interactive"]);
 
 		this.ps.on("close", (code) => {
-			console.log(`Process exited with code ${code}`);
+			console.debug(`Process exited with code ${code}`);
 		});
 
 		this.ps.stdout?.on("data", (data) => this.handleStdOut(data));
@@ -70,6 +70,7 @@ export class SasylfProcess extends EventEmitter<{
 	}
 
 	public close() {
+		this.ps.removeAllListeners();
 		this.ps.kill();
 
 		this.stagedInput = [];
@@ -128,8 +129,6 @@ export class SasylfProcess extends EventEmitter<{
 		while ((delimiterIndex = this.buffer.indexOf("\n")) !== -1) {
 			const message = this.buffer.substring(0, delimiterIndex).trim();
 			this.buffer = this.buffer.substring(delimiterIndex + 1);
-
-			console.log("Received complete message:", message);
 
 			try {
 				const res = JSON.parse(message);
