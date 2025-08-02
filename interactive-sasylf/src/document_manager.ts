@@ -22,7 +22,7 @@ export class DocumentManager {
 			this.loadDocument(document);
 		});
 
-		// If a documenet closes, we need to unload it.
+		// If a document closes, we need to unload it.
 		context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => {
 			this.unloadDocument(document);
 		}));
@@ -38,10 +38,20 @@ export class DocumentManager {
 		// It also has to be done for documents already active text editor
 		this.changeActiveDocument(vscode.window.activeTextEditor ?? null);
 
+		vscode.workspace.onDidChangeTextDocument;
 		// TODO: If the text in a document changes, it has to be communicated with the sasylf process
-		// context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) => {
-		// 	// TODO: Handle changes to the text here
-		// }));
+		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) => {
+			const uri = evt.document.uri.toString();
+			const document = this.documents.get(uri);
+			if (!document) { return; }
+
+			if (evt.contentChanges.length === 0) { return; }
+
+			const changes = [...evt.contentChanges];
+			changes.sort((a, b) => a.range.start.compareTo(b.range.start));
+
+			document.changedAt(changes[0].range.start);
+		}));
 	}
 
 	public close() {
@@ -74,7 +84,6 @@ export class DocumentManager {
 		this.getCurrentDocumentHandler()?.revealContextView();
 	}
 
-	// FIXME:
 	public restart() {
 		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");

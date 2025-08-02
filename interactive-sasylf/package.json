@@ -1,6 +1,6 @@
 {
-  "name": "interactive-sasylf",
-  "displayName": "Interactive SASyLF",
+  "name": "live-sasylf",
+  "displayName": "Live SASyLF",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -16,19 +16,19 @@
   "contributes": {
     "commands": [
       {
-        "command": "interactive-sasylf.runToCursor",
+        "command": "live-sasylf.runToCursor",
         "title": "SASyLF: Run To Step Under Cursor"
       },
       {
-        "command": "interactive-sasylf.runNext",
+        "command": "live-sasylf.runNext",
         "title": "SASyLF: Run Next Step"
       },
       {
-        "command": "interactive-sasylf.openContextView",
+        "command": "live-sasylf.openContextView",
         "title": "SASyLF: Open Context View"
       },
       {
-        "command": "interactive-sasylf.restartCurrentProcess",
+        "command": "live-sasylf.restartCurrentProcess",
         "title": "SASyLF: Restart Current Process"
       }
     ],

@@ -6,19 +6,19 @@ let dm: DocumentManager | null = null;
 export function activate(context: vscode.ExtensionContext) {
 	dm = new DocumentManager(context);
 
-	context.subscriptions.push(vscode.commands.registerCommand('interactive-sasylf.runToCursor', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('live-sasylf.runToCursor', () => {
 		dm!.runToCursor();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('interactive-sasylf.runNext', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('live-sasylf.runNext', () => {
 		dm!.runNext();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('interactive-sasylf.openContextView', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('live-sasylf.openContextView', () => {
 		dm!.openContextView();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('interactive-sasylf.restartCurrentProcess', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('live-sasylf.restartCurrentProcess', () => {
 		dm!.restart();
 	}));
 }

@@ -93,6 +93,37 @@ export class SasylfDocument {
 		this.process.stageInput(item);
 	}
 
+	public changedAt(position: vscode.Position) {
+		// If change not in committed part, early return
+		if (!new vscode.Range(new vscode.Position(0, 0), this.lastPosition).contains(position)) {
+			return;
+		}
+
+		// Restart process
+		this.restart();
+
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showWarningMessage("No SASyLF file active");
+			return;
+		}
+
+		const parsed = parseIntoAtoms(
+			new vscode.Position(0, 0),
+			editor.document.getText(),
+			false);
+
+		const filtered = parsed
+			.filter(i =>
+				i.range.start.isAfterOrEqual(this.lastPosition)
+				&& i.range.end.isBefore(position));
+
+
+		this.lastPosition = filtered[filtered.length - 1].range.end;
+
+		this.process.stageInput(...filtered);
+	}
+
 	public runAll() {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {

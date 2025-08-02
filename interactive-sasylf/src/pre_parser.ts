@@ -6,6 +6,7 @@ import { SasylfInput } from '@/sasylf_process';
 
 enum AtomWord {
 	END_THEOREM = "end theorem",
+	END_LEMMA = "end lemma",
 	END_CASE = "end case",
 	END_INDUCTION = "end induction",
 
@@ -14,6 +15,7 @@ enum AtomWord {
 	SYNTAX = "syntax",
 	JUDGMENT = "judgment",
 	THEOREM = "theorem",
+	LEMMA = "lemma",
 	CASE = "case",
 	IS = "is",
 }
@@ -104,7 +106,7 @@ export function parseIntoAtoms(position: vscode.Position, input: string, inTheor
 
 		const [atom, index] = atomIndex;
 
-		if (atom === AtomWord.THEOREM) {
+		if (atom === AtomWord.THEOREM || atom === AtomWord.LEMMA) {
 			const [rest, resultInThm] = parseInsideTheorem(currentPos, input);
 			input = rest;
 			result = result.concat(resultInThm);
@@ -154,7 +156,7 @@ function parseInsideTheorem(position: vscode.Position, input: string): [string, 
 	// NOTE: To keep the positions/ranges correct, at no point may a part of the input string be lost. **
 
 	// Find the part inside the theorem
-	const nextEndTheorem = getFirstAtomIndex(AtomWord.END_THEOREM, input);
+	const nextEndTheorem = [getFirstAtomIndex(AtomWord.END_THEOREM, input), getFirstAtomIndex(AtomWord.END_LEMMA, input)].sort()[0];
 	const rest = nextEndTheorem ? input.slice(nextEndTheorem) : "";
 	input = nextEndTheorem ? input.slice(0, nextEndTheorem) : input;
 

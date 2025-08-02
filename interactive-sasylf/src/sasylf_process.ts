@@ -33,7 +33,7 @@ export class SasylfProcess extends EventEmitter<{
 		const javaVersion = javaVersionPs.stdout.toString().split(' ', 2)[1];
 		const javaMajor = javaVersion.split('.', 1)[0];
 		if (parseInt(javaMajor) < 21) {
-			vscode.window.showErrorMessage(`The interactive SASyLF plugin needs a java runtime of at least 21 or later. You are currently hosting version ${javaVersion}`);
+			vscode.window.showErrorMessage(`The Live SASyLF plugin needs a java runtime of at least 21 or later. You are currently hosting version ${javaVersion}`);
 			throw new Error("Outdated Java Runtime");
 		}
 
