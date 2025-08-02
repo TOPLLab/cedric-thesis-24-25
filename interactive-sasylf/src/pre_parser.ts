@@ -2,6 +2,7 @@ import assert from 'assert';
 import * as vscode from 'vscode';
 import { SasylfInput } from '@/sasylf_process';
 
+// TODO: Handle comments
 
 enum AtomWord {
 	END_THEOREM = "end theorem",
@@ -75,7 +76,7 @@ export function parseIntoAtoms(position: vscode.Position, input: string, inTheor
 			(match) => match.replace(/./g, ' ')
 		).replace(
 			/\/\*.*?\*\//gs,
-			(match) => match.replace(/[^\n]/g, '-')
+			(match) => match.replace(/[^\n]/g, ' ')
 		);
 
 	var result: SasylfInput[] = [];
