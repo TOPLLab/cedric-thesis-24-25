@@ -3,6 +3,7 @@ import { SasylfProcess } from '@/sasylf_process';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
 import { preparse } from '@/pre_parser';
+import { Context } from '@/types/context';
 
 export class SasylfDocument {
 	private process: SasylfProcess;
@@ -10,6 +11,7 @@ export class SasylfDocument {
 	private ctxView: ContextView | null;
 	private decorations: DecorationsView;
 	private lastPosition: vscode.Position;
+	private contexts: Map<vscode.Range, Context>;
 
 	constructor() {
 		this.process = new SasylfProcess();
@@ -18,6 +20,7 @@ export class SasylfDocument {
 		this.ctxView.reveal();
 		this.decorations = new DecorationsView();
 		this.lastPosition = new vscode.Position(0, 0);
+		this.contexts = new Map();
 	}
 
 	public close() {
@@ -36,6 +39,7 @@ export class SasylfDocument {
 		this.process.close();
 		this.process = new SasylfProcess();
 		this.lastPosition = new vscode.Position(0, 0);
+		this.contexts = new Map();
 
 		for (const editor of this.editors) {
 			this.decorations.clear(editor);
@@ -130,6 +134,29 @@ export class SasylfDocument {
 		this.process.stageInput(...parsed);
 	}
 
+	public cursorChanged(selections: readonly vscode.Selection[]) {
+		if (selections.length === 0) {
+			return;
+		}
+
+		const position = selections[0].start;
+		let key = [...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position));
+		if (key === undefined) {
+			console.debug("Range has no context yet");
+			this.ctxView?.renderContext({});
+			return;
+		}
+
+		const context = this.contexts.get(key);
+		if (context === undefined) {
+			vscode.window.showWarningMessage("No context found where one was expected.");
+			this.ctxView?.renderContext({});
+			return;
+		}
+
+		this.ctxView?.renderContext(context);
+	}
+
 	public deactivate() {
 		this.process.removeAllListeners();
 	}
@@ -146,6 +173,8 @@ export class SasylfDocument {
 		});
 
 		this.process.on('success', (range, ctx) => {
+			this.contexts.set(range, ctx);
+
 			this.ctxView?.renderContext(ctx);
 			for (const editor of this.editors) {
 				this.decorations.setSuccess(editor, range);

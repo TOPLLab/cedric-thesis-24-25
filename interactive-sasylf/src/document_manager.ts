@@ -40,7 +40,7 @@ export class DocumentManager {
 
 		vscode.workspace.onDidChangeTextDocument;
 		// TODO: If the text in a document changes, it has to be communicated with the sasylf process
-		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) => {
+		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(evt => {
 			const uri = evt.document.uri.toString();
 			const document = this.documents.get(uri);
 			if (!document) { return; }
@@ -51,6 +51,10 @@ export class DocumentManager {
 			changes.sort((a, b) => a.range.start.compareTo(b.range.start));
 
 			document.changedAt(changes[0].range.start);
+		}));
+
+		context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(evt => {
+			this.cursorChanged(evt.selections);
 		}));
 	}
 
@@ -163,5 +167,9 @@ export class DocumentManager {
 		this.currentDocument = editor.document.uri.toString();
 		this.loadDocument(editor.document);
 		this.getCurrentDocumentHandler()!.activate();
+	}
+
+	private cursorChanged(selections: readonly vscode.Selection[]) {
+		this.getCurrentDocumentHandler()?.cursorChanged(selections);
 	}
 }

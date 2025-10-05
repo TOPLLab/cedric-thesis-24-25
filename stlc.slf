@@ -90,6 +90,7 @@ Gamma |- e1 e2 : tau'
 
 /* Progress */
 
+
 judgment stepsorvalue : e stepsorvalue
 
 e value
@@ -97,7 +98,7 @@ e value
 e stepsorvalue
 
 e -> e'
--------------- stepval-step
+-------------- stepval-step 
 e stepsorvalue
 
 theorem progress : forall dt : * |- e : tau exists e stepsorvalue.
