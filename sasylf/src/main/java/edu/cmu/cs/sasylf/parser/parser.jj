@@ -2270,13 +2270,13 @@ Derivation JustificationPrologue(Token startT, Clause c) :
      }
      ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
     { return da; }
- //  | <SUBSTITUTION> <ON> t=<IDENTIFIER>
- //    { 
- //      da = new DerivationBySubstitution(startT.image, new Location(startT), c);
- //      da.addArgString(clauseFor(t));
- //    }
- //    ( <COMMA> t=<IDENTIFIER> { da.addArgString(clauseFor(t)); } )* 
- //    { return da; }
+   | <SUBSTITUTION> <ON> t=<IDENTIFIER>
+     {
+       da = new DerivationBySubstitution(startT.image, new Location(startT), c);
+       da.addArgString(clauseFor(t));
+     }
+     ( <COMMA> t=<IDENTIFIER> { da.addArgString(clauseFor(t)); } )*
+     { return da; }
    | t=<UNPROVED>
      { d = new DerivationUnproved(startT.image, new Location(startT), c);
        d.setEndLocation(Location.endOf(t));

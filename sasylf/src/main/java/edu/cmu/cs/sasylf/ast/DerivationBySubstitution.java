@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.term.Abstraction;
 import edu.cmu.cs.sasylf.term.BoundVar;
 import edu.cmu.cs.sasylf.term.Facade;
@@ -85,6 +86,60 @@ public class DerivationBySubstitution extends DerivationWithArgs {
 		}
 
 	}
+
+    @Override
+    public void run(Orchestrator orch, Context ctx) {
+        super.run(orch, ctx);
+
+        if (this.getArgs().size() != 2) {
+            ErrorHandler.error(Errors.WRONG_SUBSTITUTION_ARGUMENTS, this);
+        }
+
+        // get terms for arguments
+        Element arg0 = this.getArgs().get(0).getElement();
+        Element arg1 = this.getArgs().get(1).getElement();
+
+        if (!(arg0.getType() instanceof Judgment)) {
+            ErrorHandler.error(Errors.SUBSTITUTION_ARGUMENT, this.getArgStrings().get(0));
+        }
+        if (!(arg1.getType() instanceof Judgment)) {
+            ErrorHandler.error(Errors.SUBSTITUTION_ARGUMENT, this.getArgStrings().get(1));
+        }
+
+        checkRootMatch("substitution", (ClauseUse)arg0, (ClauseUse)getClause(), this);
+        checkRootMatch("substitution", (ClauseUse)arg1, (ClauseUse)getClause(), this);
+
+        Term subContext = ctx.toTerm(arg0);
+        Term source = ctx.toTerm(arg1);
+
+        Util.debug(this.getLocation());
+        Util.debug("subContext = ", subContext);
+        Util.debug("source = ", source);
+
+        Term result = doSubst(ctx, subContext, source, new ArrayDeque<Term>());
+
+        Util.debug("result = ", result);
+
+        // verify result is the second substituted for (and eliminating) the assumption of the first
+        Term claimedResult = ctx.toTerm(getClause());
+        Util.debug("claimed = ", claimedResult);
+
+        if (!result.equals(claimedResult)) {
+            TermPrinter tp = new TermPrinter(ctx, arg0.getRoot(), getLocation(),false);
+            ErrorHandler.error(Errors.SUBSTITUTION_OTHER,tp.toString(result,true),this);
+        }
+
+        // Permit induction on this term if source was a subderivation
+        if (ctx.subderivations.containsKey(getArgs().get(0))) {
+            // Must require that substitution does not include course type!
+            // System.out.println("Type of base is " + subContext.getTypeFamily());
+            // System.out.println("Type of actual is " + source.getTypeFamily());
+            if (!FreeVar.canAppearIn(subContext.getTypeFamily(),source.getTypeFamily())) {
+                ctx.subderivations.put(this,ctx.subderivations.get(getArgs().get(0)));
+            }
+        }
+
+    }
 
 	/**
 	 * @param func An abstraction we try to call with the arg
