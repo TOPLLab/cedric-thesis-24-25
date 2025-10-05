@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
-import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.term.Application;
 import edu.cmu.cs.sasylf.term.BoundVar;
 import edu.cmu.cs.sasylf.term.FreeVar;
@@ -35,6 +34,8 @@ import edu.cmu.cs.sasylf.util.Util;
 
 
 public abstract class DerivationByAnalysis extends DerivationWithArgs {
+    protected Orchestrator.ParseFn<Derivation> epilogueParseFn;
+
 	public DerivationByAnalysis(String n, Location l, Clause c, String derivName) {
 		super(n,l,c); 
 		super.addArgString(derivName);
@@ -244,7 +245,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
 							}
 						}
 					},
-					new Orchestrator.Delegate<>(parser -> parser.InductionJustificationEpilogue(this)) {
+					new Orchestrator.Delegate<>(this.epilogueParseFn) {
 						@Override
 						public void run(Context ctx, Derivation value) {
 							done[0] = true;

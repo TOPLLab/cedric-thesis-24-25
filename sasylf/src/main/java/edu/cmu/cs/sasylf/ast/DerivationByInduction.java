@@ -3,6 +3,7 @@ package edu.cmu.cs.sasylf.ast;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.cmu.cs.sasylf.interactive.Orchestrator;
+import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.reduction.InductionSchema;
 import edu.cmu.cs.sasylf.reduction.StructuralInduction;
@@ -78,6 +79,7 @@ public class DerivationByInduction extends DerivationByAnalysis {
 		}
         assert is != null;
 // TODO:       System.out.println("Induction variable: " + this.getArgStrings().get(is.hashCode()));
+        this.epilogueParseFn = (parser) -> parser.InductionJustificationEpilogue(this);
 		super.run(orch, ctx);
 	}
 

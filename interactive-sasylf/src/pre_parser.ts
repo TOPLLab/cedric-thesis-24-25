@@ -2,13 +2,12 @@ import assert from 'assert';
 import * as vscode from 'vscode';
 import { SasylfInput } from '@/sasylf_process';
 
-// TODO: Handle comments
-
-enum AtomWord {
+enum SyncWord {
 	END_THEOREM = "end theorem",
 	END_LEMMA = "end lemma",
 	END_CASE = "end case",
 	END_INDUCTION = "end induction",
+	END_CASE_ANALYSIS = "end case analysis",
 
 	PACKAGE = "package",
 	TERMINALS = "terminals",
@@ -30,45 +29,60 @@ function calculatePosition(start: vscode.Position, str: string): vscode.Position
 	return start.translate(newlines).with(undefined, charactersOnLastLine);
 }
 
-/// Get all `AtomWord`s in the string and their index
-function getAtomWordsAndIndexes(input: string): [AtomWord, number][] {
+/// Get all `SyncWord`s in the string and their index
+function getSyncWordsAndIndexes(input: string): [SyncWord, number][] {
 	return Object
-		.values(AtomWord)
-		.map((word): [AtomWord, number] => {
+		.values(SyncWord)
+		.map((word): [SyncWord, number] => {
 			const index = input.indexOf(word);
 			return [word, index];
 		})
-		.sort(([aw, a], [bw, b]) => a !== b ? a - b : bw.length - aw.length) // break ties by keeping the longest atom
-		.filter(([_a, a]) => a !== -1);
+		.sort(([aWord, aIndex], [bWord, bIndex]) => aIndex !== bIndex ? aIndex - bIndex : bWord.length - aWord.length) // break ties by keeping the longest Sync
+		.filter(([_, aIndex]) => aIndex !== -1)
+		.reduce((filteredList, val) => {
+
+			if (filteredList.length === 0) {
+				return [val];
+			}
+			const lastVal = filteredList.pop()!;
+			const [_lastWord, lastIndex] = lastVal;
+			const [_currWord, currIndex] = val;
+
+			// If the index is the same, remove since we sorted by length
+			if (lastIndex === currIndex) {
+				return [...filteredList, lastVal];
+			}
+
+			return [...filteredList, lastVal, val];
+		}, [] as [SyncWord, number][]);
 }
 
-/// Get the first `AtomWord` in the string and it's index
-function getFirstAtomWordAndIndex(input: string): [AtomWord, number] | null {
-	const result = getAtomWordsAndIndexes(input);
-
-	if (input.startsWith("//") || input.startsWith("/*")) {
-		return result[1] ?? null;
-	}
-
-	return result[0] ?? null;
+/// Get the first `SyncWord` in the string and it's index
+function getFirstSyncWordAndIndex(input: string): [SyncWord, number] | null {
+	return getSyncWordsAndIndexes(input)[0] ?? null;
 }
 
-/// Get the index of the first occurence of a certain `AtomWord`
-function getFirstAtomIndex(atom: AtomWord, input: string): number | null {
-	const atomIndexes = getAtomWordsAndIndexes(input);
-	if (!atomIndexes) {
+/// Get the index of the first occurence of a certain `SyncWord`
+function getFirstSyncIndex(sync: SyncWord, input: string): number | null {
+	const syncIndexes = getSyncWordsAndIndexes(input);
+	if (!syncIndexes) {
 		return null;
 	}
 
-	for (const [a, idx] of atomIndexes) {
-		if (a === atom) {
+	for (const [word, idx] of syncIndexes) {
+		if (word === sync) {
 			return idx;
 		}
 	}
 	return null;
 }
 
-export function parseIntoAtoms(position: vscode.Position, input: string, inTheorem: boolean): SasylfInput[] {
+/**
+ * Parses a complete file into ranges which are appropriate to send to SASyLF
+ * @param input The full file text to pre parse
+ * @returns 
+ */
+export function preparse(input: string): SasylfInput[] {
 	// NOTE: To keep the positions/ranges correct, at no point may a part of the input string be lost.
 
 	// Mask comments in the input
@@ -82,21 +96,12 @@ export function parseIntoAtoms(position: vscode.Position, input: string, inTheor
 		);
 
 	var result: SasylfInput[] = [];
-	var currentPos = position.with(); // `.with()` makes a clone.
-
-	if (inTheorem) {
-		const [rest, resultInThm] = parseInsideTheorem(currentPos, input);
-		input = rest;
-		result = result.concat(resultInThm);
-		if (resultInThm.length > 0) {
-			currentPos = resultInThm[resultInThm.length - 1].range.end;
-		}
-	}
+	var currentPos = new vscode.Position(0, 0); // `.with()` makes a clone.
 
 	while (true) {
-		const atomIndex = getFirstAtomWordAndIndex(input);
+		const syncIndex = getFirstSyncWordAndIndex(input);
 
-		if (atomIndex === null) {
+		if (syncIndex === null) {
 			const endPos = calculatePosition(currentPos, input);
 			return [...result, {
 				range: new vscode.Range(currentPos, endPos),
@@ -104,9 +109,9 @@ export function parseIntoAtoms(position: vscode.Position, input: string, inTheor
 			}];
 		}
 
-		const [atom, index] = atomIndex;
+		const [sync, index] = syncIndex;
 
-		if (atom === AtomWord.THEOREM || atom === AtomWord.LEMMA) {
+		if (sync === SyncWord.THEOREM || sync === SyncWord.LEMMA) {
 			const [rest, resultInThm] = parseInsideTheorem(currentPos, input);
 			input = rest;
 			result = result.concat(resultInThm);
@@ -114,7 +119,7 @@ export function parseIntoAtoms(position: vscode.Position, input: string, inTheor
 				currentPos = resultInThm[resultInThm.length - 1].range.end;
 			}
 		} else
-			if (index !== 0) {
+			if (index !== 0 && input.slice(0, index).trim() !== "") {
 				const slice = input.slice(0, index);
 				const endPos = calculatePosition(currentPos, slice);
 				result.push({
@@ -124,13 +129,13 @@ export function parseIntoAtoms(position: vscode.Position, input: string, inTheor
 				currentPos = endPos;
 				input = input.slice(index);
 			} else {
-				const newInput = input.slice(atom.length);
+				const newInput = input.slice(index + sync.length);
 
-				// Get slice until next atom
-				const nextAtomIndex = getFirstAtomWordAndIndex(newInput);
+				// Get slice until next Sync
+				const nextSyncIndex = getFirstSyncWordAndIndex(newInput);
 
-				// If no atom, take everything till the end
-				if (nextAtomIndex === null) {
+				// If no Sync, take everything till the end
+				if (nextSyncIndex === null) {
 					const endPos = calculatePosition(currentPos, input);
 					return [...result, {
 						range: new vscode.Range(currentPos, endPos),
@@ -138,16 +143,16 @@ export function parseIntoAtoms(position: vscode.Position, input: string, inTheor
 					}];
 				}
 
-				// Else slice until next atom
-				const [_, nextIndex] = nextAtomIndex;
-				const slice = input.slice(0, nextIndex + atom.length);
+				// Else slice until next sync
+				const [_, nextIndex] = nextSyncIndex;
+				const slice = input.slice(0, index + sync.length + nextIndex);
 				const endPos = calculatePosition(currentPos, slice);
 				result.push({
 					range: new vscode.Range(currentPos, endPos),
 					input: slice
 				});
 				currentPos = endPos;
-				input = input.slice(nextIndex + atom.length);
+				input = input.slice(index + sync.length + nextIndex);
 			}
 	}
 }
@@ -156,14 +161,14 @@ function parseInsideTheorem(position: vscode.Position, input: string): [string, 
 	// NOTE: To keep the positions/ranges correct, at no point may a part of the input string be lost. **
 
 	// Find the part inside the theorem
-	const nextEndTheorem = [getFirstAtomIndex(AtomWord.END_THEOREM, input), getFirstAtomIndex(AtomWord.END_LEMMA, input)].sort()[0];
+	const nextEndTheorem = [getFirstSyncIndex(SyncWord.END_THEOREM, input), getFirstSyncIndex(SyncWord.END_LEMMA, input)].sort()[0];
 	const rest = nextEndTheorem ? input.slice(nextEndTheorem) : "";
 	input = nextEndTheorem ? input.slice(0, nextEndTheorem) : input;
 
 	// First put special stuff such as `case ... is` and `end case` on their own line and don't touch again. 
 	// (`case ... is` may be separated by newlines, `end case` has to be captured to not interfere with `case ... is`)
-	const rEndCase = /\bend\b\s+\bcase\b\s*/;
-	const rCaseIs = /\bcase\b(?:.|\s)+?\bis\b\s*/;
+	const rEndCase = /\bend\b\s+\bcase\b(?!\s+\banalysis\b)\s*/;
+	const rCaseIs = /(?!\bcase\b\s+\banalysis\b\s*)\bcase\b(?:.|\s)+?\bis\b\s*/;
 
 	const parts = input
 		.split(new RegExp(`(${rEndCase.source}|${rCaseIs.source})`, 'g'))
@@ -178,7 +183,6 @@ function parseInsideTheorem(position: vscode.Position, input: string): [string, 
 			return [p, false];
 		});
 
-	// TODO: Concat empty lines back onto the previous line
 	const lines = parts
 		.flatMap(([str, isFinal]) => {
 			if (!isFinal) {

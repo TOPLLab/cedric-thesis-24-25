@@ -2214,16 +2214,11 @@ Derivation JustificationPrologue(Token startT, Clause c) :
        ( <COMMA> cl=SimpleExpr() { di.addArgString(cl); } )*
      t=<COLON>
     {  di.setEndLocation(Location.endOf(t)); return di; }
- //  | LOOKAHEAD(2) <CASE> <ANALYSIS> <ON> cl=SimpleExpr()
- //    { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, cl); }
- //      ( <COMMA> cl=SimpleExpr() { dca.addArgString(cl); } )* 
- //    <COLON>
- //    ( ca=Case() { if (ca != null) dca.getCases().add(ca); })*
- //    of=<END> 
- //    ( LOOKAHEAD(2) <CASE> t=<ANALYSIS> |
- //     (t=<CASE> | t=<INDUCTION> | t=<LEMMA> | t=<THEOREM> )
- //     { ErrorHandler.recoverableError(Errors.WRONG_END,"'end case analysis'",new TokenSpan(t),t.image+"\ncase analysis"); } )
- //    { dca.setEndLocation(Location.endOf(t)); return dca; }
+   | LOOKAHEAD(2) <CASE> <ANALYSIS> <ON> cl=SimpleExpr()
+     { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, cl); }
+       ( <COMMA> cl=SimpleExpr() { dca.addArgString(cl); } )*
+     t=<COLON>
+     { dca.setEndLocation(Location.endOf(t)); return dca; }
  //  | LOOKAHEAD(2) <CONTRADICTION> <ON> t=<IDENTIFIER>
  //    { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, t.image); 
  //      dca.setEndLocation(Location.endOf(t)); return dca; }
@@ -2324,7 +2319,7 @@ Derivation JustificationPrologue(Token startT, Clause c) :
 
 
 Derivation InductionJustificationEpilogue(DerivationByAnalysis di) :
-{ Token t = null; Token of = null; Token rest;
+{ Token t = null; Token of = null;
 }
 {
     of=<END>
@@ -2337,6 +2332,18 @@ Derivation InductionJustificationEpilogue(DerivationByAnalysis di) :
         di.setEndLocation(Location.endOf(t));
         return di;
     }
+}
+
+
+Derivation CaseAnalysisJustificationEpilogue(DerivationByAnalysis dca) :
+{ Token t = null; Token of = null;
+}
+{
+     of=<END>
+     ( LOOKAHEAD(2) <CASE> t=<ANALYSIS> |
+      (t=<CASE> | t=<INDUCTION> | t=<LEMMA> | t=<THEOREM> )
+      { ErrorHandler.recoverableError(Errors.WRONG_END,"'end case analysis'",new TokenSpan(t),t.image+"\ncase analysis"); } )
+     { dca.setEndLocation(Location.endOf(t)); return dca; }
 }
 
 Derivation Justification(Token startT, Clause c) :

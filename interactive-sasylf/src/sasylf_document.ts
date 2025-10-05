@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { SasylfProcess } from '@/sasylf_process';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
-import { parseIntoAtoms } from '@/pre_parser';
+import { preparse } from '@/pre_parser';
 
 export class SasylfDocument {
 	private process: SasylfProcess;
@@ -58,10 +58,7 @@ export class SasylfDocument {
 			return;
 		}
 
-		const parsed = parseIntoAtoms(
-			new vscode.Position(0, 0),
-			editor.document.getText(),
-			false);
+		const parsed = preparse(editor.document.getText());
 
 		const filtered = parsed
 			.filter(i =>
@@ -81,10 +78,7 @@ export class SasylfDocument {
 			return;
 		}
 
-		const parsed = parseIntoAtoms(
-			new vscode.Position(0, 0),
-			editor.document.getText(),
-			false);
+		const parsed = preparse(editor.document.getText());
 
 		const item = parsed.find(v => v.range.start.isEqual(this.lastPosition));
 		if (item === undefined) {
@@ -111,10 +105,7 @@ export class SasylfDocument {
 			return;
 		}
 
-		const parsed = parseIntoAtoms(
-			new vscode.Position(0, 0),
-			editor.document.getText(),
-			false);
+		const parsed = preparse(editor.document.getText());
 
 		const filtered = parsed
 			.filter(i =>
@@ -134,10 +125,7 @@ export class SasylfDocument {
 			return;
 		}
 
-		const parsed = parseIntoAtoms(
-			new vscode.Position(0, 0),
-			editor.document.getText(),
-			false);
+		const parsed = preparse(editor.document.getText());
 
 		this.process.stageInput(...parsed);
 	}
