@@ -3,7 +3,8 @@ import { SasylfProcess } from '@/sasylf_process';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
 import { preparse } from '@/pre_parser';
-import { Context } from '@/types/context';
+import type { Context } from '@/types/context';
+import type { Errors } from '@/types/errors';
 
 export class SasylfDocument {
 	private process: SasylfProcess;
@@ -23,7 +24,7 @@ export class SasylfDocument {
 		this.contexts = new Map();
 	}
 
-	public close() {
+	public close(): void {
 		this.process.removeAllListeners();
 		this.process.close();
 		this.ctxView?.dispose();
@@ -33,7 +34,7 @@ export class SasylfDocument {
 	/**
 	 * Assume the pane is activated, otherwise the restart call would never happen
 	 */
-	public restart() {
+	public restart(): void {
 		this.deactivate();
 		this.process.removeAllListeners();
 		this.process.close();
@@ -48,14 +49,14 @@ export class SasylfDocument {
 		this.activate();
 	}
 
-	public setEditors(editors: vscode.TextEditor[]) {
+	public setEditors(editors: vscode.TextEditor[]): void {
 		this.editors = editors;
 		for (const editor of this.editors) {
 			this.decorations.render(editor);
 		}
 	}
 
-	public runToCursor() {
+	public runToCursor(): void {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			vscode.window.showWarningMessage("No SASyLF file active");
@@ -75,7 +76,7 @@ export class SasylfDocument {
 		this.process.stageInput(...filtered);
 	}
 
-	public runNext() {
+	public runNext(): void {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			vscode.window.showWarningMessage("No SASyLF file active");
@@ -94,7 +95,7 @@ export class SasylfDocument {
 		this.process.stageInput(item);
 	}
 
-	public changedAt(position: vscode.Position) {
+	public changedAt(position: vscode.Position): void {
 		const runRange = new vscode.Range(new vscode.Position(0, 0), this.lastPosition);
 		if (!runRange.contains(position)) {
 			return;
@@ -122,7 +123,7 @@ export class SasylfDocument {
 		this.process.stageInput(...filtered);
 	}
 
-	public runAll() {
+	public runAll(): void {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			vscode.window.showWarningMessage("No SASyLF file active");
@@ -134,13 +135,13 @@ export class SasylfDocument {
 		this.process.stageInput(...parsed);
 	}
 
-	public cursorChanged(selections: readonly vscode.Selection[]) {
+	public cursorChanged(selections: readonly vscode.Selection[]): void {
 		if (selections.length === 0) {
 			return;
 		}
 
 		const position = selections[0].start;
-		let key = [...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position));
+		const key = [...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position));
 		if (key === undefined) {
 			console.debug("Range has no context yet");
 			this.ctxView?.renderContext({});
@@ -157,22 +158,22 @@ export class SasylfDocument {
 		this.ctxView?.renderContext(context);
 	}
 
-	public deactivate() {
+	public deactivate(): void {
 		this.process.removeAllListeners();
 	}
 
-	public revealContextView() {
+	public revealContextView(): void {
 		this.ctxView?.reveal();
 	}
 
-	public activate() {
-		this.process.on('pending', (range) => {
+	public activate(): void {
+		this.process.on('pending', (range: vscode.Range) => {
 			for (const editor of this.editors) {
 				this.decorations.setPending(editor, range);
 			}
 		});
 
-		this.process.on('success', (range, ctx) => {
+		this.process.on('success', (range: vscode.Range, ctx: Context) => {
 			this.contexts.set(range, ctx);
 
 			this.ctxView?.renderContext(ctx);
@@ -181,7 +182,7 @@ export class SasylfDocument {
 			}
 		});
 
-		this.process.on('failure', (range, errors) => {
+		this.process.on('failure', (range: vscode.Range, errors: Errors) => {
 			for (const editor of this.editors) {
 				this.decorations.setFailure(editor, range, errors);
 			}

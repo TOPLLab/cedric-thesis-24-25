@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
-import { ChildProcess, spawn, spawnSync } from 'child_process';
+import type { ChildProcess } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import path from 'path';
-import { Context } from '@/types/context';
-import { Errors } from '@/types/errors';
-import { SasylfResponse as Response } from '@/types/response';
+import type { Context } from '@/types/context';
+import type { Errors } from '@/types/errors';
+import type { SasylfResponse as Response } from '@/types/response';
 import { EventEmitter } from 'node:events';
 
 export type SasylfInput = {
@@ -69,7 +70,7 @@ export class SasylfProcess extends EventEmitter<{
 		this.stagedInput = [];
 	}
 
-	public close() {
+	public close(): void {
 		this.ps.removeAllListeners();
 		this.ps.kill();
 
@@ -77,7 +78,7 @@ export class SasylfProcess extends EventEmitter<{
 		this.comittedInput = null;
 	}
 
-	public stageInput(...input: SasylfInput[]) {
+	public stageInput(...input: SasylfInput[]): void {
 		const hasToStart = this.stagedInput.length === 0;
 		this.stagedInput.push(...input);
 		for (const inp of input) {
@@ -99,7 +100,7 @@ export class SasylfProcess extends EventEmitter<{
 		this.comittedInput = this.stagedInput[0];
 		this.stagedInput = this.stagedInput.slice(1);
 
-		let req = JSON.stringify({
+		const req = JSON.stringify({
 			input: this.comittedInput.input
 		});
 
@@ -122,7 +123,7 @@ export class SasylfProcess extends EventEmitter<{
 		this.handleSucces(this.comittedInput.range, res.context);
 	}
 
-	private handleStdOut(data: any) {
+	private handleStdOut(data: ArrayBuffer) {
 		this.buffer += data.toString(); // Append the new chunk to the buffer
 
 		let delimiterIndex: number;
@@ -146,7 +147,7 @@ export class SasylfProcess extends EventEmitter<{
 		}
 	}
 
-	private handleStdErr(data: any) {
+	private handleStdErr(data: ArrayBuffer) {
 		const stream = data.toString();
 		console.debug("Error:", stream);
 

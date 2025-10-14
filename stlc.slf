@@ -11,15 +11,15 @@ syntax
 e ::= true
     | false
     | if e then e else e
-    | fn x : tau => e[x]
+    | fn x : τ => e[x]
     | x
     | e e
 
-tau ::= Bool
-      | tau -> tau
+τ ::= Bool
+      | τ -> τ
 
-Gamma ::= *
-        | Gamma, x : tau
+Γ ::= *
+        | Γ, x : τ
 
 judgment value : e value
 
@@ -30,7 +30,7 @@ true value
 false value
 
 ---------------------- val-fn
-fn x : tau => e1[x] value
+fn x : τ => e1[x] value
 
 judgment step : e -> e
 
@@ -47,7 +47,7 @@ e1 e2 -> e1' e2
 
              e2 value 
 -------------------------------- r-app
-(fn x : tau => e[x]) e2 -> e[e2]
+(fn x : τ => e[x]) e2 -> e[e2]
 
 // Steps for if expressions
 
@@ -61,32 +61,32 @@ if true then e1 else e2 -> e1
 ------------------------------ r-if-false
 if false then e1 else e2 -> e2
 
-judgment has-type : Gamma |- e : tau
-assumes Gamma
+judgment has-type : Γ |- e : τ
+assumes Γ
 
 -------------------- t-true
-Gamma |- true : Bool
+Γ |- true : Bool
 
 --------------------- t-false
-Gamma |- false : Bool
+Γ |- false : Bool
 
-Gamma |- e1 : Bool
-Gamma |- e2 : tau
-Gamma |- e3 : tau
+Γ |- e1 : Bool
+Γ |- e2 : τ
+Γ |- e3 : τ
 ------------------------------------ t-if
-Gamma |- if e1 then e2 else e3 : tau
+Γ |- if e1 then e2 else e3 : τ
 
 ------------------------ t-var
-Gamma, x : tau |- x: tau
+Γ, x : τ |- x: τ
 
-Gamma, x1 : tau |- e[x1] : tau'
+Γ, x1 : τ |- e[x1] : τ'
 ----------------------------------------- t-fn
-Gamma |- fn x : tau => e[x] : tau -> tau'
+Γ |- fn x : τ => e[x] : τ -> τ'
 
-Gamma |- e1 : tau -> tau'
-Gamma |- e2 : tau
+Γ |- e1 : τ -> τ'
+Γ |- e2 : τ
 ------------------------- t-app
-Gamma |- e1 e2 : tau'
+Γ |- e1 e2 : τ'
 
 /* Progress */
 
@@ -101,15 +101,8 @@ e -> e'
 -------------- stepval-step 
 e stepsorvalue
 
-theorem progress : forall dt : * |- e : tau exists e stepsorvalue.
+theorem progress : forall dt : * |- e : τ exists e stepsorvalue.
     dsv : e stepsorvalue by induction on dt :
-        case rule
-            ---------------------- t-true
-            dtb : * |- true : Bool
-        is
-            dv : true value by rule val-true
-            dsv : true stepsorvalue by rule stepval-value on dv
-        end case
 
         case rule
             ---------------------- t-false
@@ -120,29 +113,37 @@ theorem progress : forall dt : * |- e : tau exists e stepsorvalue.
         end case
 
         case rule
+            ---------------------- t-true
+            dtb : * |- true : Bool
+        is
+            dv : true value by rule val-true
+            dsv : true stepsorvalue by rule stepval-value on dv
+        end case
+
+        case rule
             de1b : * |- e1 : Bool
-            de2t : * |- e2 : tau'
-            de3t : * |- e3 : tau'
+            de2t : * |- e2 : τ'
+            de3t : * |- e3 : τ'
             -------------------------------------- t-if
-            dit : * |- if e1 then e2 else e3 : tau'
+            dit : * |- if e1 then e2 else e3 : τ'
         is
             dsv : (if e1 then e2 else e3) stepsorvalue by unproved
         end case
 
         case rule
-            dext : *, x1 : tau'' |- e1[x1] : tau'
+            dext : *, x1 : τ'' |- e1[x1] : τ'
             --------------------------------------------- t-fn
-            dfnt : * |- fn x : tau'' => e1[x] : tau'' -> tau'
+            dfnt : * |- fn x : τ'' => e1[x] : τ'' -> τ'
         is
-            dv : fn x : tau'' => e'[x] value by rule val-fn
-            dsv : fn x : tau'' => e'[x] stepsorvalue by rule stepval-value on dv
+            dv : fn x : τ'' => e'[x] value by rule val-fn
+            dsv : fn x : τ'' => e'[x] stepsorvalue by rule stepval-value on dv
         end case
 
         case rule
-            de1t : * |- e1 : tau'' -> tau'
-            de2t : * |- e2 : tau''
+            de1t : * |- e1 : τ'' -> τ'
+            de2t : * |- e2 : τ''
             ------------------------- t-app
-            dappt: * |- e1 e2 : tau'
+            dappt: * |- e1 e2 : τ'
         is
             dsv : e1 e2 stepsorvalue by unproved
         end case

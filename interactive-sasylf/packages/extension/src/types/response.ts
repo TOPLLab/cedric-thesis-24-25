@@ -1,5 +1,5 @@
-import { Context } from '@/types/context';
-import { Errors } from '@/types/errors';
+import type { Context } from '@/types/context';
+import type { Errors } from '@/types/errors';
 
 export type SasylfResponse = {
 	type: "context"

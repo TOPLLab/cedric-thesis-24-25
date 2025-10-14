@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"module": "esnext",
+		"target": "es2022",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"lib": [
+			"ES2022"
+		],
+		"sourceMap": true,
+		"strict": true,
+		"noImplicitReturns": true,
+		"rootDir": ".",
+		"baseUrl": ".",
+		"jsx": "react-jsx",
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		}
+	}
+}

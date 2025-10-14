@@ -1,6 +1,6 @@
 import assert from 'assert';
 import * as vscode from 'vscode';
-import { SasylfInput } from '@/sasylf_process';
+import type { SasylfInput } from '@/sasylf_process';
 
 enum SyncWord {
 	END_THEOREM = "end theorem",
@@ -95,8 +95,8 @@ export function preparse(input: string): SasylfInput[] {
 			(match) => match.replace(/[^\n]/g, ' ')
 		);
 
-	var result: SasylfInput[] = [];
-	var currentPos = new vscode.Position(0, 0); // `.with()` makes a clone.
+	let result: SasylfInput[] = [];
+	let currentPos = new vscode.Position(0, 0); // `.with()` makes a clone.
 
 	while (true) {
 		const syncIndex = getFirstSyncWordAndIndex(input);
@@ -195,7 +195,7 @@ function parseInsideTheorem(position: vscode.Position, input: string): [string, 
 
 	assert(input === lines.join(''), 'parseInsideTheorem: The text after parsing is no longer exactly the same as before. Some parts may have been ommited which is not allowed.');
 
-	var currentPos = position.with(); // `.with()` makes a clone.
+	let currentPos = position.with(); // `.with()` makes a clone.
 	const linesWithRanges = lines
 		.map<SasylfInput>(line => {
 			const endPos = calculatePosition(currentPos, line);

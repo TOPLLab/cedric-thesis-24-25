@@ -310,7 +310,7 @@ is
 				dpp1t' : *, x:tau' |- e1'[x] : tau
 				---------------------------------------------------- t-fn
 				dp1t' : * |- fn x : tau' => e1'[x] : tau' -> tau
-			
+			\
 			is
 			
 				ds : (fn x : tau' => e1'[x]) e2 -> e1'[e2] by rule r-app on dp2v

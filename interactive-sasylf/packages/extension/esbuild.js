@@ -1,5 +1,7 @@
-const esbuild = require("esbuild");
-const copyStaticFiles = require('esbuild-copy-static-files');
+import esbuild from "esbuild";
+import copyStaticFiles from 'esbuild-copy-static-files';
+import process from "process";
+import console from "console";
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
@@ -29,10 +31,11 @@ async function main() {
 		entryPoints: [
 			'src/extension.ts'
 		],
+		publicPath: "",
 		bundle: true,
 		format: 'cjs',
 		minify: production,
-		sourcemap: !production,
+		sourcemap: production ? false : "linked",
 		sourcesContent: false,
 		platform: 'node',
 		outfile: 'dist/extension.js',

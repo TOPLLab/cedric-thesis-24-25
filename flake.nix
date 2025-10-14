@@ -28,6 +28,7 @@
               pkgs.jdt-language-server
               pkgs.maven
               pkgs.nodejs_23
+              pkgs.pnpm
             ];
 
             shellHook = ''

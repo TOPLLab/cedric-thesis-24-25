@@ -2,13 +2,13 @@ import * as vscode from 'vscode';
 import { SasylfDocument } from '@/sasylf_document';
 
 export class DocumentManager {
-	private documents: Map<String, SasylfDocument>;
-	private currentDocument: String | null;
+	private documents: Map<string, SasylfDocument>;
+	private currentDocument: string | null;
 
 	constructor(context: vscode.ExtensionContext) {
 		this.currentDocument = null;
 
-		this.documents = new Map<String, SasylfDocument>();
+		this.documents = new Map<string, SasylfDocument>();
 
 		// If a text document opens, we need to load that document.
 		//
@@ -38,8 +38,6 @@ export class DocumentManager {
 		// It also has to be done for documents already active text editor
 		this.changeActiveDocument(vscode.window.activeTextEditor ?? null);
 
-		vscode.workspace.onDidChangeTextDocument;
-		// TODO: If the text in a document changes, it has to be communicated with the sasylf process
 		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(evt => {
 			const uri = evt.document.uri.toString();
 			const document = this.documents.get(uri);
@@ -58,13 +56,13 @@ export class DocumentManager {
 		}));
 	}
 
-	public close() {
+	public close(): void {
 		this.documents.forEach(document => document.close());
 		this.documents.clear();
 		this.currentDocument = null;
 	}
 
-	public runToCursor() {
+	public runToCursor(): void {
 		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
@@ -72,7 +70,7 @@ export class DocumentManager {
 		this.getCurrentDocumentHandler()?.runToCursor();
 	}
 
-	public runNext() {
+	public runNext(): void {
 		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
@@ -80,7 +78,7 @@ export class DocumentManager {
 		this.getCurrentDocumentHandler()?.runNext();
 	}
 
-	public openContextView() {
+	public openContextView(): void {
 		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
@@ -88,7 +86,7 @@ export class DocumentManager {
 		this.getCurrentDocumentHandler()?.revealContextView();
 	}
 
-	public restart() {
+	public restart(): void {
 		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;

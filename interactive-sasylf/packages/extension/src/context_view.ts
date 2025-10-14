@@ -1,4 +1,4 @@
-import { Context, DerivationFact, Fact, SyntaxAssumptionFact, Theorem, VariableAssumptionFact } from '@/types/context';
+import type { Context, DerivationFact, Fact, SyntaxAssumptionFact, Theorem, VariableAssumptionFact } from '@/types/context';
 import EventEmitter from 'node:events';
 import * as vscode from 'vscode';
 
@@ -19,17 +19,17 @@ export class ContextView extends EventEmitter<{
 		});
 	}
 
-	public reveal() {
+	public reveal(): void {
 		this.panel.reveal(undefined, true);
 	}
 
-	public dispose() {
+	public dispose(): void {
 		this.panel.dispose();
 		this.emit("dispose");
 		this.removeAllListeners();
 	}
 
-	public renderContext(ctx: Context) {
+	public renderContext(ctx: Context): void {
 		const theoremHtml = ctx.currentTheorem ? `
 		<div>
 			<p>
