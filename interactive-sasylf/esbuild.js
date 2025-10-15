@@ -26,10 +26,14 @@ const esbuildProblemMatcherPlugin = {
 	},
 };
 
+/**
+ * This script does the final bundling of the packages into the extension. 
+ * Make sure the packages are built first.
+ */
 async function main() {
 	const ctx = await esbuild.context({
 		entryPoints: [
-			'src/extension.ts'
+			'packages/extension/dist/extension.js'
 		],
 		publicPath: "",
 		bundle: true,
@@ -44,7 +48,7 @@ async function main() {
 		plugins: [
 			esbuildProblemMatcherPlugin,
 			copyStaticFiles({
-				src: './lib',
+				src: './packages/extension/lib',
 				dest: './dist/lib'
 			}),
 		],

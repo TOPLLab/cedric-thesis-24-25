@@ -2,6 +2,7 @@
 	"editor.insertSpaces": false,
 	"typescript.tsc.autoDetect": "off",
 	"typescript.preferences.quoteStyle": "single",
+	"typescript.preferences.importModuleSpecifier": "project-relative",
 	"editor.codeActionsOnSave": {
 		"source.fixAll.eslint": "explicit"
 	}

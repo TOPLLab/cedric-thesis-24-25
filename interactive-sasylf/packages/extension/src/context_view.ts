@@ -1,4 +1,3 @@
-import type { Context, DerivationFact, Fact, SyntaxAssumptionFact, Theorem, VariableAssumptionFact } from '@/types/context';
 import EventEmitter from 'node:events';
 import * as vscode from 'vscode';
 
@@ -63,14 +62,13 @@ export class ContextView extends EventEmitter<{
  */
 	private getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
 		// The CSS file from the React build output
-		// const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "goal-ui", "dist", "assets", "index.css"));
+		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "goal-ui", "dist", "assets", "index.css"));
 		// The JS file from the React build output
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "goal-ui", "dist", "assets", "index.js"));
 
 		const nonce = getNonce();
 
 		// Tip: Install the es6-string-html VS Code extension to enable code highlighting below
-		// TODO: <link rel="stylesheet" type="text/css" nonce="${nonce}" href="${stylesUri}">
 		return /*html*/ `
 			<!DOCTYPE html>
 			<html lang="en">
@@ -78,6 +76,7 @@ export class ContextView extends EventEmitter<{
 				<meta charset="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+				<link rel="stylesheet" type="text/css" nonce="${nonce}" href="${styleUri}">
 				
 				<title>Goal View</title>
 				</head>

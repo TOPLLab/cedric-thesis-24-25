@@ -1,5 +1,5 @@
-import { FC } from 'react';
+import type { FC } from 'react';
 
 export const Test: FC = () => {
-	return <>Test</>;
-}
+	return <p className='text-red-500'>Test</p>;
+};

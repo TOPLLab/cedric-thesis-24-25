@@ -1,17 +1,18 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'url';
-import dts from 'vite-plugin-dts'
+import dts from 'vite-plugin-dts';
+import tailwindcss from '@tailwindcss/vite';
 
-import pkg from './package.json'
+import pkg from './package.json';
 
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     dts(),
+    tailwindcss(),
   ],
   build: {
-    outDir: "dist",
     sourcemap: mode === "development" ? "inline" : false,
     rollupOptions: {
       external: [

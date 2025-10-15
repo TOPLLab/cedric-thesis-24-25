@@ -8,9 +8,23 @@
 				"dist/**"
 			]
 		},
+		"build:production": {
+			"dependsOn": [],
+			"outputLogs": "new-only",
+			"outputs": [
+				"dist/**"
+			]
+		},
 		"watch": {
 			"dependsOn": [],
 			"outputLogs": "new-only",
+			"outputs": [
+				"dist/**"
+			]
+		},
+		"lint": {
+			"dependsOn": [],
+			"outputLogs": "full",
 			"outputs": [
 				"dist/**"
 			]

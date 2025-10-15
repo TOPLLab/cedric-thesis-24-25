@@ -1,19 +1,20 @@
 {
 	"name": "@live-sasylf/extension",
 	"main": "./dist/extension.js",
+	"type": "module",
 	"scripts": {
-		"build": "node esbuild.js",
-		"build:production": "pnpm build --production",
-		"watch": "pnpm build --watch",
+		"build": "vite build --mode development",
+		"build:production": "vite build",
+		"watch": "vite build --mode development --watch",
 		"lint": "eslint"
+	},
+	"devDependencies": {
+		"@types/esbuild-copy-static-files": "^0.1.4",
+		"@types/vscode": "^1.83.0",
+		"@live-sasylf/eslint-config": "workspace:*"
 	},
 	"dependencies": {
 		"@live-sasylf/goal-ui": "workspace:*",
 		"@types/node": "^24.7.2"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.83.0",
-		"esbuild": "^0.19.0",
-		"esbuild-copy-static-files": "^0.1.0"
 	}
 }

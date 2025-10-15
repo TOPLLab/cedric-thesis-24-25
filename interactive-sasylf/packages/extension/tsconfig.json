@@ -1,22 +1,30 @@
 {
 	"compilerOptions": {
-		"module": "nodenext",
-		"target": "es2022",
-		"moduleResolution": "nodenext",
-		"resolveJsonModule": true,
+		"target": "esnext",
 		"lib": [
-			"ES2022"
+			"dom",
+			"dom.iterable",
+			"esnext"
 		],
-		"sourceMap": true,
+		"useDefineForClassFields": true,
+		"allowJs": false,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
 		"strict": true,
-		"noImplicitReturns": true,
-		"rootDir": ".",
-		"baseUrl": ".",
-		"jsx": "react-jsx",
+		"forceConsistentCasingInFileNames": true,
+		"module": "esnext",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
 		"paths": {
 			"@/*": [
 				"./src/*"
 			]
 		}
-	}
+	},
+	"include": [
+		"./src"
+	]
 }
