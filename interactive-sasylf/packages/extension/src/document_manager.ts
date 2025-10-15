@@ -5,7 +5,7 @@ export class DocumentManager {
 	private documents: Map<string, SasylfDocument>;
 	private currentDocument: string | null;
 
-	constructor(context: vscode.ExtensionContext) {
+	constructor(ctx: vscode.ExtensionContext) {
 		this.currentDocument = null;
 
 		this.documents = new Map<string, SasylfDocument>();
@@ -13,17 +13,17 @@ export class DocumentManager {
 		// If a text document opens, we need to load that document.
 		//
 		// Does not run on already open documents.
-		context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => {
-			this.loadDocument(document);
+		ctx.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => {
+			this.loadDocument(ctx, document);
 		}));
 
 		// It also has to be done for documents already opened.
 		vscode.workspace.textDocuments.forEach(document => {
-			this.loadDocument(document);
+			this.loadDocument(ctx, document);
 		});
 
 		// If a document closes, we need to unload it.
-		context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => {
+		ctx.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => {
 			this.unloadDocument(document);
 		}));
 
@@ -32,13 +32,13 @@ export class DocumentManager {
 		// Does not run on already active text editor.
 		// Does run after onDidOpenTextDocument.
 		// Has to be done after loading all in all open documents.
-		context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
-			this.changeActiveDocument(editor ?? null);
+		ctx.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
+			this.changeActiveDocument(ctx, editor ?? null);
 		}));
 		// It also has to be done for documents already active text editor
-		this.changeActiveDocument(vscode.window.activeTextEditor ?? null);
+		this.changeActiveDocument(ctx, vscode.window.activeTextEditor ?? null);
 
-		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(evt => {
+		ctx.subscriptions.push(vscode.workspace.onDidChangeTextDocument(evt => {
 			const uri = evt.document.uri.toString();
 			const document = this.documents.get(uri);
 			if (!document) { return; }
@@ -51,7 +51,7 @@ export class DocumentManager {
 			document.changedAt(changes[0].range.start);
 		}));
 
-		context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(evt => {
+		ctx.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(evt => {
 			this.cursorChanged(evt.selections);
 		}));
 	}
@@ -106,7 +106,7 @@ export class DocumentManager {
 		return this.documents.get(this.currentDocument)!;
 	}
 
-	private loadDocument(document: vscode.TextDocument) {
+	private loadDocument(ctx: vscode.ExtensionContext, document: vscode.TextDocument) {
 		console.debug("Loading document", document.uri.toString());
 
 		if (document.languageId !== 'sasylf') {
@@ -118,7 +118,7 @@ export class DocumentManager {
 
 		if (!this.documents.has(uri)) {
 			console.debug("Document not tracked. Adding to registry.");
-			this.documents.set(uri, new SasylfDocument());
+			this.documents.set(uri, new SasylfDocument(ctx.extensionUri));
 		}
 
 		const editors = vscode.window.visibleTextEditors.filter(
@@ -149,7 +149,7 @@ export class DocumentManager {
 		console.debug("Document unloaded");
 	}
 
-	private changeActiveDocument(editor: vscode.TextEditor | null) {
+	private changeActiveDocument(ctx: vscode.ExtensionContext, editor: vscode.TextEditor | null) {
 		console.debug("Chaning active document");
 		this.getCurrentDocumentHandler()?.deactivate();
 		this.currentDocument = null;
@@ -163,7 +163,7 @@ export class DocumentManager {
 		}
 
 		this.currentDocument = editor.document.uri.toString();
-		this.loadDocument(editor.document);
+		this.loadDocument(ctx, editor.document);
 		this.getCurrentDocumentHandler()!.activate();
 	}
 

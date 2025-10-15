@@ -35,8 +35,8 @@ export default [
             "no-relative-import-paths/no-relative-import-paths": [
                 "error",
                 {
-                    rootDir: "src",
-                    prefix: "@"
+                    rootDir: "src/",
+                    prefix: "@/"
                 }
             ],
 

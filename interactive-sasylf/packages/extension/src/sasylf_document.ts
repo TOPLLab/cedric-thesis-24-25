@@ -14,10 +14,10 @@ export class SasylfDocument {
 	private lastPosition: vscode.Position;
 	private contexts: Map<vscode.Range, Context>;
 
-	constructor() {
+	constructor(extensionUri: vscode.Uri) {
 		this.process = new SasylfProcess();
 		this.editors = [];
-		this.ctxView = new ContextView();
+		this.ctxView = new ContextView(extensionUri);
 		this.ctxView.reveal();
 		this.decorations = new DecorationsView();
 		this.lastPosition = new vscode.Position(0, 0);
@@ -144,18 +144,18 @@ export class SasylfDocument {
 		const key = [...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position));
 		if (key === undefined) {
 			console.debug("Range has no context yet");
-			this.ctxView?.renderContext({});
+			// TODO: this.ctxView?.renderContext({});
 			return;
 		}
 
 		const context = this.contexts.get(key);
 		if (context === undefined) {
 			vscode.window.showWarningMessage("No context found where one was expected.");
-			this.ctxView?.renderContext({});
+			// TODO: this.ctxView?.renderContext({});
 			return;
 		}
 
-		this.ctxView?.renderContext(context);
+		// TODO: this.ctxView?.renderContext(context);
 	}
 
 	public deactivate(): void {
@@ -176,7 +176,7 @@ export class SasylfDocument {
 		this.process.on('success', (range: vscode.Range, ctx: Context) => {
 			this.contexts.set(range, ctx);
 
-			this.ctxView?.renderContext(ctx);
+			// TODO: this.ctxView?.renderContext(ctx);
 			for (const editor of this.editors) {
 				this.decorations.setSuccess(editor, range);
 			}

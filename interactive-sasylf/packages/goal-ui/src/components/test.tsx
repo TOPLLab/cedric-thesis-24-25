@@ -1,5 +1,5 @@
-import { ReactElement } from 'react';
+import { FC } from 'react';
 
-export function Test(): ReactElement {
+export const Test: FC = () => {
 	return <>Test</>;
 }

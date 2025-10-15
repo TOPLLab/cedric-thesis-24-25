@@ -8,7 +8,8 @@
 		"lint": "eslint"
 	},
 	"dependencies": {
-		"@live-sasylf/goal-ui": "workspace:*"
+		"@live-sasylf/goal-ui": "workspace:*",
+		"@types/node": "^24.7.2"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.83.0",

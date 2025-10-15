@@ -2,17 +2,20 @@
 	"compilerOptions": {
 		"module": "nodenext",
 		"target": "es2022",
+		"moduleResolution": "nodenext",
+		"resolveJsonModule": true,
 		"lib": [
 			"ES2022"
 		],
 		"sourceMap": true,
 		"strict": true,
 		"noImplicitReturns": true,
-		"rootDir": "src",
-		"baseUrl": "src",
+		"rootDir": ".",
+		"baseUrl": ".",
+		"jsx": "react-jsx",
 		"paths": {
 			"@/*": [
-				"./*"
+				"./src/*"
 			]
 		}
 	}
