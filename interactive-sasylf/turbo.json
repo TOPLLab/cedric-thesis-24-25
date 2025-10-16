@@ -2,14 +2,18 @@
 	"$schema": "https://turbo.build/schema.json",
 	"tasks": {
 		"build": {
-			"dependsOn": [],
+			"dependsOn": [
+				"^lint"
+			],
 			"outputLogs": "new-only",
 			"outputs": [
 				"dist/**"
 			]
 		},
 		"build:production": {
-			"dependsOn": [],
+			"dependsOn": [
+				"^lint"
+			],
 			"outputLogs": "new-only",
 			"outputs": [
 				"dist/**"
@@ -25,9 +29,7 @@
 		"lint": {
 			"dependsOn": [],
 			"outputLogs": "full",
-			"outputs": [
-				"dist/**"
-			]
+			"outputs": []
 		}
 	}
 }
