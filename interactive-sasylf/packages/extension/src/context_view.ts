@@ -13,23 +13,22 @@ export class ContextView extends EventEmitter<{
 			// Panel view type
 			"sasylf",
 			// Panel title
-			"Sasylf Context",
+			"Context View",
 			// The editor column the panel should be displayed in
 			{ preserveFocus: true, viewColumn: vscode.ViewColumn.Two },
 			// Extra panel configurations
 			{
 				// Enable JavaScript in the webview
 				enableScripts: true,
-				// Restrict the webview to only load resources from the `out` and `webview-ui/build` directories
-				localResourceRoots: [
-					vscode.Uri.joinPath(extensionUri, "packages", "extension", "dist"),
-					vscode.Uri.joinPath(extensionUri, "packages", "goal-ui", "dist")
-				],
+				// // Restrict the webview to only load resources from the `context-view` package
+				// localResourceRoots: [
+				// 	vscode.Uri.joinPath(extensionUri, "packages", "context-view", "dist")
+				// ],
 
 				retainContextWhenHidden: true,
 
 				enableFindWidget: true,
-			}
+			},
 		);
 
 		this.panel.webview.html = this.getWebviewContent(this.panel.webview, extensionUri);
@@ -52,7 +51,7 @@ export class ContextView extends EventEmitter<{
 	/**
  * Defines and returns the HTML that should be rendered within the webview panel.
  *
- * @remarks This is also the place where references to the React webview build files
+ * @remarks This is also the place where references to the Solidjs webview build files
  * are created and inserted into the webview HTML.
  *
  * @param webview A reference to the extension webview
@@ -61,14 +60,13 @@ export class ContextView extends EventEmitter<{
  * rendered within the webview panel
  */
 	private getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
-		// The CSS file from the React build output
-		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "goal-ui", "dist", "assets", "index.css"));
-		// The JS file from the React build output
-		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "goal-ui", "dist", "assets", "index.js"));
+		// The CSS file from the Solidjs build output
+		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "context-view", "dist", "assets", "index.css"));
+		// The JS file from the Solidjs build output
+		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "packages", "context-view", "dist", "assets", "index.js"));
 
 		const nonce = getNonce();
 
-		// Tip: Install the es6-string-html VS Code extension to enable code highlighting below
 		return /*html*/ `
 			<!DOCTYPE html>
 			<html lang="en">
@@ -78,7 +76,7 @@ export class ContextView extends EventEmitter<{
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
 				<link rel="stylesheet" type="text/css" nonce="${nonce}" href="${styleUri}">
 				
-				<title>Goal View</title>
+				<title>Context View</title>
 				</head>
 				<body>
 				<div id="root"></div>
@@ -136,7 +134,7 @@ export class ContextView extends EventEmitter<{
 	// 		<head>
 	// 			<meta charset="UTF-8">
 	// 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	// 			<title>React Webview</title>
+	// 			<title>Webview</title>
 	// 		</head>
 	// 		<body>
 	// 			<div style="font-size: calc(var(--vscode-editor-font-size) * 1.2);">

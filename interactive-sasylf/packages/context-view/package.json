@@ -1,5 +1,5 @@
 {
-  "name": "@live-sasylf/goal-ui",
+  "name": "@live-sasylf/context-view",
   "version": "0.0.1",
   "type": "module",
   "private": true,
@@ -13,16 +13,13 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.14",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@vitejs/plugin-react": "^5.0.4",
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.9.2",
     "vite": "^7.1.9",
-    "vite-plugin-dts": "^4.5.4",
-    "@live-sasylf/eslint-config": "workspace:*"
+    "vite-plugin-solid": "^2.11.9"
   },
   "dependencies": {
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "tailwindcss": "^4.1.14"
+    "solid-js": "^1.9.9",
+    "solid-devtools": "^0.34.3"
   }
 }

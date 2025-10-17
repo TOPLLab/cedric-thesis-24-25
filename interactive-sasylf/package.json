@@ -60,13 +60,15 @@
   ],
   "scripts": {
     "build": "pnpm build:packages && pnpm build:plugin",
+    "b": "pnpm build",
     "build:production": "pnpm build:packages:production && pnpm build:plugin:production",
     "build:plugin": "node esbuild.js",
     "build:plugin:production": "node esbuild.js --production",
     "build:packages": "turbo run build",
     "build:packages:production": "turbo run build:production",
     "watch": "turbo run watch",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "fmt": "turbo run lint -- --fix"
   },
   "devDependencies": {
     "turbo": "^2.5.8",

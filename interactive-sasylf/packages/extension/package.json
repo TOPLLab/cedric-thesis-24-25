@@ -11,10 +11,12 @@
 	"devDependencies": {
 		"@types/esbuild-copy-static-files": "^0.1.4",
 		"@types/vscode": "^1.83.0",
-		"@live-sasylf/eslint-config": "workspace:*"
+		"@live-sasylf/eslint-config": "workspace:*",
+		"typescript": "^5.9.2",
+		"vite": "^7.1.9"
 	},
 	"dependencies": {
-		"@live-sasylf/goal-ui": "workspace:*",
+		"@live-sasylf/context-view": "workspace:*",
 		"@types/node": "^24.7.2"
 	}
 }
