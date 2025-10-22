@@ -12,6 +12,7 @@ export class SasylfDocument {
 	private decorations: DecorationsView;
 	private lastPosition: vscode.Position;
 	private contexts: Map<vscode.Range, Context>;
+	private hasError: boolean;
 
 	constructor(ctx: vscode.ExtensionContext) {
 		this.process = new Client(ctx);
@@ -21,6 +22,7 @@ export class SasylfDocument {
 		this.decorations = new DecorationsView();
 		this.lastPosition = new vscode.Position(0, 0);
 		this.contexts = new Map();
+		this.hasError = false;
 	}
 
 	public close(): void {
@@ -40,6 +42,7 @@ export class SasylfDocument {
 		this.process = new Client(ctx);
 		this.lastPosition = new vscode.Position(0, 0);
 		this.contexts = new Map();
+		this.hasError = false;
 
 		for (const editor of this.editors) {
 			this.decorations.clear(editor);
@@ -56,6 +59,11 @@ export class SasylfDocument {
 	}
 
 	public runToCursor(): void {
+		if (this.hasError) {
+			vscode.window.showInformationMessage("First solve the present error.");
+			return;
+		}
+
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			vscode.window.showWarningMessage("No SASyLF file active");
@@ -76,6 +84,11 @@ export class SasylfDocument {
 	}
 
 	public runNext(): void {
+		if (this.hasError) {
+			vscode.window.showInformationMessage("First solve the present error.");
+			return;
+		}
+
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			vscode.window.showWarningMessage("No SASyLF file active");
@@ -120,18 +133,6 @@ export class SasylfDocument {
 		this.lastPosition = filtered[filtered.length - 1].range.end;
 
 		this.process.stageInput(...filtered);
-	}
-
-	public runAll(): void {
-		const editor = vscode.window.activeTextEditor;
-		if (!editor) {
-			vscode.window.showWarningMessage("No SASyLF file active");
-			return;
-		}
-
-		const parsed = preparse(editor.document.getText());
-
-		this.process.stageInput(...parsed);
 	}
 
 	public cursorChanged(selections: readonly vscode.Selection[]): void {
@@ -182,6 +183,7 @@ export class SasylfDocument {
 		});
 
 		this.process.on('failure', (range: vscode.Range, errors: Errors) => {
+			this.hasError = true;
 			for (const editor of this.editors) {
 				this.decorations.setFailure(editor, range, errors);
 			}

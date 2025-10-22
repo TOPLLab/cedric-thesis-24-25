@@ -7,6 +7,7 @@ import com.google.protobuf.util.JsonFormat;
 import edu.cmu.cs.sasylf.ast.Context;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
+import edu.cmu.cs.sasylf.types.Errors;
 import edu.cmu.cs.sasylf.types.Response;
 
 import java.io.BufferedReader;
@@ -46,18 +47,21 @@ public class Orchestrator {
 //        System.out.println(rootNode);
 //    }
 
-    private void logParseExceptions(List<ParseException> exceptions) {
-        final var mapper = new ObjectMapper();
-
-        var rootNode = mapper.createObjectNode();
-
-        var errorsNode = mapper.createArrayNode();
+    private void logParseExceptions(List<ParseException> exceptions) throws InvalidProtocolBufferException {
+        var errorsPb = Errors.newBuilder();
         for (var e : exceptions) {
-            errorsNode.add(e.toString());
+            errorsPb.addErrors(e.toString());
         }
-        rootNode.put("type", "errors");
-        rootNode.set("errors", errorsNode);
-        System.out.println(rootNode);
+
+        var responsePb = Response.newBuilder()
+                .setErrors(errorsPb)
+                .build();
+        String jsonOutput = JsonFormat.printer()
+                .preservingProtoFieldNames()
+                // NOTE: The client assumes the json struct is on a single line.
+                .omittingInsignificantWhitespace()
+                .print(responsePb);
+        System.out.println(jsonOutput);
     }
 
     /// Try all parseFns until one succeeds. If failed, read again
@@ -72,16 +76,8 @@ public class Orchestrator {
         }
 
         while (true) {
-
-            // TODO: Keep parsed stuff
-            // TODO: Keep context per parsed node
-            // TODO: if all parser errors happen at end of input, keep input, else throw away.
-
-            var input = "";
-
             try {
-                // TODO: use rest string if present here
-                input = reader.readLine();
+                var input = reader.readLine();
                 node = mapper.readTree(input);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -102,7 +98,11 @@ public class Orchestrator {
                 }
             }
 
-            this.logParseExceptions(exceptions);
+            try {
+                this.logParseExceptions(exceptions);
+            } catch (InvalidProtocolBufferException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
