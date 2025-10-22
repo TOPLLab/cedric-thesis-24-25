@@ -2,6 +2,7 @@
 	"name": "@live-sasylf/extension",
 	"main": "./dist/extension.js",
 	"type": "module",
+	"version": "0.0.0",
 	"scripts": {
 		"build": "vite build --mode development",
 		"build:production": "vite build",
@@ -13,10 +14,11 @@
 		"@types/vscode": "^1.83.0",
 		"@live-sasylf/eslint-config": "workspace:*",
 		"typescript": "^5.9.2",
-		"vite": "^7.1.9"
+		"vite": "^7.1.9",
+		"@types/node": "^24.7.2"
 	},
 	"dependencies": {
 		"@live-sasylf/context-view": "workspace:*",
-		"@types/node": "^24.7.2"
+		"@live-sasylf/client": "workspace:*"
 	}
 }

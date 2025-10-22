@@ -1,23 +1,21 @@
 import * as vscode from 'vscode';
-import { SasylfProcess } from '@/sasylf_process';
+import { Client, type Context, type Errors } from '@live-sasylf/client';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
 import { preparse } from '@/pre_parser';
-import type { Context } from '@/types/context';
-import type { Errors } from '@/types/errors';
 
 export class SasylfDocument {
-	private process: SasylfProcess;
+	private process: Client;
 	private editors: vscode.TextEditor[];
 	private ctxView: ContextView | null;
 	private decorations: DecorationsView;
 	private lastPosition: vscode.Position;
-	private contexts: Map<vscode.Range, Context>;
+	private contexts: Map<vscode.Range, Context | undefined>;
 
-	constructor(extensionUri: vscode.Uri) {
-		this.process = new SasylfProcess();
+	constructor(ctx: vscode.ExtensionContext) {
+		this.process = new Client(ctx);
 		this.editors = [];
-		this.ctxView = new ContextView(extensionUri);
+		this.ctxView = new ContextView(ctx);
 		this.ctxView.reveal();
 		this.decorations = new DecorationsView();
 		this.lastPosition = new vscode.Position(0, 0);
@@ -34,11 +32,11 @@ export class SasylfDocument {
 	/**
 	 * Assume the pane is activated, otherwise the restart call would never happen
 	 */
-	public restart(): void {
+	public restart(ctx: vscode.ExtensionContext): void {
 		this.deactivate();
 		this.process.removeAllListeners();
 		this.process.close();
-		this.process = new SasylfProcess();
+		this.process = new Client(ctx);
 		this.lastPosition = new vscode.Position(0, 0);
 		this.contexts = new Map();
 
@@ -95,14 +93,14 @@ export class SasylfDocument {
 		this.process.stageInput(item);
 	}
 
-	public changedAt(position: vscode.Position): void {
+	public changedAt(ctx: vscode.ExtensionContext, position: vscode.Position): void {
 		const runRange = new vscode.Range(new vscode.Position(0, 0), this.lastPosition);
 		if (!runRange.contains(position)) {
 			return;
 		}
 
 		// Restart process
-		this.restart();
+		this.restart(ctx);
 
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
@@ -144,18 +142,18 @@ export class SasylfDocument {
 		const key = [...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position));
 		if (key === undefined) {
 			console.debug("Range has no context yet");
-			// TODO: this.ctxView?.renderContext({});
+			this.ctxView?.postContext(undefined);
 			return;
 		}
 
 		const context = this.contexts.get(key);
 		if (context === undefined) {
 			vscode.window.showWarningMessage("No context found where one was expected.");
-			// TODO: this.ctxView?.renderContext({});
+			this.ctxView?.postContext(undefined);
 			return;
 		}
 
-		// TODO: this.ctxView?.renderContext(context);
+		this.ctxView?.postContext(context);
 	}
 
 	public deactivate(): void {
@@ -173,10 +171,10 @@ export class SasylfDocument {
 			}
 		});
 
-		this.process.on('success', (range: vscode.Range, ctx: Context) => {
+		this.process.on('success', (range: vscode.Range, ctx: Context | undefined) => {
 			this.contexts.set(range, ctx);
 
-			// TODO: this.ctxView?.renderContext(ctx);
+			this.ctxView?.postContext(ctx);
 			for (const editor of this.editors) {
 				this.decorations.setSuccess(editor, range);
 			}

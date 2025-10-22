@@ -247,7 +247,7 @@ case rule
 is
 
 	dv : e value by rule val-unit
-	dsv : "("")" stepsorvalue by rule stepsorvalue-value on dv
+	dsv : "("")" stepsorvalue by rle stepsorvalue-value on dv
 
 end case
 
@@ -311,7 +311,6 @@ is
 				---------------------------------------------------- t-fn
 				dp1t' : * |- fn x : tau' => e1'[x] : tau' -> tau
 			is
-			
 				ds : (fn x : tau' => e1'[x]) e2 -> e1'[e2] by rule r-app on dp2v
 				dsv : e stepsorvalue by rule stepsorvalue-steps on ds
 				
@@ -344,10 +343,8 @@ is
 			dp2sv' :  e2 stepsorvalue
 		
 		is
-		
 			ds : e1 e2 -> e1 e2' by rule c-app-r on dp1v, dp2s
 			dsv : e1 e2 stepsorvalue by rule stepsorvalue-steps on ds
-		
 		end case
 		end case analysis
 	end case

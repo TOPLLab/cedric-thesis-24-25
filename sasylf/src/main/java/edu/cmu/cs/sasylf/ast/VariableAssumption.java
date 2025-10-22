@@ -1,7 +1,7 @@
 package edu.cmu.cs.sasylf.ast;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.cmu.cs.sasylf.types.Fact;
+import edu.cmu.cs.sasylf.types.VariableAssumptionFact;
 import edu.cmu.cs.sasylf.util.Location;
 
 import java.io.PrintWriter;
@@ -9,42 +9,40 @@ import java.io.StringWriter;
 
 public class VariableAssumption extends SyntaxAssumption {
 
-	public VariableAssumption(String n, Location l, Element assumes) {
-		super(n, l, assumes);
-		variable = new Variable(n,l);
-	}
+    private Variable variable;
 
-	public VariableAssumption(Variable v) {
-		super(v.getSymbol(),v.getLocation(),null);
-		variable = v;
-	}
+    public VariableAssumption(String n, Location l, Element assumes) {
+        super(n, l, assumes);
+        variable = new Variable(n, l);
+    }
 
-	@Override
-	public Element getElementBase() {
-		return variable;
-	}
+    public VariableAssumption(Variable v) {
+        super(v.getSymbol(), v.getLocation(), null);
+        variable = v;
+    }
 
-	private Variable variable;
+    @Override
+    public Element getElementBase() {
+        return variable;
+    }
 
+    @Override
+    public Fact toTypePb() {
+        var builder = VariableAssumptionFact.newBuilder();
 
-	@Override
-	public ObjectNode getInteractiveInfo() {
-		var mapper = new ObjectMapper();
-		var rootNode = mapper.createObjectNode();
+        builder.setName(this.getName());
 
-		rootNode.put("fact", "VariableAssumption");
-		rootNode.put("name", this.getName());
+//        var esw = new StringWriter();
+//        var epw = new PrintWriter(esw);
+//        this.getElement().prettyPrint(epw);
+//        builder.setElement(esw.toString());
 
-		var esw = new StringWriter();
-		var epw = new PrintWriter(esw);
-		this.getElement().prettyPrint(epw);
-		rootNode.put("element", esw.toString());
+        var csw = new StringWriter();
+        var cpw = new PrintWriter(csw);
+        this.variable.prettyPrint(cpw);
+        builder.setVariable(csw.toString());
 
-		var csw = new StringWriter();
-		var cpw = new PrintWriter(csw);
-		this.variable.prettyPrint(cpw);
-		rootNode.put("variable", csw.toString());
-
-		return rootNode;
-	}
+        var factBuilder = edu.cmu.cs.sasylf.types.Fact.newBuilder().setVariableAssumptionFact(builder);
+        return factBuilder.build();
+    }
 }

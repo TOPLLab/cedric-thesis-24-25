@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import type { Errors } from '@/types/errors';
+import type { Errors } from '@live-sasylf/client';
 
 const decorations = {
 	pending: vscode.window.createTextEditorDecorationType({
@@ -43,7 +43,7 @@ export class DecorationsView {
 	setFailure(editor: vscode.TextEditor, range: vscode.Range, errors: Errors): void {
 		this.collection.clear();
 		this.activePendingDecorations = [];
-		const diagnostics = errors.map((error) => new vscode.Diagnostic(range, error, vscode.DiagnosticSeverity.Error));
+		const diagnostics = errors.errors.map((error) => new vscode.Diagnostic(range, error, vscode.DiagnosticSeverity.Error));
 		this.collection.set(editor.document.uri, diagnostics);
 		this.render(editor);
 	}

@@ -48,7 +48,7 @@ export class DocumentManager {
 			const changes = [...evt.contentChanges];
 			changes.sort((a, b) => a.range.start.compareTo(b.range.start));
 
-			document.changedAt(changes[0].range.start);
+			document.changedAt(ctx, changes[0].range.start);
 		}));
 
 		ctx.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(evt => {
@@ -86,12 +86,12 @@ export class DocumentManager {
 		this.getCurrentDocumentHandler()?.revealContextView();
 	}
 
-	public restart(): void {
+	public restart(ctx: vscode.ExtensionContext): void {
 		if (!this.getCurrentDocumentHandler()) {
 			vscode.window.showWarningMessage("No SASyLF file active");
 			return;
 		}
-		this.getCurrentDocumentHandler()?.restart();
+		this.getCurrentDocumentHandler()?.restart(ctx);
 	}
 
 	private getCurrentDocumentHandler(): SasylfDocument | null {
@@ -118,7 +118,7 @@ export class DocumentManager {
 
 		if (!this.documents.has(uri)) {
 			console.debug("Document not tracked. Adding to registry.");
-			this.documents.set(uri, new SasylfDocument(ctx.extensionUri));
+			this.documents.set(uri, new SasylfDocument(ctx));
 		}
 
 		const editors = vscode.window.visibleTextEditors.filter(

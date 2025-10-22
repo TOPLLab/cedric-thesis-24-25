@@ -1,123 +1,127 @@
 package edu.cmu.cs.sasylf.ast;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import edu.cmu.cs.sasylf.types.SyntaxAssumptionFact;
 import edu.cmu.cs.sasylf.util.ErrorHandler;
 import edu.cmu.cs.sasylf.util.Errors;
 import edu.cmu.cs.sasylf.util.Location;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public abstract class SyntaxAssumption extends Fact {
 
-	public SyntaxAssumption(String n, Location l, Element assumes) {
-		super(n, l);
-		context = assumes;
-		if (contextIsUnknown()) {
-			new Throwable("for trace").printStackTrace();
-		}
-		if (assumes != null) {
-			setEndLocation(assumes.getEndLocation());
-		}
-	}
+    private Element context;
 
-	@Override
-	public void prettyPrint(PrintWriter out) {
-		getElementBase().prettyPrint(out);
-		if (context != null) {
-			out.print(" assumes ");
-			if (contextIsUnknown()) out.print("?");
-			else context.prettyPrint(out);
-		}
-	}
+    public SyntaxAssumption(String n, Location l, Element assumes) {
+        super(n, l);
+        context = assumes;
+        if (contextIsUnknown()) {
+            new Throwable("for trace").printStackTrace();
+        }
+        if (assumes != null) {
+            setEndLocation(assumes.getEndLocation());
+        }
+    }
 
-	@Override
-	public void printReference(PrintWriter out) {
-		out.print('(');
-		prettyPrint(out);
-		out.print(')');
-	}
+    @Override
+    public void prettyPrint(PrintWriter out) {
+        getElementBase().prettyPrint(out);
+        if (context != null) {
+            out.print(" assumes ");
+            if (contextIsUnknown()) out.print("?");
+            else context.prettyPrint(out);
+        }
+    }
 
-	@Override 
-	public int hashCode() {
-		int h = getElementBase().hashCode();
-		if (context == null) return h;
-		return (context.hashCode() << 3) ^ h;
-	}
+    @Override
+    public void printReference(PrintWriter out) {
+        out.print('(');
+        prettyPrint(out);
+        out.print(')');
+    }
 
-	@Override
-	public boolean equals(Object x) {
-		if (x instanceof SyntaxAssumption) {
-			SyntaxAssumption sa = (SyntaxAssumption)x;
-			return getElementBase().equals(sa.getElementBase()) &&
-					(context == sa.getContext() || context != null && context.equals(sa.getContext()));
-		}
-		return false;
-	}
+    @Override
+    public int hashCode() {
+        int h = getElementBase().hashCode();
+        if (context == null) return h;
+        return (context.hashCode() << 3) ^ h;
+    }
 
-	@Override
-	public void typecheck(Context ctx) {
-		if (context != null) {
-			context = context.typecheck(ctx);
-			if (context instanceof Clause) {
-				context = ((Clause)context).computeClause(ctx,false);
-			}
-			ElementType type = context.getType();
-			if (!(type instanceof SyntaxDeclaration) || !((SyntaxDeclaration)type).isInContextForm()) {
-				ErrorHandler.error(Errors.ILLEGAL_ASSUMES_CLAUSE,": " + type, this);
-			}
-		}
-	}
+    @Override
+    public boolean equals(Object x) {
+        if (x instanceof SyntaxAssumption) {
+            SyntaxAssumption sa = (SyntaxAssumption) x;
+            return getElementBase().equals(sa.getElementBase()) &&
+                    (context == sa.getContext() || context != null && context.equals(sa.getContext()));
+        }
+        return false;
+    }
 
-	@Override
-	public final Element getElement() {
-		Element base = getElementBase();
-		if (context == null) return base;
-		return new AssumptionElement(getLocation(),base,context);
-	}
+    @Override
+    public void typecheck(Context ctx) {
+        if (context != null) {
+            context = context.typecheck(ctx);
+            if (context instanceof Clause) {
+                context = ((Clause) context).computeClause(ctx, false);
+            }
+            ElementType type = context.getType();
+            if (!(type instanceof SyntaxDeclaration) || !((SyntaxDeclaration) type).isInContextForm()) {
+                ErrorHandler.error(Errors.ILLEGAL_ASSUMES_CLAUSE, ": " + type, this);
+            }
+        }
+    }
 
-	/**
-	 * Return the element for this fact ignoring the context.
-	 * @return element base for this fact.
-	 */
-	public abstract Element getElementBase();
+    @Override
+    public final Element getElement() {
+        Element base = getElementBase();
+        if (context == null) return base;
+        return new AssumptionElement(getLocation(), base, context);
+    }
 
-	protected boolean contextIsUnknown() {
-		return context != null && context instanceof Clause && ((Clause)context).getElements().size() == 0;
-	}
+    /**
+     * Return the element for this fact ignoring the context.
+     *
+     * @return element base for this fact.
+     */
+    public abstract Element getElementBase();
 
-	public void setContext(Element c) { context = c; }
-	public Element getContext() { return context; }
+    protected boolean contextIsUnknown() {
+        return context != null && context instanceof Clause && ((Clause) context).getElements().size() == 0;
+    }
 
-	public NonTerminal getRoot() {
-		if (context == null) return null;
-		if (context instanceof NonTerminal) return (NonTerminal) context;
-		if (context instanceof ClauseUse) return ((ClauseUse)context).getRoot();
-		throw new RuntimeException("no root for SyntaxAssumption: " + this);
-	}
+    public Element getContext() {
+        return context;
+    }
 
-	private Element context;
+    public void setContext(Element c) {
+        context = c;
+    }
 
-	@Override
-	public ObjectNode getInteractiveInfo() {
-		var mapper = new ObjectMapper();
-		var rootNode = mapper.createObjectNode();
+    public NonTerminal getRoot() {
+        if (context == null) return null;
+        if (context instanceof NonTerminal) return (NonTerminal) context;
+        if (context instanceof ClauseUse) return ((ClauseUse) context).getRoot();
+        throw new RuntimeException("no root for SyntaxAssumption: " + this);
+    }
 
-		rootNode.put("fact", "SyntaxAssumption");
-		rootNode.put("name", this.getName());
+    @Override
+    public edu.cmu.cs.sasylf.types.Fact toTypePb() {
+        var builder = SyntaxAssumptionFact.newBuilder();
 
-		var esw = new StringWriter();
-		var epw = new PrintWriter(esw);
-		this.getElement().prettyPrint(epw);
-		rootNode.put("element", esw.toString());
+        builder.setName(this.getName());
 
-		var csw = new StringWriter();
-		var cpw = new PrintWriter(csw);
-		this.getElement().prettyPrint(cpw);
-		rootNode.put("context", csw.toString());
+//        var esw = new StringWriter();
+//        var epw = new PrintWriter(esw);
+//        this.getElement().prettyPrint(epw);
+//        builder.setElement(esw.toString());
 
-		return rootNode;
-	}
+        var csw = new StringWriter();
+        var cpw = new PrintWriter(csw);
+        this.getElement().prettyPrint(cpw);
+        builder.setContext(csw.toString());
+
+        var factBuilder = edu.cmu.cs.sasylf.types.Fact.newBuilder().setSyntaxAssumptionFact(builder);
+        return factBuilder.build();
+    }
 }
 

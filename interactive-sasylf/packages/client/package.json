@@ -1,0 +1,27 @@
+{
+	"name": "@live-sasylf/client",
+	"version": "0.0.0",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "pnpm build:proto && pnpm build:client",
+		"build:production": "pnpm build:proto && pnpm build:client:production",
+		"build:proto": "pnpm buf generate",
+		"build:client": "vite build --mode development",
+		"build:client:production": "vite build"
+	},
+	"devDependencies": {
+		"@bufbuild/buf": "^1.58.0",
+		"@bufbuild/protoc-gen-es": "^2.9.0",
+		"@live-sasylf/eslint-config": "workspace:*",
+		"@types/node": "^24.7.2",
+		"@types/vscode": "^1.83.0",
+		"typescript": "^5.9.2",
+		"vite": "^7.1.9",
+		"vite-plugin-dts": "^4.5.4"
+	},
+	"dependencies": {
+		"@bufbuild/protobuf": "^2.9.0"
+	}
+}

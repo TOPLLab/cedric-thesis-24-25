@@ -2,66 +2,49 @@ package edu.cmu.cs.sasylf.interactive;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import edu.cmu.cs.sasylf.ast.Context;
 import edu.cmu.cs.sasylf.parser.DSLToolkitParser;
 import edu.cmu.cs.sasylf.parser.ParseException;
-import edu.cmu.cs.sasylf.util.ErrorHandler;
-import edu.cmu.cs.sasylf.util.ErrorReport;
-import edu.cmu.cs.sasylf.util.Report;
-import edu.cmu.cs.sasylf.util.SASyLFError;
+import edu.cmu.cs.sasylf.types.Response;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class Orchestrator {
-    private int messageId = 0;
-    public interface ParseFn<T> {
-        T run(DSLToolkitParser parser) throws ParseException;
-    }
-
-    public abstract static class Delegate<T> {
-        ParseFn<T> parserFn;
-
-        public Delegate(ParseFn<T> parserFn) {
-            this.parserFn = parserFn;
-        }
-
-        void finalize(Context ctx, DSLToolkitParser parser) throws ParseException {
-            var v = this.parserFn.run(parser);
-            this.run(ctx, v);
-        }
-
-        /// Use the result of the parser if it passes
-        public abstract void run(Context ctx, T value) throws ParseException;
-    }
-
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    private void logContext(Context ctx) {
-        final var mapper = new ObjectMapper();
-        var ctxNode = mapper.createObjectNode();
-
-        ctxNode.put("id", this.messageId++);
-        ctxNode.put("type", "context");
-        ctxNode.set("context", ctx.getInteractiveInfo());
-        System.out.println(ctxNode);
+    private void emitContext(Context ctx) throws InvalidProtocolBufferException {
+        var ctxPb = ctx.toTypePb();
+        var responsePb = Response.newBuilder()
+                .setContext(ctxPb)
+                .build();
+        String jsonOutput = JsonFormat.printer()
+                .preservingProtoFieldNames()
+                // NOTE: The client assumes the json struct is on a single line.
+                .omittingInsignificantWhitespace()
+                .print(responsePb);
+        System.out.println(jsonOutput);
     }
 
-    private void logErrorReports(List<Report> reports) {
-        final var mapper = new ObjectMapper();
-
-        var rootNode = mapper.createObjectNode();
-
-        var reportsNode = mapper.createArrayNode();
-        for (var r : reports) {
-            reportsNode.add(r.toString());
-        }
-        rootNode.put("type", "reports");
-        rootNode.set("reports", reportsNode);
-        System.out.println(rootNode);
-    }
+//    private void logErrorReports(List<Report> reports) {
+//        final var mapper = new ObjectMapper();
+//
+//        var rootNode = mapper.createObjectNode();
+//
+//        var reportsNode = mapper.createArrayNode();
+//        for (var r : reports) {
+//            reportsNode.add(r.toString());
+//        }
+//        rootNode.put("type", "reports");
+//        rootNode.set("reports", reportsNode);
+//        System.out.println(rootNode);
+//    }
 
     private void logParseExceptions(List<ParseException> exceptions) {
         final var mapper = new ObjectMapper();
@@ -78,11 +61,15 @@ public class Orchestrator {
     }
 
     /// Try all parseFns until one succeeds. If failed, read again
-    public final void runNextNode(Context ctx, Delegate...delegates) {
+    public final void runNextNode(Context ctx, Delegate... delegates) {
         final var mapper = new ObjectMapper();
         JsonNode node;
 
-        this.logContext(ctx);
+        try {
+            this.emitContext(ctx);
+        } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+        }
 
         while (true) {
 
@@ -117,5 +104,25 @@ public class Orchestrator {
 
             this.logParseExceptions(exceptions);
         }
+    }
+
+    public interface ParseFn<T> {
+        T run(DSLToolkitParser parser) throws ParseException;
+    }
+
+    public abstract static class Delegate<T> {
+        ParseFn<T> parserFn;
+
+        public Delegate(ParseFn<T> parserFn) {
+            this.parserFn = parserFn;
+        }
+
+        void finalize(Context ctx, DSLToolkitParser parser) throws ParseException {
+            var v = this.parserFn.run(parser);
+            this.run(ctx, v);
+        }
+
+        /// Use the result of the parser if it passes
+        public abstract void run(Context ctx, T value) throws ParseException;
     }
 }

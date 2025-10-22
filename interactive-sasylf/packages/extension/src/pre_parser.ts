@@ -1,6 +1,6 @@
 import assert from 'assert';
 import * as vscode from 'vscode';
-import type { SasylfInput } from '@/sasylf_process';
+import type { SasylfInput } from '@live-sasylf/client';
 
 enum SyncWord {
 	END_THEOREM = "end theorem",

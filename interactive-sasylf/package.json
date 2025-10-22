@@ -3,6 +3,7 @@
   "displayName": "Live SASyLF",
   "version": "0.0.1",
   "packageManager": "pnpm@9.12.3",
+  "type": "module",
   "engines": {
     "vscode": "^1.96.4"
   },
@@ -13,7 +14,7 @@
   "activationEvents": [
     "onLanguage:sasylf"
   ],
-  "main": "./dist/extension.js",
+  "main": "./packages/extension/dist/extension.js",
   "contributes": {
     "commands": [
       {
@@ -59,20 +60,13 @@
     "lib/"
   ],
   "scripts": {
-    "build": "pnpm build:packages && pnpm build:plugin",
-    "b": "pnpm build",
-    "build:production": "pnpm build:packages:production && pnpm build:plugin:production",
-    "build:plugin": "node esbuild.js",
-    "build:plugin:production": "node esbuild.js --production",
-    "build:packages": "turbo run build",
-    "build:packages:production": "turbo run build:production",
+    "build": "turbo run build",
+    "build:production": "turbo run build:production",
     "watch": "turbo run watch",
     "lint": "turbo run lint",
     "fmt": "turbo run lint -- --fix"
   },
   "devDependencies": {
-    "turbo": "^2.5.8",
-    "esbuild": "^0.19.0",
-    "esbuild-copy-static-files": "^0.1.0"
+    "turbo": "^2.5.8"
   }
 }

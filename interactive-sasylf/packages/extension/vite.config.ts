@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
 		},
 		rollupOptions: {
 			external: [
-				...Object.keys(pkg.dependencies),
+				// ...Object.keys(pkg.dependencies),
 				...Object.keys(pkg.devDependencies),
 				'vscode'
 			],

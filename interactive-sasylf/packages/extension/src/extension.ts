@@ -3,23 +3,23 @@ import { DocumentManager } from '@/document_manager';
 
 let dm: DocumentManager | null = null;
 
-export function activate(context: vscode.ExtensionContext): void {
-	dm = new DocumentManager(context);
+export function activate(ctx: vscode.ExtensionContext): void {
+	dm = new DocumentManager(ctx);
 
-	context.subscriptions.push(vscode.commands.registerCommand('live-sasylf.runToCursor', () => {
+	ctx.subscriptions.push(vscode.commands.registerCommand('live-sasylf.runToCursor', () => {
 		dm!.runToCursor();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('live-sasylf.runNext', () => {
+	ctx.subscriptions.push(vscode.commands.registerCommand('live-sasylf.runNext', () => {
 		dm!.runNext();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('live-sasylf.openContextView', () => {
+	ctx.subscriptions.push(vscode.commands.registerCommand('live-sasylf.openContextView', () => {
 		dm!.openContextView();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('live-sasylf.restartCurrentProcess', () => {
-		dm!.restart();
+	ctx.subscriptions.push(vscode.commands.registerCommand('live-sasylf.restartCurrentProcess', () => {
+		dm!.restart(ctx);
 	}));
 }
 

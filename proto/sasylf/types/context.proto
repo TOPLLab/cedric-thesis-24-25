@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package sasylf.types;
+option java_package = "edu.cmu.cs.sasylf.types";
+option java_multiple_files = true;
+
+message Response  {
+  oneof value {
+    Context context = 1;
+    Errors errors = 2;
+  }
+}
+
+message Errors {
+  repeated string errors = 1;
+}
+
+message Context  {
+  Theorem currentTheorem = 1;
+  string goal = 2;
+  repeated Fact derivations = 3;
+  CaseAnalysisContext case_analysis_context = 4;
+}
+
+message Theorem {
+  repeated Fact forall = 1;
+  string exists = 2;
+}
+
+message Fact {
+  oneof value {
+    DerivationFact derivation_fact = 1;
+    SyntaxAssumptionFact syntax_assumption_fact = 2;
+    VariableAssumptionFact variable_assumption_fact = 3;
+  }
+}
+
+message DerivationFact {
+  string name = 1;
+  string clause = 3;
+}
+
+message SyntaxAssumptionFact  {
+  string name = 1;
+  string context = 2;
+}
+
+message VariableAssumptionFact {
+  string name = 1;
+  string variable = 2;
+}
+
+message CaseAnalysisContext {
+  string currentCaseAnalysisElement = 1;
+  repeated string cases = 2;
+}
