@@ -1,5 +1,10 @@
 {
   "name": "live-sasylf",
+  "author": {
+    "name": "Cédric Meukens",
+    "email": "cedric.meukens@ugent.be"
+  },
+  "license": "EPL-2.0",
   "displayName": "Live SASyLF",
   "version": "0.0.1",
   "packageManager": "pnpm@9.12.3",
@@ -56,18 +61,17 @@
       }
     ]
   },
-  "files": [
-    "lib/"
-  ],
   "scripts": {
     "build": "turbo run build",
     "build:production": "turbo run build:production",
     "watch": "turbo run watch",
     "lint": "turbo run lint",
     "fmt": "turbo run lint -- --fix",
-    "type-check": "turbo run type-check"
+    "type-check": "turbo run type-check",
+    "package": "pnpm build:production && vsce package --no-dependencies --allow-missing-repository"
   },
   "devDependencies": {
+    "@vscode/vsce": "^3.6.2",
     "turbo": "^2.5.8"
   }
 }
