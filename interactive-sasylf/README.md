@@ -2,9 +2,9 @@
 
 ## Develop
 
-1. Install JRE 17 or later.
-2. Start debugging
+1. Make sure you have JRE 21 or later installed.
 
 ## Install
 
-> TODO
+1. Make sure you have JRE 21 or later installed.
+2. Install using the `live-sasylf-*.vsix`.
