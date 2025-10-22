@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
 	plugins: [],
 	build: {
 		ssr: true,
-		sourcemap: mode === "development" ? "inline" : false,
+		sourcemap: mode === "dev",
 		lib: {
 			entry: resolve(__dirname, 'src/extension.ts'),
 			name: pkg.name,
@@ -17,7 +17,6 @@ export default defineConfig(({ mode }) => ({
 		},
 		rollupOptions: {
 			external: [
-				// ...Object.keys(pkg.dependencies),
 				...Object.keys(pkg.devDependencies),
 				'vscode'
 			],

@@ -247,7 +247,7 @@ case rule
 is
 
 	dv : e value by rule val-unit
-	dsv : "("")" stepsorvalue by rle stepsorvalue-value on dv
+	dsv : "("")" stepsorvalue by rule stepsorvalue-value on dv
 
 end case
 

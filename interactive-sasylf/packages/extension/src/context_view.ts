@@ -39,7 +39,7 @@ export class ContextView extends EventEmitter<{
 		});
 	}
 
-	public postContext(ctx: Context | undefined): void {
+	public postContext(ctx: Context): void {
 		this.panel.webview.postMessage(ctx);
 	}
 

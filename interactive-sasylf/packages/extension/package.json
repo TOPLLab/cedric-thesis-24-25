@@ -4,7 +4,7 @@
 	"type": "module",
 	"version": "0.0.0",
 	"scripts": {
-		"build": "vite build --mode development",
+		"build": "vite build --mode dev",
 		"build:production": "vite build",
 		"watch": "pnpm build --watch",
 		"lint": "eslint",
@@ -20,6 +20,7 @@
 	},
 	"dependencies": {
 		"@live-sasylf/context-view": "workspace:*",
-		"@live-sasylf/client": "workspace:*"
+		"@live-sasylf/client": "workspace:*",
+		"@bufbuild/protobuf": "^2.9.0"
 	}
 }

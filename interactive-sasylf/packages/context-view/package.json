@@ -6,7 +6,7 @@
   "main": "./dist/main.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "vite build --mode development",
+    "build": "vite build --mode dev",
     "build:production": "vite build",
     "watch": "pnpm build --watch",
     "lint": "eslint",

@@ -22,7 +22,8 @@
 			"@/*": [
 				"./src/*"
 			]
-		}
+		},
+		"sourceMap": true
 	},
 	"include": [
 		"./src"

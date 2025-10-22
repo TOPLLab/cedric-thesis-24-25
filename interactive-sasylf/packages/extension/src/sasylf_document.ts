@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
-import { Client, type Context, type Errors } from '@live-sasylf/client';
+import { Client, ContextSchema, type Context, type Errors } from '@live-sasylf/client';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
 import { preparse } from '@/pre_parser';
+import { create } from '@bufbuild/protobuf';
 
 export class SasylfDocument {
 	private process: Client;
@@ -10,7 +11,7 @@ export class SasylfDocument {
 	private ctxView: ContextView | null;
 	private decorations: DecorationsView;
 	private lastPosition: vscode.Position;
-	private contexts: Map<vscode.Range, Context | undefined>;
+	private contexts: Map<vscode.Range, Context>;
 
 	constructor(ctx: vscode.ExtensionContext) {
 		this.process = new Client(ctx);
@@ -142,14 +143,14 @@ export class SasylfDocument {
 		const key = [...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position));
 		if (key === undefined) {
 			console.debug("Range has no context yet");
-			this.ctxView?.postContext(undefined);
+			this.ctxView?.postContext(create(ContextSchema));
 			return;
 		}
 
 		const context = this.contexts.get(key);
 		if (context === undefined) {
 			vscode.window.showWarningMessage("No context found where one was expected.");
-			this.ctxView?.postContext(undefined);
+			this.ctxView?.postContext(create(ContextSchema));
 			return;
 		}
 
@@ -171,7 +172,7 @@ export class SasylfDocument {
 			}
 		});
 
-		this.process.on('success', (range: vscode.Range, ctx: Context | undefined) => {
+		this.process.on('success', (range: vscode.Range, ctx: Context) => {
 			this.contexts.set(range, ctx);
 
 			this.ctxView?.postContext(ctx);

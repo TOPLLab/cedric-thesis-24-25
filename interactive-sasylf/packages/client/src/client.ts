@@ -20,7 +20,7 @@ export type SasylfInput = {
 
 export class Client extends EventEmitter<{
 	'pending': [range: vscode.Range]
-	'success': [range: vscode.Range, ctx: Context | undefined]
+	'success': [range: vscode.Range, ctx: Context]
 	'failure': [range: vscode.Range, errors: Errors]
 }> {
 	private stagedInput: SasylfInput[];
@@ -64,7 +64,7 @@ export class Client extends EventEmitter<{
 		this.emit('pending', range);
 	}
 
-	private handleSucces(range: vscode.Range, ctx: Context | undefined) {
+	private handleSucces(range: vscode.Range, ctx: Context) {
 		this.emit('success', range, ctx);
 		this.comittedInput = null;
 		this.sendNextInput();
@@ -123,10 +123,11 @@ export class Client extends EventEmitter<{
 
 		if (res.value.case === 'errors') {
 			this.handleFailure(this.comittedInput.range, res.value.value);
-			return;
 		}
 
-		this.handleSucces(this.comittedInput.range, res.value.value);
+		if (res.value.case === 'context') {
+			this.handleSucces(this.comittedInput.range, res.value.value);
+		}
 	}
 
 	private handleStdOut(data: ArrayBuffer) {

@@ -9,7 +9,7 @@ import pkg from './package.json';
 export default defineConfig(({ mode }) => ({
   plugins: [devtools(), solidPlugin(), tailwindcss()],
   build: {
-    sourcemap: mode === "development" ? "inline" : false,
+    sourcemap: mode === "dev",
     rollupOptions: {
       external: [
         ...Object.keys(pkg.devDependencies),
