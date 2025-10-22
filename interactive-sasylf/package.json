@@ -64,7 +64,8 @@
     "build:production": "turbo run build:production",
     "watch": "turbo run watch",
     "lint": "turbo run lint",
-    "fmt": "turbo run lint -- --fix"
+    "fmt": "turbo run lint -- --fix",
+    "type-check": "turbo run type-check"
   },
   "devDependencies": {
     "turbo": "^2.5.8"

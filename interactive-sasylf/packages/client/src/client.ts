@@ -2,10 +2,12 @@ import * as vscode from 'vscode';
 import type { ChildProcess } from 'child_process';
 import { spawn, spawnSync } from 'child_process';
 import path from 'path';
+import type {
+	Context
+} from '@/gen/sasylf/types/context_pb';
 import {
 	ResponseSchema,
 	type Response,
-	type Context,
 	type Errors
 } from '@/gen/sasylf/types/context_pb';
 import { EventEmitter } from 'node:events';

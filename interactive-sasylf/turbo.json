@@ -3,6 +3,7 @@
 	"tasks": {
 		"build": {
 			"dependsOn": [
+				"^type-check",
 				"^lint"
 			],
 			"outputLogs": "new-only",
@@ -12,6 +13,7 @@
 		},
 		"build:production": {
 			"dependsOn": [
+				"^type-check",
 				"^lint"
 			],
 			"outputLogs": "new-only",
@@ -27,6 +29,11 @@
 			]
 		},
 		"lint": {
+			"dependsOn": [],
+			"outputLogs": "full",
+			"outputs": []
+		},
+		"type-check": {
 			"dependsOn": [],
 			"outputLogs": "full",
 			"outputs": []

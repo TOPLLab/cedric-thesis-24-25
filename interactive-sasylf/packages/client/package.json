@@ -9,7 +9,10 @@
 		"build:production": "pnpm build:proto && pnpm build:client:production",
 		"build:proto": "pnpm buf generate",
 		"build:client": "vite build --mode development",
-		"build:client:production": "vite build"
+		"build:client:production": "vite build",
+		"watch": "pnpm build --watch",
+		"lint": "eslint",
+		"type-check": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@bufbuild/buf": "^1.58.0",

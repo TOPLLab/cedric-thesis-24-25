@@ -6,8 +6,9 @@
 	"scripts": {
 		"build": "vite build --mode development",
 		"build:production": "vite build",
-		"watch": "vite build --mode development --watch",
-		"lint": "eslint"
+		"watch": "pnpm build --watch",
+		"lint": "eslint",
+		"type-check": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@types/esbuild-copy-static-files": "^0.1.4",
