@@ -70,13 +70,17 @@ export class SasylfDocument {
 			return;
 		}
 
+		if (this.contexts.keys().find((range) => range.contains(editor.selection.start))) {
+			return;
+		}
+
 		const parsed = preparse(editor.document.getText());
 
 		const filtered = parsed
 			.filter(i =>
 				i.range.start.isAfterOrEqual(this.lastPosition)
-				&& (i.range.end.isBefore(editor.selection.end)
-					|| i.range.contains(editor.selection.end)));
+				&& (i.range.end.isBefore(editor.selection.start)
+					|| i.range.contains(editor.selection.start)));
 
 		this.lastPosition = filtered[filtered.length - 1].range.end;
 
@@ -141,9 +145,13 @@ export class SasylfDocument {
 		}
 
 		const position = selections[0].start;
-		const key = [...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position));
+		const key =
+			// get the range with the cursor inside
+			[...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position))
+			// fallback to the last context
+			?? [...this.contexts.keys()].reduce((last, range) => range.start.isAfterOrEqual(last.end) ? range : last);
+
 		if (key === undefined) {
-			console.debug("Range has no context yet");
 			this.ctxView?.postContext(create(ContextSchema));
 			return;
 		}
