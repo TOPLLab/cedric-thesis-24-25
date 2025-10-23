@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'url';
 import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
 import pkg from './package.json';
 
 export default defineConfig(({ mode }) => ({
-	plugins: [],
+	plugins: [dts()],
 	build: {
 		ssr: true,
 		sourcemap: mode === "dev",

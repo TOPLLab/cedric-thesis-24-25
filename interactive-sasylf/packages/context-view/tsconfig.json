@@ -25,7 +25,9 @@
 				"./src/*"
 			]
 		},
-		"sourceMap": true
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true
 	},
 	"include": [
 		"./src"
