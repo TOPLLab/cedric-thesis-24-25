@@ -3,16 +3,10 @@ import type { Errors } from '@live-sasylf/client';
 
 const decorations = {
 	pending: vscode.window.createTextEditorDecorationType({
-		borderWidth: '0px 0px 2px 0px',
-		borderStyle: 'solid',
-		borderSpacing: '2px',
-		borderColor: new vscode.ThemeColor('terminal.ansiBlue')
+		backgroundColor: 'color-mix(in srgb, var(--vscode-terminal-ansiBlue) 40%, transparent)'
 	}),
 	success: vscode.window.createTextEditorDecorationType({
-		borderWidth: '0px 0px 2px 0px',
-		borderStyle: 'solid',
-		borderSpacing: '2px',
-		borderColor: new vscode.ThemeColor('terminal.ansiGreen')
+		backgroundColor: 'color-mix(in srgb, var(--vscode-terminal-ansiGreen) 40%, transparent)'
 	}),
 };
 
