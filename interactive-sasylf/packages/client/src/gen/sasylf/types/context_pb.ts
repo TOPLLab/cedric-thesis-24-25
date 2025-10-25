@@ -10,28 +10,66 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sasylf/types/context.proto.
  */
 export const file_sasylf_types_context: GenFile = /*@__PURE__*/
-  fileDesc("ChpzYXN5bGYvdHlwZXMvY29udGV4dC5wcm90bxIMc2FzeWxmLnR5cGVzImUKCFJlc3BvbnNlEigKB2NvbnRleHQYASABKAsyFS5zYXN5bGYudHlwZXMuQ29udGV4dEgAEiYKBmVycm9ycxgCIAEoCzIULnNhc3lsZi50eXBlcy5FcnJvcnNIAEIHCgV2YWx1ZSIYCgZFcnJvcnMSDgoGZXJyb3JzGAEgAygJIrEBCgdDb250ZXh0Ei0KDmN1cnJlbnRUaGVvcmVtGAEgASgLMhUuc2FzeWxmLnR5cGVzLlRoZW9yZW0SDAoEZ29hbBgCIAEoCRInCgtkZXJpdmF0aW9ucxgDIAMoCzISLnNhc3lsZi50eXBlcy5GYWN0EkAKFWNhc2VfYW5hbHlzaXNfY29udGV4dBgEIAEoCzIhLnNhc3lsZi50eXBlcy5DYXNlQW5hbHlzaXNDb250ZXh0Ij0KB1RoZW9yZW0SIgoGZm9yYWxsGAEgAygLMhIuc2FzeWxmLnR5cGVzLkZhY3QSDgoGZXhpc3RzGAIgASgJItgBCgRGYWN0EjcKD2Rlcml2YXRpb25fZmFjdBgBIAEoCzIcLnNhc3lsZi50eXBlcy5EZXJpdmF0aW9uRmFjdEgAEkQKFnN5bnRheF9hc3N1bXB0aW9uX2ZhY3QYAiABKAsyIi5zYXN5bGYudHlwZXMuU3ludGF4QXNzdW1wdGlvbkZhY3RIABJIChh2YXJpYWJsZV9hc3N1bXB0aW9uX2ZhY3QYAyABKAsyJC5zYXN5bGYudHlwZXMuVmFyaWFibGVBc3N1bXB0aW9uRmFjdEgAQgcKBXZhbHVlIi4KDkRlcml2YXRpb25GYWN0EgwKBG5hbWUYASABKAkSDgoGY2xhdXNlGAMgASgJIjUKFFN5bnRheEFzc3VtcHRpb25GYWN0EgwKBG5hbWUYASABKAkSDwoHY29udGV4dBgCIAEoCSI4ChZWYXJpYWJsZUFzc3VtcHRpb25GYWN0EgwKBG5hbWUYASABKAkSEAoIdmFyaWFibGUYAiABKAkiSAoTQ2FzZUFuYWx5c2lzQ29udGV4dBIiChpjdXJyZW50Q2FzZUFuYWx5c2lzRWxlbWVudBgBIAEoCRINCgVjYXNlcxgCIAMoCUIbChdlZHUuY211LmNzLnNhc3lsZi50eXBlc1ABYgZwcm90bzM");
+  fileDesc("ChpzYXN5bGYvdHlwZXMvY29udGV4dC5wcm90bxIMc2FzeWxmLnR5cGVzIjgKB1JlcXVlc3QSJAoFaW5wdXQYASABKAsyEy5zYXN5bGYudHlwZXMuSW5wdXRIAEIHCgV2YWx1ZSIWCgVJbnB1dBINCgVpbnB1dBgBIAEoCSJUCghSZXNwb25zZRImCgdjb250ZXh0GAEgASgLMhUuc2FzeWxmLnR5cGVzLkNvbnRleHQSDgoGZXJyb3JzGAIgAygJEhAKCHdhcm5pbmdzGAMgAygJIrEBCgdDb250ZXh0Ei0KDmN1cnJlbnRUaGVvcmVtGAEgASgLMhUuc2FzeWxmLnR5cGVzLlRoZW9yZW0SDAoEZ29hbBgCIAEoCRInCgtkZXJpdmF0aW9ucxgDIAMoCzISLnNhc3lsZi50eXBlcy5GYWN0EkAKFWNhc2VfYW5hbHlzaXNfY29udGV4dBgEIAEoCzIhLnNhc3lsZi50eXBlcy5DYXNlQW5hbHlzaXNDb250ZXh0Ij0KB1RoZW9yZW0SIgoGZm9yYWxsGAEgAygLMhIuc2FzeWxmLnR5cGVzLkZhY3QSDgoGZXhpc3RzGAIgASgJItgBCgRGYWN0EjcKD2Rlcml2YXRpb25fZmFjdBgBIAEoCzIcLnNhc3lsZi50eXBlcy5EZXJpdmF0aW9uRmFjdEgAEkQKFnN5bnRheF9hc3N1bXB0aW9uX2ZhY3QYAiABKAsyIi5zYXN5bGYudHlwZXMuU3ludGF4QXNzdW1wdGlvbkZhY3RIABJIChh2YXJpYWJsZV9hc3N1bXB0aW9uX2ZhY3QYAyABKAsyJC5zYXN5bGYudHlwZXMuVmFyaWFibGVBc3N1bXB0aW9uRmFjdEgAQgcKBXZhbHVlIi4KDkRlcml2YXRpb25GYWN0EgwKBG5hbWUYASABKAkSDgoGY2xhdXNlGAMgASgJIjUKFFN5bnRheEFzc3VtcHRpb25GYWN0EgwKBG5hbWUYASABKAkSDwoHY29udGV4dBgCIAEoCSI4ChZWYXJpYWJsZUFzc3VtcHRpb25GYWN0EgwKBG5hbWUYASABKAkSEAoIdmFyaWFibGUYAiABKAkiSAoTQ2FzZUFuYWx5c2lzQ29udGV4dBIiChpjdXJyZW50Q2FzZUFuYWx5c2lzRWxlbWVudBgBIAEoCRINCgVjYXNlcxgCIAMoCUIbChdlZHUuY211LmNzLnNhc3lsZi50eXBlc1ABYgZwcm90bzM");
+
+/**
+ * @generated from message sasylf.types.Request
+ */
+export type Request = Message<"sasylf.types.Request"> & {
+  /**
+   * @generated from oneof sasylf.types.Request.value
+   */
+  value: {
+    /**
+     * @generated from field: sasylf.types.Input input = 1;
+     */
+    value: Input;
+    case: "input";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message sasylf.types.Request.
+ * Use `create(RequestSchema)` to create a new message.
+ */
+export const RequestSchema: GenMessage<Request> = /*@__PURE__*/
+  messageDesc(file_sasylf_types_context, 0);
+
+/**
+ * @generated from message sasylf.types.Input
+ */
+export type Input = Message<"sasylf.types.Input"> & {
+  /**
+   * @generated from field: string input = 1;
+   */
+  input: string;
+};
+
+/**
+ * Describes the message sasylf.types.Input.
+ * Use `create(InputSchema)` to create a new message.
+ */
+export const InputSchema: GenMessage<Input> = /*@__PURE__*/
+  messageDesc(file_sasylf_types_context, 1);
 
 /**
  * @generated from message sasylf.types.Response
  */
 export type Response = Message<"sasylf.types.Response"> & {
   /**
-   * @generated from oneof sasylf.types.Response.value
+   * @generated from field: sasylf.types.Context context = 1;
    */
-  value: {
-    /**
-     * @generated from field: sasylf.types.Context context = 1;
-     */
-    value: Context;
-    case: "context";
-  } | {
-    /**
-     * @generated from field: sasylf.types.Errors errors = 2;
-     */
-    value: Errors;
-    case: "errors";
-  } | { case: undefined; value?: undefined };
+  context?: Context;
+
+  /**
+   * @generated from field: repeated string errors = 2;
+   */
+  errors: string[];
+
+  /**
+   * @generated from field: repeated string warnings = 3;
+   */
+  warnings: string[];
 };
 
 /**
@@ -39,24 +77,7 @@ export type Response = Message<"sasylf.types.Response"> & {
  * Use `create(ResponseSchema)` to create a new message.
  */
 export const ResponseSchema: GenMessage<Response> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 0);
-
-/**
- * @generated from message sasylf.types.Errors
- */
-export type Errors = Message<"sasylf.types.Errors"> & {
-  /**
-   * @generated from field: repeated string errors = 1;
-   */
-  errors: string[];
-};
-
-/**
- * Describes the message sasylf.types.Errors.
- * Use `create(ErrorsSchema)` to create a new message.
- */
-export const ErrorsSchema: GenMessage<Errors> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 1);
+  messageDesc(file_sasylf_types_context, 2);
 
 /**
  * @generated from message sasylf.types.Context
@@ -88,7 +109,7 @@ export type Context = Message<"sasylf.types.Context"> & {
  * Use `create(ContextSchema)` to create a new message.
  */
 export const ContextSchema: GenMessage<Context> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 2);
+  messageDesc(file_sasylf_types_context, 3);
 
 /**
  * @generated from message sasylf.types.Theorem
@@ -110,7 +131,7 @@ export type Theorem = Message<"sasylf.types.Theorem"> & {
  * Use `create(TheoremSchema)` to create a new message.
  */
 export const TheoremSchema: GenMessage<Theorem> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 3);
+  messageDesc(file_sasylf_types_context, 4);
 
 /**
  * @generated from message sasylf.types.Fact
@@ -145,7 +166,7 @@ export type Fact = Message<"sasylf.types.Fact"> & {
  * Use `create(FactSchema)` to create a new message.
  */
 export const FactSchema: GenMessage<Fact> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 4);
+  messageDesc(file_sasylf_types_context, 5);
 
 /**
  * @generated from message sasylf.types.DerivationFact
@@ -167,7 +188,7 @@ export type DerivationFact = Message<"sasylf.types.DerivationFact"> & {
  * Use `create(DerivationFactSchema)` to create a new message.
  */
 export const DerivationFactSchema: GenMessage<DerivationFact> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 5);
+  messageDesc(file_sasylf_types_context, 6);
 
 /**
  * @generated from message sasylf.types.SyntaxAssumptionFact
@@ -189,7 +210,7 @@ export type SyntaxAssumptionFact = Message<"sasylf.types.SyntaxAssumptionFact"> 
  * Use `create(SyntaxAssumptionFactSchema)` to create a new message.
  */
 export const SyntaxAssumptionFactSchema: GenMessage<SyntaxAssumptionFact> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 6);
+  messageDesc(file_sasylf_types_context, 7);
 
 /**
  * @generated from message sasylf.types.VariableAssumptionFact
@@ -211,7 +232,7 @@ export type VariableAssumptionFact = Message<"sasylf.types.VariableAssumptionFac
  * Use `create(VariableAssumptionFactSchema)` to create a new message.
  */
 export const VariableAssumptionFactSchema: GenMessage<VariableAssumptionFact> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 7);
+  messageDesc(file_sasylf_types_context, 8);
 
 /**
  * @generated from message sasylf.types.CaseAnalysisContext
@@ -233,5 +254,5 @@ export type CaseAnalysisContext = Message<"sasylf.types.CaseAnalysisContext"> & 
  * Use `create(CaseAnalysisContextSchema)` to create a new message.
  */
 export const CaseAnalysisContextSchema: GenMessage<CaseAnalysisContext> = /*@__PURE__*/
-  messageDesc(file_sasylf_types_context, 8);
+  messageDesc(file_sasylf_types_context, 9);
 

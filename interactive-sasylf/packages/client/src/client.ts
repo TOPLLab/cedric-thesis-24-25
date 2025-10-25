@@ -2,16 +2,14 @@ import * as vscode from 'vscode';
 import type { ChildProcess } from 'child_process';
 import { spawn, spawnSync } from 'child_process';
 import path from 'path';
-import type {
-	Context
-} from '@/gen/sasylf/types/context_pb';
 import {
 	ResponseSchema,
 	type Response,
-	type Errors
+	RequestSchema,
+	InputSchema,
 } from '@/gen/sasylf/types/context_pb';
 import { EventEmitter } from 'node:events';
-import { fromJsonString } from "@bufbuild/protobuf";
+import { create, fromJsonString, toJsonString } from "@bufbuild/protobuf";
 
 export type SasylfInput = {
 	range: vscode.Range
@@ -20,8 +18,8 @@ export type SasylfInput = {
 
 export class Client extends EventEmitter<{
 	'pending': [range: vscode.Range]
-	'success': [range: vscode.Range, ctx: Context]
-	'failure': [range: vscode.Range, errors: Errors]
+	'success': [range: vscode.Range, response: Response]
+	'failure': [range: vscode.Range, response: Response]
 }> {
 	private stagedInput: SasylfInput[];
 	private comittedInput: SasylfInput | null;
@@ -64,14 +62,14 @@ export class Client extends EventEmitter<{
 		this.emit('pending', range);
 	}
 
-	private handleSucces(range: vscode.Range, ctx: Context) {
-		this.emit('success', range, ctx);
+	private handleSucces(range: vscode.Range, response: Response) {
+		this.emit('success', range, response);
 		this.comittedInput = null;
 		this.sendNextInput();
 	}
 
-	private handleFailure(range: vscode.Range, errors: Errors) {
-		this.emit('failure', range, errors);
+	private handleFailure(range: vscode.Range, response: Response) {
+		this.emit('failure', range, response);
 		this.comittedInput = null;
 		this.stagedInput = [];
 	}
@@ -106,10 +104,14 @@ export class Client extends EventEmitter<{
 		this.comittedInput = this.stagedInput[0];
 		this.stagedInput = this.stagedInput.slice(1);
 
-		const req = JSON.stringify({
-			input: this.comittedInput.input
-		});
-
+		const req = toJsonString(RequestSchema, create(RequestSchema, {
+			value: {
+				value: create(InputSchema, {
+					input: this.comittedInput.input
+				}),
+				case: 'input'
+			}
+		}));
 		console.debug("Sending request", req);
 		this.ps.stdin?.write(`${req}\n`);
 	}
@@ -121,13 +123,11 @@ export class Client extends EventEmitter<{
 			return;
 		}
 
-		if (res.value.case === 'errors') {
-			this.handleFailure(this.comittedInput.range, res.value.value);
+		if (res.errors.length > 0) {
+			this.handleFailure(this.comittedInput.range, res);
 		}
 
-		if (res.value.case === 'context') {
-			this.handleSucces(this.comittedInput.range, res.value.value);
-		}
+		this.handleSucces(this.comittedInput.range, res);
 	}
 
 	private handleStdOut(data: ArrayBuffer) {
@@ -142,33 +142,30 @@ export class Client extends EventEmitter<{
 				const res = fromJsonString(ResponseSchema, message);
 				this.finalizeInput(res);
 			} catch (error) {
-				vscode.window.showErrorMessage(`Could not parse the output of the sasylf process as a json object.\n${error}\nin message\n${message}`);
+				console.error(`Could not parse the output of the sasylf process as a json object.\n${error}\nin message\n${message}`);
 
 				if (this.comittedInput === null) {
 					return;
 				}
 
-				this.handleFailure(this.comittedInput.range, {
-					$typeName: "sasylf.types.Errors",
-					errors: [message]
-				});
+				this.handleFailure(this.comittedInput.range, create(ResponseSchema, {
+					errors: [`Could not parse SASyLF response.`]
+				}));
 			}
 		}
 	}
 
 	private handleStdErr(data: ArrayBuffer) {
 		const stream = data.toString();
-		console.debug("Error:", stream);
-
-		// vscode.window.showErrorMessage(`An error occured in the sasylf process.\n${data.toString()}`);
 
 		if (this.comittedInput === null) {
 			return;
 		}
 
-		this.handleFailure(this.comittedInput.range, {
-			$typeName: "sasylf.types.Errors",
-			errors: [stream]
-		});
+		this.handleFailure(this.comittedInput.range, create(ResponseSchema, {
+			errors: [`An error occurred in the SASyLF process.`]
+		}));
+
+		console.error(`An error occurred in the SASyLF process: ${stream}`);
 	}
 }

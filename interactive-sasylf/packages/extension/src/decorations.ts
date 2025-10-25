@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import type { Errors } from '@live-sasylf/client';
 
 const decorations = {
 	pending: vscode.window.createTextEditorDecorationType({
@@ -13,43 +12,49 @@ const decorations = {
 export class DecorationsView {
 	private activePendingDecorations: vscode.Range[];
 	private activeSuccessDecorations: vscode.Range[];
+	private diagnostics: vscode.Diagnostic[];
 	private collection: vscode.DiagnosticCollection;
 
 	constructor() {
 		this.activePendingDecorations = [];
 		this.activeSuccessDecorations = [];
+		this.diagnostics = [];
 		this.collection = vscode.languages.createDiagnosticCollection("SASyLF Interactive");
 	}
 
-	setPending(editor: vscode.TextEditor, range: vscode.Range): void {
-		this.collection.clear();
+	public setPending(editor: vscode.TextEditor, range: vscode.Range): void {
 		this.activePendingDecorations.push(range);
 		this.render(editor);
 	}
 
-	setSuccess(editor: vscode.TextEditor, range: vscode.Range): void {
-		this.collection.clear();
+	private setWarnings(range: vscode.Range, warnings: string[]) {
+		this.diagnostics.push(...warnings.map((warning) => new vscode.Diagnostic(range, warning, vscode.DiagnosticSeverity.Warning)));
+	}
+
+	public setSuccess(editor: vscode.TextEditor, range: vscode.Range, warnings: string[]): void {
 		this.activePendingDecorations = this.activePendingDecorations.filter(r => !r.isEqual(range));
 		this.activeSuccessDecorations.push(range);
+		this.setWarnings(range, warnings);
 		this.render(editor);
 	}
 
-	setFailure(editor: vscode.TextEditor, range: vscode.Range, errors: Errors): void {
-		this.collection.clear();
+	public setFailure(editor: vscode.TextEditor, range: vscode.Range, errors: string[], warnings: string[]): void {
 		this.activePendingDecorations = [];
-		const diagnostics = errors.errors.map((error) => new vscode.Diagnostic(range, error, vscode.DiagnosticSeverity.Error));
-		this.collection.set(editor.document.uri, diagnostics);
+		this.diagnostics.push(...errors.map((error) => new vscode.Diagnostic(range, error, vscode.DiagnosticSeverity.Error)));
+		this.setWarnings(range, warnings);
 		this.render(editor);
 	}
 
-	render(editor: vscode.TextEditor): void {
+	public render(editor: vscode.TextEditor): void {
 		console.debug("Rendering decorations");
 		editor.setDecorations(decorations.pending, this.activePendingDecorations);
 		editor.setDecorations(decorations.success, this.activeSuccessDecorations);
+		this.collection.set(editor.document.uri, this.diagnostics);
 	}
 
-	clear(editor: vscode.TextEditor): void {
+	public clear(editor: vscode.TextEditor): void {
 		console.debug("Clearing decorations");
+		this.collection.clear();
 		this.activePendingDecorations = [];
 		this.activeSuccessDecorations = [];
 		editor.setDecorations(decorations.pending, this.activePendingDecorations);

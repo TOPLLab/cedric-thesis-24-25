@@ -4,15 +4,20 @@ package sasylf.types;
 option java_package = "edu.cmu.cs.sasylf.types";
 option java_multiple_files = true;
 
-message Response  {
+message Request {
   oneof value {
-    Context context = 1;
-    Errors errors = 2;
+    Input input = 1;
   }
 }
 
-message Errors {
-  repeated string errors = 1;
+message Input {
+  string input = 1;
+}
+
+message Response  {
+  Context context = 1;
+  repeated string errors = 2;
+  repeated string warnings = 3;
 }
 
 message Context  {

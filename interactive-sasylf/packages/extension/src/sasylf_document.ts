@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Client, ContextSchema, type Context, type Errors } from '@live-sasylf/client';
+import { Client, ContextSchema, type Context } from '@live-sasylf/client';
 import { ContextView } from '@/context_view';
 import { DecorationsView } from '@/decorations';
 import { preparse } from '@/pre_parser';
@@ -175,25 +175,25 @@ export class SasylfDocument {
 	}
 
 	public activate(): void {
-		this.process.on('pending', (range: vscode.Range) => {
+		this.process.on('pending', (range) => {
 			for (const editor of this.editors) {
 				this.decorations.setPending(editor, range);
 			}
 		});
 
-		this.process.on('success', (range: vscode.Range, ctx: Context) => {
-			this.contexts.set(range, ctx);
+		this.process.on('success', (range, response) => {
+			this.contexts.set(range, response.context!);
 
-			this.ctxView?.postContext(ctx);
+			this.ctxView?.postContext(response.context!);
 			for (const editor of this.editors) {
-				this.decorations.setSuccess(editor, range);
+				this.decorations.setSuccess(editor, range, response.warnings);
 			}
 		});
 
-		this.process.on('failure', (range: vscode.Range, errors: Errors) => {
+		this.process.on('failure', (range, response) => {
 			this.hasError = true;
 			for (const editor of this.editors) {
-				this.decorations.setFailure(editor, range, errors);
+				this.decorations.setFailure(editor, range, response.errors, response.warnings);
 			}
 		});
 
