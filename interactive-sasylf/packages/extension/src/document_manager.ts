@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { SasylfDocument } from '@/sasylf_document';
+import path from 'node:path';
 
 export class DocumentManager {
 	private documents: Map<string, SasylfDocument>;
@@ -118,7 +119,7 @@ export class DocumentManager {
 
 		if (!this.documents.has(uri)) {
 			console.debug("Document not tracked. Adding to registry.");
-			this.documents.set(uri, new SasylfDocument(ctx));
+			this.documents.set(uri, new SasylfDocument(ctx, path.basename(document.uri.path)));
 		}
 
 		const editors = vscode.window.visibleTextEditors.filter(

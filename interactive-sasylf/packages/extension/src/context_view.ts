@@ -7,14 +7,14 @@ export class ContextView extends EventEmitter<{
 }> {
 	private panel: vscode.WebviewPanel;
 
-	constructor(ectx: vscode.ExtensionContext) {
+	constructor(ectx: vscode.ExtensionContext, fileName: string) {
 		super();
 
 		this.panel = vscode.window.createWebviewPanel(
 			// Panel view type
 			"sasylf",
 			// Panel title
-			"Context View",
+			`Context View: ${fileName}`,
 			// The editor column the panel should be displayed in
 			{ preserveFocus: true, viewColumn: vscode.ViewColumn.Two },
 			// Extra panel configurations

@@ -14,10 +14,10 @@ export class SasylfDocument {
 	private contexts: Map<vscode.Range, Context>;
 	private hasError: boolean;
 
-	constructor(ctx: vscode.ExtensionContext) {
+	constructor(ctx: vscode.ExtensionContext, fileName: string) {
 		this.process = new Client(ctx);
 		this.editors = [];
-		this.ctxView = new ContextView(ctx);
+		this.ctxView = new ContextView(ctx, fileName);
 		this.ctxView.reveal();
 		this.decorations = new DecorationsView();
 		this.lastPosition = new vscode.Position(0, 0);
