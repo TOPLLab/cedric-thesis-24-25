@@ -113,7 +113,6 @@ public class Orchestrator {
 
                 for (final var parseFn : delegates) {
                     try {
-
                         parseFn.finalize(ctx.clone(), parser);
                         return;
                     } catch (ParseException e) {
@@ -124,6 +123,8 @@ public class Orchestrator {
                 }
 
                 this.logParseExceptions(exceptions);
+            } else if (request.hasQuit()) {
+                System.exit(request.getQuit().getCode());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

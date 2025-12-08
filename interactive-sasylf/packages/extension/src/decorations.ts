@@ -54,11 +54,13 @@ export class DecorationsView {
 
 	public clear(editor: vscode.TextEditor): void {
 		console.debug("Clearing decorations");
-		this.collection.clear();
+
 		this.activePendingDecorations = [];
 		this.activeSuccessDecorations = [];
+		this.diagnostics = [];
+
 		editor.setDecorations(decorations.pending, this.activePendingDecorations);
 		editor.setDecorations(decorations.success, this.activeSuccessDecorations);
-		this.collection.set(editor.document.uri, []);
+		this.collection.set(editor.document.uri, this.diagnostics);
 	}
 }

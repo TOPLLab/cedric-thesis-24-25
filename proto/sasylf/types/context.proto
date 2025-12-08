@@ -7,11 +7,16 @@ option java_multiple_files = true;
 message Request {
   oneof value {
     Input input = 1;
+    Quit quit = 2;
   }
 }
 
 message Input {
   string input = 1;
+}
+
+message Quit {
+  uint32 code = 1;
 }
 
 message Response  {

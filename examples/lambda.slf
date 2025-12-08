@@ -456,14 +456,15 @@ is
 		
 			d7: *, x:tau' |- e1[x] : tau
 			------------------------------------------------- t-fn
-			d8: * |- fn x : tau' => e1[x] : tau' -> tau
+			d8: * |- fn x : tau' => e1[x] : tau' -> tau  
 		
 		is
 		
 			/** Substitution preserves typing!  No lemma to prove.
-			 */
+			 */ 
 			
-			d9: * |- e1[e2] : tau by substitution on d7, d5
+// 			d9: * |- e1[e2] : tau by substitution on d7, d5
+			d9: * |- e1[e2] : tau by unproved
 		
 		end case
 		// other cases do not unify with fn expression

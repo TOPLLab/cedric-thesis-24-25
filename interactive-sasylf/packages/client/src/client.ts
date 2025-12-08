@@ -7,6 +7,7 @@ import {
 	type Response,
 	RequestSchema,
 	InputSchema,
+	QuitSchema,
 } from '@/gen/sasylf/types/context_pb';
 import { EventEmitter } from 'node:events';
 import { create, fromJsonString, toJsonString } from "@bufbuild/protobuf";
@@ -44,7 +45,12 @@ export class Client extends EventEmitter<{
 
 		console.debug("Starting sasylf process");
 		const jarPath = path.join(ctx.extensionPath, "lib", "SASyLF.jar");
-		this.ps = spawn("java", ["-jar", jarPath, "--interactive"]);
+		this.ps = spawn("java", [
+			// "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
+			"-jar",
+			jarPath,
+			"--interactive"
+		], {});
 
 		this.ps.on("close", (code) => {
 			console.debug(`Process exited with code ${code}`);
@@ -75,11 +81,20 @@ export class Client extends EventEmitter<{
 	}
 
 	public close(): void {
-		this.ps.removeAllListeners();
-		this.ps.kill();
+		console.log("Sending quit command");
 
+		const req = toJsonString(RequestSchema, create(RequestSchema, {
+			value: {
+				value: create(QuitSchema, {
+					code: 0 // Has no actual meaning
+				}),
+				case: 'quit'
+			}
+		}));
+		this.ps.stdin?.write(`${req}\n`);
 		this.stagedInput = [];
 		this.comittedInput = null;
+		this.ps.removeAllListeners();
 	}
 
 	public stageInput(...input: SasylfInput[]): void {
