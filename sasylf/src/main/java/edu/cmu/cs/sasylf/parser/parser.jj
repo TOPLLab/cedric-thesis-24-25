@@ -2219,47 +2219,43 @@ Derivation JustificationPrologue(Token startT, Clause c) :
        ( <COMMA> cl=SimpleExpr() { dca.addArgString(cl); } )*
      t=<COLON>
      { dca.setEndLocation(Location.endOf(t)); return dca; }
- //  | LOOKAHEAD(2) <CONTRADICTION> <ON> t=<IDENTIFIER>
- //    { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, t.image); 
- //      dca.setEndLocation(Location.endOf(t)); return dca; }
- //  | LOOKAHEAD(4)
- //  (
-	// <INVERSION> [of=<IDENTIFIER>] <OR> <ON> cl=SimpleExpr()
-	// {
-	//   Element lhs=null; Clause rhs=null;
-	//   WhereClause whereClauses = null;
- //      if (of == null) {
- //          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion'",cl);
- //      } else if (!of.image.equals("of")) {
- //          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion " + of.image + "'", new Location(of));
- //      }
- //    }
- //    whereClauses=WhereClauses()
- //    {
- //   	  return new DerivationByInversion(startT.image, new Location(startT), cl.getEndLocation(),
- //   	      c, DerivationByInversion.OR, cl, whereClauses);
-	// }
- //  ) 
- //  | LOOKAHEAD(3)
- //  (
- //    t2=<INVERSION> (of=<IDENTIFIER> [<RULE>] q=QualName() [<ON> cl=SimpleExpr()]
- //                   |<ON> cl=SimpleExpr()) 
- //    {
-	//   Element lhs=null; Clause rhs=null;
-	//   WhereClause whereClauses = null;
- //      if (cl == null) {
- //          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_ON,new TokenSpan(t2));
- //          cl = new Clause(q.getLocation());
- //      } else if (of != null && !of.image.equals("of")) {
- //          ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion " + of.image + "'", new Location(of));
- //      }
- //    }
- //    whereClauses=WhereClauses()
- //    {
- //   	  return new DerivationByInversion(startT.image, new Location(startT), cl.getEndLocation(),
- //   	      c, q, cl, whereClauses);
-	// }
- //  )
+   | LOOKAHEAD(2) <CONTRADICTION> <ON> t=<IDENTIFIER>
+     { dca = new DerivationByCaseAnalysis(startT.image, new Location(startT), c, t.image);
+       dca.setEndLocation(Location.endOf(t)); return dca; }
+   | LOOKAHEAD(4)
+   <INVERSION> [of=<IDENTIFIER>] <OR> <ON> cl=SimpleExpr()
+   {
+     Element lhs=null; Clause rhs=null;
+     WhereClause whereClauses = null;
+if (of == null) {
+ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion'",cl);
+} else if (!of.image.equals("of")) {
+ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion " + of.image + "'", new Location(of));
+}
+}
+whereClauses=WhereClauses()
+{
+        return new DerivationByInversion(startT.image, new Location(startT), cl.getEndLocation(),
+            c, DerivationByInversion.OR, cl, whereClauses);
+   }
+   | LOOKAHEAD(3)
+   t2=<INVERSION> (of=<IDENTIFIER> [<RULE>] q=QualName() [<ON> cl=SimpleExpr()]
+                  |<ON> cl=SimpleExpr())
+   {
+     Element lhs=null; Clause rhs=null;
+     WhereClause whereClauses = null;
+     if (cl == null) {
+         ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_ON,new TokenSpan(t2));
+         cl = new Clause(q.getLocation());
+     } else if (of != null && !of.image.equals("of")) {
+         ErrorHandler.recoverableError(Errors.PARSE_EXPECTED_INVERSION_OF, "'inversion " + of.image + "'", new Location(of));
+     }
+   }
+   whereClauses=WhereClauses()
+   {
+        return new DerivationByInversion(startT.image, new Location(startT), cl.getEndLocation(),
+            c, q, cl, whereClauses);
+   }
    | <INDUCTION> t=<HYPOTHESIS> (<ON> cl=SimpleExpr() | {cl = null; })
      { da = new DerivationByInductionHypothesis(startT.image, new Location(startT), c);
        if (cl != null) {
@@ -2281,40 +2277,39 @@ Derivation JustificationPrologue(Token startT, Clause c) :
      { d = new DerivationUnproved(startT.image, new Location(startT), c);
        d.setEndLocation(Location.endOf(t));
        return d; }
- //  | t=<SOLVE>
- //    { d = new DerivationBySolve(startT.image, new Location(startT), c);
- //      d.setEndLocation(Location.endOf(t)); 
- //      return d; }
- //  | <EXCHANGE> <ON> t=<IDENTIFIER>
- //    { da = new DerivationByExchange(startT.image, new Location(startT), c);
- //      da.addArgString(clauseFor(t)); }
- //    ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* 
- //    { return da; }
- //  | <WEAKENING> <ON> t=<IDENTIFIER>
- //    { da = new DerivationByWeakening(startT.image, new Location(startT), c);
- //      da.addArgString(clauseFor(t)); }
- //    ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* 
- //    { return da; }
- //  | LOOKAHEAD({isRulePart2()}) qn = QualName() 
- //     { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, null); }
- //     (<ON> cl=SimpleExpr() { da.addArgString(cl); }
- //      ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* | {} )
- //     { // handled later: ErrorHandler.recoverableError("Missing keyword 'rule' or 'theorem'/'lemma' before name", new Location(startT));
- //       return da;
- //     }
- //  | LOOKAHEAD(2) t=<IDENTIFIER> {qn = new QualName(new Location(t), t.image);} 
- //     { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, null); }
- //     <ON> cl=SimpleExpr() { da.addArgString(cl); }
- //      ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )* 
- //     { // handled later: ErrorHandler.recoverableError("Missing keyword 'rule' or 'theorem'/'lemma' before name", new Location(t));
- //       return da;
- //     }
- //  | cl=SimpleExpr()
- //    { da = new DerivationByPrevious(startT.image, new Location(startT), c);
- //      da.addArgString(cl);
- //    }
- //    ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
-	// { return da; }
+   | t=<SOLVE>
+     { d = new DerivationBySolve(startT.image, new Location(startT), c);
+       d.setEndLocation(Location.endOf(t));
+       return d; }
+   | <EXCHANGE> <ON> t=<IDENTIFIER>
+     { da = new DerivationByExchange(startT.image, new Location(startT), c);
+       da.addArgString(clauseFor(t)); }
+     ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
+     { return da; }
+   | <WEAKENING> <ON> t=<IDENTIFIER>
+     { da = new DerivationByWeakening(startT.image, new Location(startT), c);
+       da.addArgString(clauseFor(t)); }
+     ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
+     { return da; }
+   | LOOKAHEAD({isRulePart2()}) qn = QualName()
+      { da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, null); }
+      <ON> cl=SimpleExpr() { da.addArgString(cl); }
+       ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
+      { // handled later: ErrorHandler.recoverableError("Missing keyword 'rule' or 'theorem'/'lemma' before name", new Location(startT));
+        return da;
+      }
+   | LOOKAHEAD(2) t=<IDENTIFIER> {qn = new QualName(new Location(t), t.image);  da=new DerivationByTheorem(startT.image, new Location(startT), c, qn, null); }
+      <ON> cl=SimpleExpr() { da.addArgString(cl); }
+       ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
+      { // handled later: ErrorHandler.recoverableError("Missing keyword 'rule' or 'theorem'/'lemma' before name", new Location(t));
+        return da;
+      }
+   | cl=SimpleExpr()
+     { da = new DerivationByPrevious(startT.image, new Location(startT), c);
+       da.addArgString(cl);
+     }
+     ( <COMMA> cl=SimpleExpr() { da.addArgString(cl); } )*
+	 { return da; }
 }
 
 
