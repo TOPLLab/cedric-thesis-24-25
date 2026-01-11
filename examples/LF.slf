@@ -125,10 +125,7 @@ judgment signature-no-con: c # Σ
    
 // some obvious lemmas stating that signature lookup and freeness have the expected properties
 
-lemma signature-con-decidable:
-    forall Σ
-    forall c
-    exists c:A ∈ Σ or c # Σ
+lemma signature-con-decidable: forall Σ forall c exists c:A ∈ Σ or c # Σ
     proof by induction on Σ:
         case • is
             _: c # Σ by rule empty-no-con
@@ -549,11 +546,7 @@ judgment subexpression:  α ≤ α
   α ≤ α1 → α2
 
 
-lemma simple-type-unique:
-    assumes Γ 
-    forall sm1: Γ ⊢ (A)⁻ = α' 
-    forall sm2: Γ ⊢ (A)⁻ = α''
-    exists α' = α''
+lemma simple-type-unique: assumes Γ forall sm1: Γ ⊢ (A)⁻ = α' forall sm2: Γ ⊢ (A)⁻ = α'' exists α' = α''
     proof by induction on sm1:
         case rule
             ------------------ simple-fam

@@ -492,10 +492,7 @@ end theorem
  * type theory of the tool.
  */
 
-theorem subst : assumes Gamma
-                forall dt : (Gamma, x:tau') |- e[x] : tau 
-				forall dt' : Gamma |- e' : tau'
-				exists Gamma |- e[e'] : tau.
+theorem subst : assumes Gamma forall dt : (Gamma, x:tau') |- e[x] : tau forall dt' : Gamma |- e' : tau' exists Gamma |- e[e'] : tau.
 
 d1 : Gamma |- e[e'] : tau by induction on dt :
 

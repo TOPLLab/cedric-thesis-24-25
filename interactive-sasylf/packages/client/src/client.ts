@@ -173,6 +173,8 @@ export class Client extends EventEmitter<{
 	private handleStdErr(data: ArrayBuffer) {
 		const stream = data.toString();
 
+		console.error(`An error occurred in the SASyLF process: ${stream}`);
+
 		if (this.comittedInput === null) {
 			return;
 		}
@@ -180,7 +182,5 @@ export class Client extends EventEmitter<{
 		this.handleFailure(this.comittedInput.range, create(ResponseSchema, {
 			errors: [`An error occurred in the SASyLF process.`]
 		}));
-
-		console.error(`An error occurred in the SASyLF process: ${stream}`);
 	}
 }

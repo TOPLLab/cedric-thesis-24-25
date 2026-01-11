@@ -53,7 +53,7 @@ public abstract class Derivation extends Fact {
         }
         if (!finalOK) return false;
 
-        Derivation last = derivations.get(derivations.size() - 1);
+        Derivation last = derivations.getLast();
         if (last instanceof PartialCaseAnalysis) {
             ErrorHandler.error(Errors.PARTIAL_CASE_ANALYSIS, last, "do\nproof by");
         }
@@ -88,7 +88,7 @@ public abstract class Derivation extends Fact {
         }
         if (!finalOK) return false;
 
-        Derivation last = derivations.get(derivations.size() - 1);
+        Derivation last = derivations.getLast();
         if (last instanceof PartialCaseAnalysis) {
             ErrorHandler.error(Errors.PARTIAL_CASE_ANALYSIS, last, "do\nproof by");
         }
@@ -437,6 +437,12 @@ public abstract class Derivation extends Fact {
     /// @param orch
     /// @param ctx  Context to use. Should be cloned by the caller
     public void run(Orchestrator orch, Context ctx) {
+        if (this.clause == null) {
+            // we copy over to get the right location for things
+            this.clause = ctx.currentGoalClause.clone();
+            this.clause.setLocation(this.getLocation());
+            this.clause.setEndLocation(this.getLocation().add(PROOF_SIZE));
+        }
         ErrorHandler.recordLastSpan(this);
         ctx.checkConsistent(this);
         clause = clause.typecheck(ctx);
@@ -467,7 +473,12 @@ public abstract class Derivation extends Fact {
 
         var csw = new StringWriter();
         var cpw = new PrintWriter(csw);
-        this.getClause().prettyPrint(cpw);
+        var clause = this.getClause();
+        if (clause != null) {
+            this.getClause().prettyPrint(cpw);
+        } else {
+            cpw.print("<null>");
+        }
         builder.setClause(csw.toString());
 
         var factBuilder = edu.cmu.cs.sasylf.types.Fact.newBuilder().setDerivationFact(builder);

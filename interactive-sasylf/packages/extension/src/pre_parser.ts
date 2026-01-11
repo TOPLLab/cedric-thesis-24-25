@@ -33,12 +33,14 @@ function calculatePosition(start: vscode.Position, str: string): vscode.Position
 function getSyncWordsAndIndexes(input: string): [SyncWord, number][] {
 	return Object
 		.values(SyncWord)
-		.map((word): [SyncWord, number] => {
-			const index = input.indexOf(word);
-			return [word, index];
+		.map((word): [SyncWord, number | null] => {
+			const re = new RegExp(`\\b${word.replace(' ', `\\s+`)}\\b`);
+			const match = re.exec(input);
+			console.log(match);
+			return [word, match?.index ?? null];
 		})
+		.filter((result): result is [SyncWord, number] => result[1] !== null)
 		.sort(([aWord, aIndex], [bWord, bIndex]) => aIndex !== bIndex ? aIndex - bIndex : bWord.length - aWord.length) // break ties by keeping the longest Sync
-		.filter(([_, aIndex]) => aIndex !== -1)
 		.reduce((filteredList, val) => {
 
 			if (filteredList.length === 0) {

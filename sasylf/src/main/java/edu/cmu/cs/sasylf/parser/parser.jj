@@ -2101,12 +2101,12 @@ Theorem TheoremDeclaration(boolean abstractOK) :
 Derivation DerivationPrologue() :
 { Token t; Token t2; Token a; StringSpan s; QualName q = null; Case ca; Clause c; Clause c2 = null; Derivation d; Token of = null; }
 {
-   (
+   ((
       t=<IDENTIFIER> <COLON> c=Expr()
     (a=<AND> t2=<IDENTIFIER> <COLON> c2=Expr()
       { t.image += "," + t2.image;
         AndJudgment.addAnd(c,new Location(a),c2); })*
-      |
+      )|
      t=<PROOF> { c = null; })
    <BY> d=JustificationPrologue(t, c)
     { return d; }
@@ -2150,11 +2150,11 @@ Derivation Derivation() :
 { Token t; Token t2; Token a; StringSpan s; QualName q = null; Case ca; Clause c; Clause c2 = null; Derivation d; Token of = null;}
 {
    (
-     t=<IDENTIFIER> <COLON> c=Expr()
+     (t=<IDENTIFIER> <COLON> c=Expr()
    (a=<AND> t2=<IDENTIFIER> <COLON> c2=Expr()
      { t.image += "," + t2.image;
        AndJudgment.addAnd(c,new Location(a),c2); })*
-     |
+     )|
      t=<PROOF> { c = null; })
    <BY> d=Justification(t, c)
   { return d; }
