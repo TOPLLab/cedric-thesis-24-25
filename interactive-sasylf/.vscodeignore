@@ -15,3 +15,5 @@ vsc-extension-quickstart.md
 **/buf.gen.yaml
 turbo.json
 pnpm-workspace.yaml
+**/result
+packages/eslint-config
