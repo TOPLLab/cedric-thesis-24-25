@@ -10,6 +10,7 @@ enum SyncWord {
 	END_CASE_ANALYSIS = "end case analysis",
 
 	PACKAGE = "package",
+	// MODULE = "module",
 	TERMINALS = "terminals",
 	SYNTAX = "syntax",
 	JUDGMENT = "judgment",

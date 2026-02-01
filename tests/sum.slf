@@ -179,7 +179,7 @@ d1: n + (z) = n by induction on n:
  */
 
 case z is
-	d2: (z) + (z) = (z)	by rule sum-z
+	d2: (z) + (z) = (z)	by rule sum-z;
 end case
 
 /* Any fresh variables in <syntax> are bound for the derivation and can be

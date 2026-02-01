@@ -20,6 +20,13 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>.._proto</name>
+			<type>2</type>
+			<location>//Users/cedric.meukens/Thesis/sasylf/proto/</location>
+		</link>
+	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1735286195656</id>

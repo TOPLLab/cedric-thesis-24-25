@@ -398,6 +398,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
         Term oldGoal = ctx.currentGoal;
         Clause oldGoalClause = ctx.currentGoalClause;
         Map<CanBeCase, Set<Pair<Term, Substitution>>> oldCaseTermMap = ctx.caseTermMap;
+        Set<CanBeCase> oldFinishedCases = ctx.finishedCases;
 
         final String targetName = targetDerivation.getName();
         final Element targetElement = targetDerivation.getElement();
@@ -484,6 +485,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
             ctx.currentCaseAnalysisElement = oldElement;
             ctx.currentGoal = oldGoal;
             ctx.currentGoalClause = oldGoalClause;
+            ctx.finishedCases = oldFinishedCases;
         }
         // this.addToDerivationMap(ctx);
     }

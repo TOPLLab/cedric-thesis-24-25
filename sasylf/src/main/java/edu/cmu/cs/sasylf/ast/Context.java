@@ -49,6 +49,8 @@ public class Context implements Cloneable {
     public Map<CanBeCase, Set<Pair<Term, Substitution>>> caseTermMap; // entries mutable
     public Map<String, Map<CanBeCase, Set<Pair<Term, Substitution>>>> savedCaseMap; // entries immutable
     public Set<FreeVar> relaxationVars;
+    public Set<CanBeCase> finishedCases = new HashSet<>();
+
     HashMap<String, NonTerminal> varFreeNTmap = new HashMap<String, NonTerminal>();
     HashMap<NonTerminal, Relaxation> relaxationMap;
     int ruleSize = 0;
@@ -752,9 +754,25 @@ public class Context implements Cloneable {
         return g;
     }
 
-    // TODO: rename these functions
     public edu.cmu.cs.sasylf.types.Context toTypePb() {
         var builder = edu.cmu.cs.sasylf.types.Context.newBuilder();
+
+        for (var mod : this.modMap.values()) {
+            var modBuilder = edu.cmu.cs.sasylf.types.Module.newBuilder();
+            modBuilder.setName(mod.getName());
+
+            Map<String, RuleLike> modRuleLikeMap = new HashMap<>();
+            mod.collectRuleLike(modRuleLikeMap);
+            for (var ruleLike : modRuleLikeMap.values()) {
+                var ruleBuilder = edu.cmu.cs.sasylf.types.RuleLike.newBuilder();
+                if (ruleLike instanceof Rule rule) {
+                    ruleBuilder.setRule(rule.toTypePb());
+                } else if (ruleLike instanceof Theorem thm) {
+                    ruleBuilder.setTheorem(thm.toTypePb());
+                }
+                modBuilder.addMembers(ruleBuilder);
+            }
+        }
 
         if (this.currentTheorem != null) {
             builder.setCurrentTheorem(this.currentTheorem.toTypePb());
@@ -777,6 +795,10 @@ public class Context implements Cloneable {
             var caBuilder = CaseAnalysisContext.newBuilder();
             for (CanBeCase key : this.caseTermMap.keySet()) {
                 caBuilder.addCases(key.getName());
+            }
+
+            for (CanBeCase finished : this.finishedCases) {
+                caBuilder.addFinishedCases(finished.getName());
             }
 
             var sw = new StringWriter();

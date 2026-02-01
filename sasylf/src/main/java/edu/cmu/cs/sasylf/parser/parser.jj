@@ -1583,6 +1583,55 @@ CompUnit CompilationUnit() :
   }
 }
 
+CompUnit InteractiveUnit() :
+{
+  Part p;
+  PackageDeclaration pkg = null;
+  String moduleName = null;
+  QualName qn;
+  List<QualName> args = new ArrayList<>();
+  Token s, t=null, tp;
+  QualName usedModule = null;
+  Location loc;
+  CompUnit cu;
+}
+{
+  [ pkg=PackageDeclaration() ]
+  [ LOOKAHEAD(3) firstToken=<MODULE> t=<IDENTIFIER> { moduleName = t.image; } ]
+  {
+    if (pkg == null)
+		pkg = new PackageDeclaration(new Location(currentFile,1,1), null, new Location(currentFile,1,1));
+    cu = new CompUnit(pkg, firstToken != null ? new Location(firstToken) : new Location(currentFile,1,1), moduleName);
+  }
+
+  (t=<REQUIRES> {
+        if (firstToken == null) firstToken = t;
+        if (moduleName == null) ErrorHandler.recoverableError(Errors.REQUIRES_IN_MODULE,new Location(t));
+    } (
+      LOOKAHEAD( "abstract" | "terminals" | "syntax" | "judgment" | "theorem" | "lemma" )
+      p=Part(true) {  cu.addParameterChunk(p); }
+  	)+
+  )?
+
+  (t=<EXTENDS> usedModule=QualName() {
+    if (firstToken == null) firstToken = t;
+    if (moduleName == null) ErrorHandler.recoverableError(Errors.EXTENDS_IN_MODULE, new Location(t));
+    else ErrorHandler.recoverableError(Errors.EXTENDS_UNIMPLEMENTED, new Location(t));
+  })*
+
+  (t=<PROVIDES> {
+    if (firstToken == null) firstToken = t;
+    if (moduleName == null) ErrorHandler.recoverableError(Errors.PROVIDES_IN_MODULE,new Location(t)); }
+  | {
+    if (moduleName != null) ErrorHandler.recoverableError(Errors.PROVIDES_NOT_IN_MODULE, new Location(token));
+  })
+
+  {
+    /* maybe update first token? */
+    return cu;
+  }
+}
+
 void matchEOF() : {} { <EOF> { return; } }
 
 PackageDeclaration PackageDeclaration() :
@@ -1617,6 +1666,25 @@ Part PartInteractive(boolean abstractOK) :
   | LOOKAHEAD(2) ( LOOKAHEAD(2) j=JudgmentDeclaration(abstractOK) {  judges.add(j); } ) +
   	{ return new JudgmentPart(judges);}
 }
+
+Part ModulePartInteractive(boolean abstractOK) :
+{
+  QualName qn;
+  List<QualName> args = new ArrayList<>();
+  Token s, t=null, tp;
+  QualName usedModule = null;
+  Location loc;
+}
+{
+        t=<MODULE> s=<IDENTIFIER> "=" usedModule=QualName() { args.clear(); loc=usedModule.getEndLocation(); }
+    	[
+    	 "[" [ qn=QualName() { args.add(qn); }
+               ( "," qn=QualName() { args.add(qn); } )* ]
+         tp="]" {  loc = new Location(tp); }
+    	]
+      	{ return new ModulePart(new Location(t),s.image,usedModule,args,loc); }
+}
+
 
 List<Theorem> Theorems(boolean abstractOK) :
 { Theorem thm, lastThm;

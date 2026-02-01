@@ -4,7 +4,6 @@ import edu.cmu.cs.sasylf.interactive.Orchestrator;
 import edu.cmu.cs.sasylf.prover.Proof;
 import edu.cmu.cs.sasylf.prover.ProofImpl;
 import edu.cmu.cs.sasylf.prover.Prover;
-import edu.cmu.cs.sasylf.prover.SolveReport;
 import edu.cmu.cs.sasylf.term.Term;
 import edu.cmu.cs.sasylf.util.ErrorHandler;
 import edu.cmu.cs.sasylf.util.Errors;
@@ -36,7 +35,7 @@ public class DerivationBySolve extends Derivation {
         if (complete == null)
             ErrorHandler.error(Errors.SOLVE_FAILED, this);
         else {
-            ErrorHandler.report(new SolveReport(this, complete));
+            // ErrorHandler.report(new SolveReport(this, complete)); -- This blocks the interactive mode
             ErrorHandler.warning(Errors.SOLVE_UNRELIABLE, this);
         }
     }
@@ -53,7 +52,6 @@ public class DerivationBySolve extends Derivation {
         if (complete == null)
             ErrorHandler.error(Errors.SOLVE_FAILED, this);
         else {
-            ErrorHandler.report(new SolveReport(this, complete));
             ErrorHandler.warning(Errors.SOLVE_UNRELIABLE, this);
         }
     }

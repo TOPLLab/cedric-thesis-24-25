@@ -2,7 +2,7 @@
   description = "SASyLF";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
@@ -16,7 +16,7 @@
       perSystem =
         { self', pkgs, ... }:
         let
-          jdk = pkgs.jdk23;
+          jdk = pkgs.jdk25;
         in
         {
           devShells.default = pkgs.mkShell {
@@ -27,7 +27,7 @@
               self'.packages.sasylf
               pkgs.jdt-language-server
               pkgs.maven
-              pkgs.nodejs_23
+              pkgs.nodejs_24
               pkgs.pnpm
             ];
 
@@ -77,7 +77,7 @@
               buildInputs = [
                 self'.packages.sasylf-jar
                 pkgs.makeWrapper
-                pkgs.zulu23
+                pkgs.zulu25
               ];
               paths = [ sasylfScript ];
               postBuild = "wrapProgram $out/bin/sasylf --prefix PATH : $out/bin";

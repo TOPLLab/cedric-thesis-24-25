@@ -97,7 +97,9 @@ public class Orchestrator {
     /// Try all parseFns until one succeeds. If failed, read again
     public final void runNextNode(Context ctx, Delegate... delegates) {
         try {
-            this.emitContext(ctx);
+            if (ctx != null) {
+                this.emitContext(ctx);
+            }
 
             var input = reader.readLine();
             var requestBuilder = Request.newBuilder();
@@ -113,7 +115,11 @@ public class Orchestrator {
 
                 for (final var parseFn : delegates) {
                     try {
-                        parseFn.finalize(ctx.clone(), parser);
+                        if (ctx != null) {
+                            parseFn.finalize(ctx.clone(), parser);
+                        } else {
+                            parseFn.finalize(null, parser);
+                        }
                         return;
                     } catch (ParseException e) {
                         exceptions.add(e);

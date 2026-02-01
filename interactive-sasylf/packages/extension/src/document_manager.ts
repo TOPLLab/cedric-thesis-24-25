@@ -151,7 +151,7 @@ export class DocumentManager {
 	}
 
 	private changeActiveDocument(ctx: vscode.ExtensionContext, editor: vscode.TextEditor | null) {
-		console.debug("Chaning active document");
+		console.debug("Changing active document");
 		this.getCurrentDocumentHandler()?.deactivate();
 		this.currentDocument = null;
 

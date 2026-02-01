@@ -30,6 +30,25 @@ message Context  {
   string goal = 2;
   repeated Fact derivations = 3;
   CaseAnalysisContext case_analysis_context = 4;
+  repeated Module modules = 5;
+}
+
+message Module {
+  string name = 1;
+  repeated RuleLike members = 2;
+}
+
+message RuleLike {
+  oneof value {
+    Theorem theorem = 1;
+    Rule rule = 2;
+  }
+}
+
+message Rule {
+  string name = 1;
+  repeated string premises = 2;
+  string conclusion = 3;
 }
 
 message Theorem {
@@ -61,6 +80,7 @@ message VariableAssumptionFact {
 }
 
 message CaseAnalysisContext {
-  string currentCaseAnalysisElement = 1;
+  string current_case_analysis_element = 1;
   repeated string cases = 2;
+  repeated string finished_cases = 3;
 }

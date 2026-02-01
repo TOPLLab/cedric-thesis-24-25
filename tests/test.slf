@@ -12,7 +12,6 @@ judgment plus: n + n = n
         -------------- plus-s
         S n1 + n2 = S n3
 
-lemma simple:
-        exists 1 + 1 = 2
+lemma simple: exists 1 + 1 = 2
         result: 1 + 1 = 2 by rule plus-s on _
 end lemma
