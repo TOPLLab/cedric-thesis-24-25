@@ -441,6 +441,7 @@ public abstract class DerivationByAnalysis extends DerivationWithArgs {
             if (isSubderivation != null) debug("found subderivation: ", targetDerivation);
 
             ctx.caseTermMap = new LinkedHashMap<CanBeCase, Set<Pair<Term, Substitution>>>();
+            ctx.finishedCases = new HashSet<>();
 
             caseAnalyze(ctx, targetName, targetElement, this, ctx.caseTermMap);
 

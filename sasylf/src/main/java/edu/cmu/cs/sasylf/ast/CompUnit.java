@@ -121,7 +121,7 @@ public class CompUnit extends Node implements Module {
      */
     @Override
     public boolean typecheck() {
-        return typecheck(NullModuleFinder.get(), (ModuleId) null);
+        return typecheck(NullModuleFinder.get(), null);
     }
 
     /**
@@ -154,7 +154,7 @@ public class CompUnit extends Node implements Module {
                 @Override
                 public void run(Context ctx, Part part) throws ParseException {
                     addChunk(part);
-                    typecheck();
+                    typecheck(mf, id);
                 }
             };
 
