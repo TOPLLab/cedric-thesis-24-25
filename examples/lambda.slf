@@ -310,9 +310,7 @@ is
 				dpp1t' : *, x:tau' |- e1'[x] : tau
 				---------------------------------------------------- t-fn
 				dp1t' : * |- fn x : tau' => e1'[x] : tau' -> tau
-			
 			is
-			
 				ds : (fn x : tau' => e1'[x]) e2 -> e1'[e2] by rule r-app on dp2v
 				dsv : e stepsorvalue by rule stepsorvalue-steps on ds
 				
@@ -345,10 +343,8 @@ is
 			dp2sv' :  e2 stepsorvalue
 		
 		is
-		
 			ds : e1 e2 -> e1 e2' by rule c-app-r on dp1v, dp2s
 			dsv : e1 e2 stepsorvalue by rule stepsorvalue-steps on ds
-		
 		end case
 		end case analysis
 	end case
@@ -460,14 +456,15 @@ is
 		
 			d7: *, x:tau' |- e1[x] : tau
 			------------------------------------------------- t-fn
-			d8: * |- fn x : tau' => e1[x] : tau' -> tau
+			d8: * |- fn x : tau' => e1[x] : tau' -> tau  
 		
 		is
 		
 			/** Substitution preserves typing!  No lemma to prove.
-			 */
+			 */ 
 			
-			d9: * |- e1[e2] : tau by substitution on d7, d5
+// 			d9: * |- e1[e2] : tau by substitution on d7, d5
+			d9: * |- e1[e2] : tau by unproved
 		
 		end case
 		// other cases do not unify with fn expression
@@ -495,10 +492,7 @@ end theorem
  * type theory of the tool.
  */
 
-theorem subst : assumes Gamma
-                forall dt : (Gamma, x:tau') |- e[x] : tau 
-				forall dt' : Gamma |- e' : tau'
-				exists Gamma |- e[e'] : tau.
+theorem subst : assumes Gamma forall dt : (Gamma, x:tau') |- e[x] : tau forall dt' : Gamma |- e' : tau' exists Gamma |- e[e'] : tau.
 
 d1 : Gamma |- e[e'] : tau by induction on dt :
 

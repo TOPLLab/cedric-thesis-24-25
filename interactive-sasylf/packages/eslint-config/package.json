@@ -1,0 +1,25 @@
+{
+	"name": "@live-sasylf/eslint-config",
+	"version": "0.0.0",
+	"type": "module",
+	"private": true,
+	"exports": {
+		"./base": "./src/base.js",
+		"./solid": "./src/solid.js"
+	},
+	"scripts": {
+		"lint": "eslint"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.37.0",
+		"@typescript-eslint/eslint-plugin": "^8.46.1",
+		"eslint": "^9.37.0",
+		"eslint-config-prettier": "^10.1.1",
+		"eslint-plugin-only-warn": "^1.1.0",
+		"eslint-plugin-solid": "^0.14.5",
+		"eslint-plugin-turbo": "^2.5.0",
+		"globals": "^16.3.0",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.46.1"
+	}
+}

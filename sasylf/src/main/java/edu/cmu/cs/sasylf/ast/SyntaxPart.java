@@ -20,7 +20,7 @@ public class SyntaxPart implements Part {
 	 * @param sdecls syntax declarations (must not be null)
 	 */
 	public SyntaxPart(List<Syntax> sdecls) {
-		syntax = new ArrayList<Syntax>(sdecls);
+		syntax = new ArrayList<>(sdecls);
 	}
 	
 	/**

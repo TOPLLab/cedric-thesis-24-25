@@ -7,35 +7,18 @@
  * contexts, and proves type safety.  As we go along, we illustrate the SASyLF language
  * in tutorial style.
  *
- * EXERCISE 2: add a "let" construct to the language syntax, reduction rules, and typing
- * rules, and fix the type safety proof to handle the cases for "let."
- *
- * SOLUTION 2: see the file solution2.slf
+ * EXERCISE 2: add an "if" construct and corresponding "true" and "false" values to the 
+ * language syntax, reduction rules, and typing rules, and fix the type safety proof to 
+ * handle the cases for "if".
  */
 
-
-/** The package declaration is currently a placeholder, but
- * will eventually support a module system for SASyLF
- */
 package edu.cmu.cs.lambda;
 
-/** SASyLF programs explicitly declare terminals that are
- * used to parse expressions.  This helps the SASyLF parser
- * detect problems in the input grammar--anything that is not
- * a declared terminal, non-terminal, or variable must be an error.
- * The user should declare all identifiers used in syntax and judgment
- * that do not themselves denote syntactic classes.  Symbols like
- * + or |- do not need to be declared, even if they are terminals.
- */
 terminals fn unit in value stepsorvalue
 
 
 /************************ SYNTAX **************************************/
 
-/** The syntax section declares the syntax of the formal
- * system, in this case of the lambda calculus.  Syntax is
- * given using an ordinary BNF grammar.
- */
 syntax
 
 /** This declaration declares e as a nonterminal.  e and variants of e
@@ -63,16 +46,18 @@ e ::= fn x : tau => e[x]
  
  | "(" ")" 				
 
-/******************************************************
- * EXERCISE 2: ADD THE SYNTAX FOR LET HERE            *
- * Don't forget to specify how the variable is bound! *
- ******************************************************/
+/**********************************************************************
+ * EXERCISE 2: ADD THE SYNTAX `true`, `false`, AND IF STATEMENTS HERE *
+ ********************r**************************************************/
 
 
 /** Here we define the syntax of types */
 
 tau ::= unit
  | tau -> tau
+/****************************************
+ * EXERCISE 3: ADD THE `bool` TYPE HERE *
+ ****************************************/
 
 
 /** The form of contexts.  Judgments that use this as a variable
@@ -103,6 +88,13 @@ judgment value: e value
 fn x : tau => e1[x] value
 
 
+/**********************************************************
+ * EXERCISE 2: ADD VALUE DEFS FOR `true` AND `false` HERE *
+ * One for evaluation of the condition                    *
+ * and one for each branch                                *
+ **********************************************************/
+
+
 /** The reduction judgment.  Rules are defined with the premises above the line
  * and the conclusion below the line.
  */
@@ -127,10 +119,11 @@ e2 value
 ---------------------------------- r-app
 (fn x : tau => e[x]) e2 -> e[e2]
 
-/*************************************************
- * EXERCISE 2: ADD EVALUATION RULES FOR LET HERE *
- * One context rule and one reduction rule       *
- *************************************************/
+/************************************************
+ * EXERCISE 2: ADD EVALUATION RULES FOR IF HERE *
+ * One for evaluation of the condition          *
+ * and one for each branch                      *
+ ************************************************/
 
 
 /** The typing judgment uses a list of assumptions for variable types.
@@ -168,9 +161,9 @@ Gamma |- e2 : tau'
 ---------------------------------- t-app
 Gamma |- e1 e2 : tau
 
-/*********************************************
- * EXERCISE 2: ADD TYPING RULES FOR LET HERE *
- *********************************************/
+/********************************************
+ * EXERCISE 2: ADD TYPING RULES FOR IF HERE *
+ ********************************************/
 
 
 /** We don't have logical and or or operators built-in, so we define the logical
@@ -203,25 +196,7 @@ e stepsorvalue
 
 theorem identity-behavior : forall dv : e value exists (fn x : tau => x) e -> e.
 
-
-/** The actual proof is a series of statements of the form:
- *
- * name : judge			by justification
- *
- * Here name is an identifier that is used to refer to each fact, in case we need it
- * later.  judge is the judgment we've proved.  And the justification is the reason
- * we believe it's true (SASyLF will make sure we're right by checking that the
- * justification actually proves the judgment).
- *
- * The most common justification is "by rule <rule-name> on <name1>, <name2>, ..., <name_k>"
- * This means that we conclude the judgment on the left by applying rule <rule-name> to the
- * (ordered) list of premises <name1>, <name2>, ..., <name_k>.  Each <name> must be either
- * one of the foralls (we don't have any for this theorem) or one of the earlier things we
- * concluded.  If the rule has no premises (i.e. it's an axiom) we leave out the "on <name1>..."
- * part.
- */
-
-d1 : (fn x : tau => x) e -> e by rule r-app on dv
+d1 : (fn x : tau => x) e -> e by unproved
 
 end theorem
 
@@ -234,17 +209,12 @@ end theorem
 
 /************************ PROGRESS **************************************/
 
-/*************************************************
- * EXERCISE 2: FIX PROGRESS TO ADD CASES FOR LET *
- *************************************************/
+/************************************************
+ * EXERCISE 2: FIX PROGRESS TO ADD CASES FOR IF *
+ ************************************************/
 
 
 theorem progress : forall dt : * |- e : tau exists e stepsorvalue.
-
-/** Now the real fun begins--a proof by induction.  We use a "by induction on X :"
- * justification, where X is the derivation or syntax that we are doing induction
- * over.
- */
 
 dsv : e stepsorvalue by induction on dt :
 
@@ -274,7 +244,6 @@ is
 end case
 
 // case t-var impossible - conclusion doesn't unify with dt
-
 
 case rule
 
@@ -395,9 +364,9 @@ end theorem
 
 /************************ PRESERVATION **************************************/
 
-/*****************************************************
- * EXERCISE 2: FIX PRESERVATION TO ADD CASES FOR LET *
- *****************************************************/
+/****************************************************
+ * EXERCISE 2: FIX PRESERVATION TO ADD CASES FOR IF *
+ ****************************************************/
 
 theorem preservation: forall dt: * |- e : tau forall ds: e -> e' exists * |- e' : tau.
 

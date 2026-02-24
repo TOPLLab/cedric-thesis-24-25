@@ -1,0 +1,28 @@
+{
+	"name": "@live-sasylf/extension",
+	"main": "./dist/extension.js",
+	"types": "./dist/extension.d.ts",
+	"type": "module",
+	"version": "0.0.0",
+	"scripts": {
+		"build": "vite build --mode dev",
+		"build:production": "vite build",
+		"watch": "pnpm build --watch",
+		"lint": "eslint",
+		"type-check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@live-sasylf/eslint-config": "workspace:*",
+		"@types/esbuild-copy-static-files": "^0.1.4",
+		"@types/node": "^24.7.2",
+		"@types/vscode": "^1.83.0",
+		"typescript": "^5.9.2",
+		"vite": "^7.1.9",
+		"vite-plugin-dts": "^4.5.4"
+	},
+	"dependencies": {
+		"@bufbuild/protobuf": "^2.9.0",
+		"@live-sasylf/client": "workspace:*",
+		"@live-sasylf/context-view": "workspace:*"
+	}
+}

@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+	/* We'll follow the selected theme's colors */
+	--color-foreground: var(--vscode-editor-foreground);
+	--color-error: var(--vscode-editorError-foreground);
+	--color-warning: var(--vscode-editorWarning-foreground);
+	--color-info: var(--vscode-editorInfo-foreground);
+
+	/* Absolute colors */
+	--color-black: var(--vscode-terminal-ansiBlack);
+	--color-red: var(--vscode-terminal-ansiRed);
+	--color-green: var(--vscode-terminal-ansiGreen);
+	--color-blue: var(--vscode-terminal-ansiBlue);
+}
+
+@layer base {
+	h1 {
+		@apply text-lg;
+	}
+}
+
+@layer components {
+	.comma-separated-list>*:not(:last-child)::after {
+		content: ", ";
+	}
+}

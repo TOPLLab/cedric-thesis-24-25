@@ -1,0 +1,79 @@
+{
+  "name": "live-sasylf",
+  "author": {
+    "name": "Cédric Meukens",
+    "email": "cedric.meukens@ugent.be"
+  },
+  "publisher": "sasylf",
+  "repository": "https://github.com/TOPLLab/cedric-thesis-24-25",
+  "license": "EPL-2.0",
+  "displayName": "Live SASyLF",
+  "version": "0.0.3",
+  "packageManager": "pnpm@9.12.3",
+  "type": "module",
+  "engines": {
+    "vscode": "^1.96.4"
+  },
+  "categories": [
+    "Education",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:sasylf"
+  ],
+  "main": "./packages/extension/dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "live-sasylf.runToCursor",
+        "title": "SASyLF: Run To Step Under Cursor"
+      },
+      {
+        "command": "live-sasylf.runNext",
+        "title": "SASyLF: Run Next Step"
+      },
+      {
+        "command": "live-sasylf.openContextView",
+        "title": "SASyLF: Open Context View"
+      },
+      {
+        "command": "live-sasylf.restartCurrentProcess",
+        "title": "SASyLF: Restart Current Process"
+      }
+    ],
+    "languages": [
+      {
+        "id": "sasylf",
+        "extensions": [
+          ".slf"
+        ],
+        "aliases": [
+          "SASyLF"
+        ],
+        "filenamePatterns": [
+          "*.slf"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sasylf",
+        "scopeName": "source.sasylf",
+        "path": "./syntaxes/sasylf.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "build:production": "turbo run build:production",
+    "watch": "turbo run watch",
+    "lint": "turbo run lint",
+    "fmt": "turbo run lint -- --fix",
+    "type-check": "turbo run type-check",
+    "package": "pnpm build:production && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.6.2",
+    "turbo": "^2.5.8"
+  }
+}

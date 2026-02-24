@@ -1,0 +1,151 @@
+terminals
+    fn
+    true false
+    if then else
+    Bool
+    value
+    stepsorvalue
+
+syntax
+
+e ::= true
+    | false
+    | if e then e else e
+    | fn x : τ => e[x]
+    | x
+    | e e
+
+τ ::= Bool
+      | τ -> τ
+
+Γ ::= *
+        | Γ, x : τ
+
+judgment value : e value
+
+---------- val-true
+true value
+
+----------- val-false
+false value
+
+---------------------- val-fn
+fn x : τ => e1[x] value
+
+judgment step : e -> e
+
+// Steps for application
+
+   e1 -> e1'
+--------------- c-app-l
+e1 e2 -> e1' e2
+
+   e1 value
+   e2 -> e2'
+--------------- c-app-r
+e1 e2 -> e1' e2
+
+             e2 value 
+-------------------------------- r-app
+(fn x : τ => e[x]) e2 -> e[e2]
+
+// Steps for if expressions
+
+                   e1 -> e1'
+----------------------------------------------- r-if-clause
+if e1 then e2 else e3 -> if e1' then e2 else e3
+
+----------------------------- r-if-true
+if true then e1 else e2 -> e1
+
+------------------------------ r-if-false
+if false then e1 else e2 -> e2
+
+judgment has-type : Γ |- e : τ
+assumes Γ
+
+-------------------- t-true
+Γ |- true : Bool
+
+--------------------- t-false
+Γ |- false : Bool
+
+Γ |- e1 : Bool
+Γ |- e2 : τ
+Γ |- e3 : τ
+------------------------------------ t-if
+Γ |- if e1 then e2 else e3 : τ
+
+------------------------ t-var
+Γ, x : τ |- x: τ
+
+Γ, x1 : τ |- e[x1] : τ'
+----------------------------------------- t-fn
+Γ |- fn x : τ => e[x] : τ -> τ'
+
+Γ |- e1 : τ -> τ'
+Γ |- e2 : τ
+------------------------- t-app
+Γ |- e1 e2 : τ'
+
+/* Progress */
+
+
+judgment stepsorvalue : e stepsorvalue
+
+e value
+-------------- stepval-value
+e stepsorvalue
+
+e -> e'
+-------------- stepval-step 
+e stepsorvalue
+
+theorem progress : forall dt : * |- e : τ exists e stepsorvalue.
+    dsv : e stepsorvalue by induction on dt :
+
+        case rule
+            ---------------------- t-false
+            dtb : * |- false : Bool
+        is 
+            dv : false value by rule val-false
+            dsv : false stepsorvalue by rule stepval-value on dv
+        end case
+
+        case rule
+            ---------------------- t-true
+            dtb : * |- true : Bool
+        is
+            dv : true value by rule val-true
+            dsv : true stepsorvalue by rule stepval-value on dv
+        end case
+
+        case rule
+            de1b : * |- e1 : Bool
+            de2t : * |- e2 : τ'
+            de3t : * |- e3 : τ'
+            -------------------------------------- t-if
+            dit : * |- if e1 then e2 else e3 : τ'
+        is
+            dsv : (if e1 then e2 else e3) stepsorvalue by unproved
+        end case
+
+        case rule
+            dext : *, x1 : τ'' |- e1[x1] : τ'
+            --------------------------------------------- t-fn
+            dfnt : * |- fn x : τ'' => e1[x] : τ'' -> τ'
+        is
+            dv : fn x : τ'' => e'[x] value by rule val-fn
+            dsv : fn x : τ'' => e'[x] stepsorvalue by rule stepval-value on dv
+        end case
+
+        case rule
+            de1t : * |- e1 : τ'' -> τ'
+            de2t : * |- e2 : τ''
+            ------------------------- t-app
+            dappt: * |- e1 e2 : τ'
+        is
+            dsv : e1 e2 stepsorvalue by unproved
+        end case
+    end induction
+end theorem

@@ -22,12 +22,7 @@ n1 + n2 = n3
 S n1 + n2 = S n3
 
 
-theorem plus-associative:
-    forall p1: n1 + n2 = n3
-    forall p2: n3 + n4 = n7
-    
-    // The result of a theorem can "and" together multiple derivations:
-    exists n2 + n4 = n6 and n1 + n6 = n7.
+theorem plus-associative: forall p1: n1 + n2 = n3 forall p2: n3 + n4 = n7 exists n2 + n4 = n6 and n1 + n6 = n7.
     
     // The pseudo-derivation "proof" means "whatever we're trying to prove now"
     // In this case, this is the conjunction we are proving

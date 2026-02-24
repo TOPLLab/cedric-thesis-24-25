@@ -26,8 +26,8 @@ e ::= x
 E ::= *
   |   E, x
 
-judgment plus = Natural.plus: n + n = n
-judgment equal = Natural.equal: n = n
+// judgment plus = Natural.plus: n + n = n
+// judgment equal = Natural.equal: n = n
 
 judgment value: e value
 
@@ -446,70 +446,70 @@ end lemma
  * to get exactly e2', which is what the "exists" part of the theorem states.
  */
 theorem fold-correct:
-    forall d1: * |- e1 ~> e2
-    forall d2: e1 => e1'
-    forall d3: e2 => e2'
-    exists * |- e1' ~> e2'
-    use induction on d2
-    proof by case analysis on d1:
-        case rule
-            a1: * |- e0 ~> e3
-            a2: (*, x) |- e4[x] ~> e5[x]
-            ------------------------- fold-let
-            _: * |- (let x = e0 in e4[x]) ~> (let x = e3 in e5[x])
-            where e1 := (let x = e0 in e4[x]) and e2 := (let x = e3 in e5[x])
-        is
-            proof by case analysis on d2:
-                case rule
-                    a3: e0 => e6
-                    a4: e4[e6] => e1'
-                    ------------------------- eval-let
-                    _: (let x = e0 in e4[x]) => e1'
-                is
-                    proof by case analysis on d3:
-                        case rule
-                            h1: (let x = e3 in e5[x]) value
-                            ------------- eval-val
-                            _: (let x = e3 in e5[x]) => (let x = e3 in e5[x])
-                            where e2' := (let x = e3 in e5[x])
-                        is
-                            proof by contradiction on h1
-                        end case
+    forall d1: * |- e1 ~> e2
+    forall d2: e1 => e1'
+    forall d3: e2 => e2'
+    exists * |- e1' ~> e2'
+    use induction on d2
+    proof by case analysis on d1:
+        case rule
+            a1: * |- e0 ~> e3
+            a2: (*, x) |- e4[x] ~> e5[x]
+            ------------------------- fold-let
+            _: * |- (let x = e0 in e4[x]) ~> (let x = e3 in e5[x])
+            where e1 := (let x = e0 in e4[x]) and e2 := (let x = e3 in e5[x])
+        is
+            proof by case analysis on d2:
+                case rule
+                    a3: e0 => e6
+                    a4: e4[e6] => e1'
+                    ------------------------- eval-let
+                    _: (let x = e0 in e4[x]) => e1'
+                is
+                    proof by case analysis on d3:
+                        case rule
+                            h1: (let x = e3 in e5[x]) value
+                            ------------- eval-val
+                            _: (let x = e3 in e5[x]) => (let x = e3 in e5[x])
+                            where e2' := (let x = e3 in e5[x])
+                        is
+                            proof by contradiction on h1
+                        end case
 
-                        case rule
-                            a5: e3 => e7
-                            a6: e5[e7] => e2'
-                            ------------------------- eval-let
-                            _: (let x = e3 in e5[x]) => e2'
-                        is
-                            a7: * |- e6 ~> e7 by induction hypothesis on a1, a3, a5
-                            a8: * |- e4[e6] ~> e5[e7] by lemma rewrite-composes on a2,a7
-                            _: * |- e1' ~> e2' by induction hypothesis on a8, a4, a6
-                        end case
+                        case rule
+                            a5: e3 => e7
+                            a6: e5[e7] => e2'
+                            ------------------------- eval-let
+                            _: (let x = e3 in e5[x]) => e2'
+                        is
+                            a7: * |- e6 ~> e7 by induction hypothesis on a1, a3, a5
+                            a8: * |- e4[e6] ~> e5[e7] by lemma rewrite-composes on a2,a7
+                            _: * |- e1' ~> e2' by induction hypothesis on a8, a4, a6
+                        end case
 
-                    end case analysis
-                end case
+                    end case analysis
+                end case
 
-                case rule
-                    q1: (let x = e0 in e4[x]) value
-                    ------------- eval-val
-                    _: (let x = e0 in e4[x]) => (let x = e0 in e4[x])
-                    where e1' := (let x = e0 in e4[x])
-                is
-                    proof by contradiction on q1
-                end case
+                case rule
+                    q1: (let x = e0 in e4[x]) value
+                    ------------- eval-val
+                    _: (let x = e0 in e4[x]) => (let x = e0 in e4[x])
+                    where e1' := (let x = e0 in e4[x])
+                is
+                    proof by contradiction on q1
+                end case
 
-            end case analysis
-        end case
+            end case analysis
+        end case
 
-        case rule
+        case rule
 		  _: (E, x) |- e0[x] ~> (fn x' { e11[x][x'] })
 		  _: (E, x) |- e2''[x] ~> (e10)
 		  _: (E, x) |- e11[x][e10] ~> e8[x]
 		  -------------------------- fold-app-prop
 		  _: (E, x) |- (e0[x] e2''[x]) ~> e8[x]
-        is
-            proof by unproved
-        end case
+        is
+            proof by unproved
+        end case
     end induction
 end theorem

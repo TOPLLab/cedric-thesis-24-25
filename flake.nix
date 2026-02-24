@@ -2,25 +2,34 @@
   description = "SASyLF";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = inputs@{ flake-parts, ... }:
+  outputs =
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "aarch64-darwin"
       ];
 
-      perSystem = { self', pkgs, ... }:
+      perSystem =
+        { self', pkgs, ... }:
         let
-          jdk = pkgs.jdk21;
+          jdk = pkgs.jdk25;
         in
         {
           devShells.default = pkgs.mkShell {
             name = "SASyLF";
 
-            buildInputs = with pkgs; [ jdk jdt-language-server maven ];
+            buildInputs = [
+              jdk
+              self'.packages.sasylf
+              pkgs.jdt-language-server
+              pkgs.maven
+              pkgs.nodejs_24
+              pkgs.pnpm
+            ];
 
             shellHook = ''
               export JAVA_HOME=${jdk}
@@ -28,31 +37,33 @@
             '';
           };
 
-          packages.sasylf-jar =
-            pkgs.stdenv.mkDerivation {
-              pname = "SASyLF";
-              version = "1.5.1";
+          packages.sasylf-jar = pkgs.stdenv.mkDerivation {
+            pname = "SASyLF";
+            version = "1.5.1";
 
-              src = ./.;
+            src = ./.;
 
-              buildInputs = with pkgs; [ jdk javacc maven ];
+            buildInputs = with pkgs; [
+              jdk
+              javacc
+              maven
+            ];
 
-              buildPhase = ''
-                # Create a temporary maven repository
-                mkdir -p $TMPDIR/.m2/repository
+            buildPhase = ''
+              # Create a temporary maven repository
+              mkdir -p $TMPDIR/.m2/repository
 
-                # Run maven with custom repository location
-                mvn clean package \
-                  -pl sasylf \
-                  -Dmaven.repo.local=$TMPDIR/.m2/repository
-              '';
+              # Run maven with custom repository location
+              mvn clean generate-sources package \
+                -pl sasylf \
+                -Dmaven.repo.local=$TMPDIR/.m2/repository
+            '';
 
-
-              installPhase = ''
-                mkdir -p $out/bin
-                cp sasylf/target/sasylf-*.jar $out/bin/SASyLF.jar
-              '';
-            };
+            installPhase = ''
+              mkdir -p $out/bin
+              cp sasylf/target/sasylf-*.jar $out/bin/SASyLF.jar
+            '';
+          };
 
           packages.sasylf =
             let
@@ -63,7 +74,11 @@
             in
             pkgs.symlinkJoin {
               name = "sasylf";
-              buildInputs = [ self'.packages.sasylf-jar pkgs.makeWrapper ];
+              buildInputs = [
+                self'.packages.sasylf-jar
+                pkgs.makeWrapper
+                pkgs.zulu25
+              ];
               paths = [ sasylfScript ];
               postBuild = "wrapProgram $out/bin/sasylf --prefix PATH : $out/bin";
             };

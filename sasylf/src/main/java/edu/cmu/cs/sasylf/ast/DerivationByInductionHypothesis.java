@@ -1,5 +1,7 @@
 package edu.cmu.cs.sasylf.ast;
 
+import edu.cmu.cs.sasylf.interactive.Orchestrator;
+import edu.cmu.cs.sasylf.parser.ParseException;
 import edu.cmu.cs.sasylf.util.Location;
 
 
@@ -25,5 +27,13 @@ public class DerivationByInductionHypothesis extends DerivationByIHRule {
 
 		this.checkInduction(ctx, ctx.currentTheorem, ctx.currentTheorem);
 	}
+
+	@Override
+	public void run(Orchestrator orch, Context ctx) {
+		super.run(orch, ctx);
+
+		this.checkInduction(ctx, ctx.currentTheorem, ctx.currentTheorem);
+	}
+
 
 }
