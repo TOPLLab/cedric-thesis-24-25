@@ -7,10 +7,10 @@ import dts from 'vite-plugin-dts';
 
 import pkg from './package.json';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig((_) => ({
   plugins: [devtools(), solidPlugin(), tailwindcss(), dts()],
   build: {
-    sourcemap: mode === "dev",
+    sourcemap: true,
     rollupOptions: {
       external: [
         ...Object.keys(pkg.devDependencies),
@@ -31,3 +31,4 @@ export default defineConfig(({ mode }) => ({
     ],
   },
 }));
+ 

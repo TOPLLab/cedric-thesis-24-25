@@ -7,33 +7,18 @@
  * contexts, and proves type safety.  As we go along, we illustrate the SASyLF language
  * in tutorial style.
  *
- * SOLUTION TO EXERCISE 2: we have added "let" to the lambda calculus in the
- * file exercise2.slf
+ * EXERCISE 2: add an "if" construct and corresponding "true" and "false" values to the 
+ * language syntax, reduction rules, and typing rules, and fix the type safety proof to 
+ * handle the cases for "if".
  */
 
-
-/** The package declaration is currently a placeholder, but
- * will eventually support a module system for SASyLF
- */
 package edu.cmu.cs.lambda;
 
-/** SASyLF programs explicitly declare terminals that are
- * used to parse expressions.  This helps the SASyLF parser
- * detect problems in the input grammar--anything that is not
- * a declared terminal, non-terminal, or variable must be an error.
- * The user should declare all identifiers used in syntax and judgment
- * that do not themselves denote syntactic classes.  Symbols like
- * + or |- do not need to be declared, even if they are terminals.
- */
-terminals fn unit in value stepsorvalue let
+terminals fn unit bool in value stepsorvalue true false if then else
 
 
 /************************ SYNTAX **************************************/
 
-/** The syntax section declares the syntax of the formal
- * system, in this case of the lambda calculus.  Syntax is
- * given using an ordinary BNF grammar.
- */
 syntax
 
 /** This declaration declares e as a nonterminal.  e and variants of e
@@ -59,14 +44,24 @@ e ::= fn x : tau => e[x]
   * the object language being defined requires quotes.
   */
  
- | "(" ")"
- | let x = e in e[x]
+ | "(" ")" 				
+ | true
+ | false
+ | if e then e else e
+
+/**********************************************************************
+ * EXERCISE 2: ADD THE SYNTAX `true`, `false`, AND IF STATEMENTS HERE *
+ ********************r**************************************************/
 
 
 /** Here we define the syntax of types */
 
 tau ::= unit
+ | bool
  | tau -> tau
+/****************************************
+ * EXERCISE 3: ADD THE `bool` TYPE HERE *
+ ****************************************/
 
 
 /** The form of contexts.  Judgments that use this as a variable
@@ -97,6 +92,18 @@ judgment value: e value
 fn x : tau => e1[x] value
 
 
+/**********************************************************
+ * EXERCISE 2: ADD VALUE DEFS FOR `true` AND `false` HERE *
+ * One for evaluation of the condition                    *
+ * and one for each branch                                *
+ **********************************************************/
+
+----------- val-true
+true value
+
+------------ val-false
+false value
+
 /** The reduction judgment.  Rules are defined with the premises above the line
  * and the conclusion below the line.
  */
@@ -119,16 +126,25 @@ e2 -> e2'
 
 e2 value
 ---------------------------------- r-app
-((fn x : tau => e[x]) e2) -> e[e2]
+(fn x : tau => e[x]) e2 -> e[e2]
+
+/************************************************
+ * EXERCISE 2: ADD EVALUATION RULES FOR IF HERE *
+ * One for evaluation of the condition          *
+ * and one for each branch                      *
+ ************************************************/
 
 e1 -> e1'
-------------------------------------------- c-let
-let x = e1 in e2[x] -> let x = e1' in e2[x] 
+--------------------------------------------------- r-if-cond
+(if e1 then e2 else e3) -> (if e1' then e2 else e3)
 
 
-e1 value
------------------------------ r-let
-let x = e1 in e2[x] -> e2[e1]
+------------------------------- r-if-true
+(if true then e2 else e3) -> e2
+
+
+-------------------------------- r-if-false
+(if false then e2 else e3) -> e3
 
 
 /** The typing judgment uses a list of assumptions for variable types.
@@ -166,10 +182,15 @@ Gamma |- e2 : tau'
 ---------------------------------- t-app
 Gamma |- e1 e2 : tau
 
-Gamma |- e1 : tau1
-Gamma, x:tau1 |- e2[x] : tau2
------------------------------------ t-let
-Gamma |- let x = e1 in e2[x] : tau2
+/********************************************
+ * EXERCISE 2: ADD TYPING RULES FOR IF HERE *
+ ********************************************/
+
+Gamma |- e1 : bool
+Gamma |- e2 : tau
+Gamma |- e3 : tau
+------------------------------------ t-if 
+Gamma |- if e1 then e2 else e3 : tau
 
 
 /** We don't have logical and or or operators built-in, so we define the logical
@@ -202,24 +223,6 @@ e stepsorvalue
 
 theorem identity-behavior : forall dv : e value exists (fn x : tau => x) e -> e.
 
-
-/** The actual proof is a series of statements of the form:
- *
- * name : judge			by justification
- *
- * Here name is an identifier that is used to refer to each fact, in case we need it
- * later.  judge is the judgment we've proved.  And the justification is the reason
- * we believe it's true (SASyLF will make sure we're right by checking that the
- * justification actually proves the judgment).
- *
- * The most common justification is "by rule <rule-name> on <name1>, <name2>, ..., <name_k>"
- * This means that we conclude the judgment on the left by applying rule <rule-name> to the
- * (ordered) list of premises <name1>, <name2>, ..., <name_k>.  Each <name> must be either
- * one of the foralls (we don't have any for this theorem) or one of the earlier things we
- * concluded.  If the rule has no premises (i.e. it's an axiom) we leave out the "on <name1>..."
- * part.
- */
-
 d1 : (fn x : tau => x) e -> e by rule r-app on dv
 
 end theorem
@@ -233,13 +236,12 @@ end theorem
 
 /************************ PROGRESS **************************************/
 
+/************************************************
+ * EXERCISE 2: FIX PROGRESS TO ADD CASES FOR IF *
+ ************************************************/
+
 
 theorem progress : forall dt : * |- e : tau exists e stepsorvalue.
-
-/** Now the real fun begins--a proof by induction.  We use a "by induction on X :"
- * justification, where X is the derivation or syntax that we are doing induction
- * over.
- */
 
 dsv : e stepsorvalue by induction on dt :
 
@@ -269,7 +271,6 @@ is
 end case
 
 // case t-var impossible - conclusion doesn't unify with dt
-
 
 case rule
 
@@ -351,16 +352,16 @@ is
 
 			case rule
 			
-				dp1t2' : (*) |- e12 : tau''
-				dp1t1' : *, x:tau'' |- e11[x] : tau' -> tau
-				-------------------------------------------------- t-let
-				tp1t' : (*) |- let x = e12 in e11[x] : tau' -> tau
-			
+				dift1' : (*) |- e11 : bool
+				dift2' : (*) |- e12 : tau' -> tau
+				dift3' : (*) |- e13 : tau' -> tau
+				---------------------------------------------- t-if
+				dift' : (*) |- if e11 then e12 else e13 : tau' -> tau
+
 			is
 				dsv : e stepsorvalue by case analysis on dp1v :
 				
 				end case analysis
-								
 			end case
 			
 			// other cases don't unify with conclusion
@@ -400,85 +401,45 @@ is
 end case
 
 case rule
-	d1: * |- e1 : tau1
-	d2: *, x:tau1 |- e2[x] : tau
-	------------------------------ t-let
-	d3: * |- let x = e1 in e2[x] : tau
+
+    dift1: * |- e1 : bool
+    dift2: * |- e2 : tau
+    dift3: * |- e3 : tau
+    ------------------------------------------ t-if
+    diftc: * |- if e1 then e2 else e3 : tau
+
 is
-	d4: e1 stepsorvalue by induction hypothesis on d1
-	d5: e stepsorvalue by case analysis on d4:
-	case rule
+    /* Apply induction hypothesis to the condition e1 */
+    d1sv: e1 stepsorvalue by induction hypothesis on dift1
 
-		d6 : e1 value
-		---------------------- stepsorvalue-value
-		d7 : e1 stepsorvalue
+    dsv: e stepsorvalue by case analysis on d1sv:
+        case rule
+            d1v: e1 value
+            ----------------------- stepsorvalue-value
+            d1sv': e1 stepsorvalue
+        is
+            /* e1 is a value; because it has type bool, it must be 'true' or 'false' */
+            dsv: e stepsorvalue by case analysis on dift1:
+                case rule
+				   
+                    ----------------------- t-true
+                    dtruet: * |- true : bool
+                is
+				
 
-	is
-		d8: let x = e1 in e2[x] -> e2[e1] by rule r-let on d6
-		d9: let x = e1 in e2[x] stepsorvalue by rule stepsorvalue-steps on d8
-	end case
-	
-	case rule
-	
-		d6 : e1 -> e1'
-		-------------------------- stepsorvalue-steps
-		d7 :  e1 stepsorvalue
-	
-	is
-		d8: let x = e1 in e2[x] -> let x = e1' in e2[x] by rule c-let on d6
-		d9: let x = e1 in e2[x] stepsorvalue by rule stepsorvalue-steps on d8
-	end case
-	end case analysis
-end case
 end induction
 end theorem
 
 
 /************************ PRESERVATION **************************************/
 
+/****************************************************
+ * EXERCISE 2: FIX PRESERVATION TO ADD CASES FOR IF *
+ ****************************************************/
 
 theorem preservation: forall dt: * |- e : tau forall ds: e -> e' exists * |- e' : tau.
 
 dt' : * |- e' : tau by induction on ds:
-
-case rule
-
-	d1 : e1 -> e1'
-	------------------------------------------------ c-let
-	d2 : let x = e1 in e2[x] -> let x = e1' in e2[x] 
-
-is
-	dt' : * |- e' : tau by case analysis on dt:
-	case rule
-		d3: * |- e1 : tau1
-		d4: *, x:tau1 |- e2[x] : tau
-		----------------------------------- t-let
-		d5: * |- let x = e1 in e2[x] : tau
-	is
-		d6: * |- e1' : tau1 by induction hypothesis on d3, d1
-		d7: * |- let x = e1' in e2[x] : tau by rule t-let on d6, d4
-	end case
-	end case analysis
-end case
-
-case rule
-
-	d1 : e1 value
-	---------------------------------- r-let
-	d2 : let x = e1 in e2[x] -> e2[e1]
-
-is
-	dt' : * |- e' : tau by case analysis on dt:
-	case rule
-		d3: * |- e1 : tau1
-		d4: *, x:tau1 |- e2[x] : tau
-		----------------------------------- t-let
-		d5: * |- let x = e1 in e2[x] : tau
-	is
-		dt' : * |- e2[e1] : tau by substitution on d4, d3
-	end case
-	end case analysis
-end case
 
 case rule
 

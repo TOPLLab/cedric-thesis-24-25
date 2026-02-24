@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import type { ChildProcess } from 'child_process';
 import { spawn, spawnSync } from 'child_process';
-import path from 'path';
+import path from 'node:path';
 import {
 	ResponseSchema,
 	type Response,

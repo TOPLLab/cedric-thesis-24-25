@@ -9,14 +9,9 @@
  * lemma, this theorem proves that addition commutes.
  *
  * EXERCISE 1: complete the proof of lemma sum-s-rh
- *
- * SOLUTION 1: see the file sum.slf in the examples directory
  */
 
 
-/** The package declaration is currently a placeholder, but
- * will eventually support a module system for SASyLF
- */
 package edu.cmu.cs.sum;
 
 

@@ -1,25 +1,29 @@
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'url';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import dts from 'vite-plugin-dts';
 
 import pkg from './package.json';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig((_) => ({
 	plugins: [dts()],
+	ssr: {
+		noExternal: [/@bufbuild\/protobuf/]
+	},
 	build: {
 		ssr: true,
-		sourcemap: mode === "dev",
+		sourcemap: true,
 		lib: {
 			entry: resolve(__dirname, 'src/index.ts'),
 			name: pkg.name,
-			fileName: 'extension',
+			fileName: 'index',
 			formats: ['es'],
 		},
 		rollupOptions: {
+			input: 'src/index.ts',
 			external: [
 				...Object.keys(pkg.devDependencies),
-				'vscode'
+				'vscode',
 			],
 		},
 	},
