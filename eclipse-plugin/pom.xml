@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.sasylf</groupId>
+    <artifactId>org.sasylf</artifactId>
+    <version>1.5.1</version>
+    <packaging>eclipse-plugin</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <jackson.version>2.16.1</jackson.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>edu.cmu.cs.sasylf</groupId>
+            <artifactId>sasylf</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.core.runtime</artifactId>
+            <version>3.31.100</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.core.resources</artifactId>
+            <version>3.20.100</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.ui</artifactId>
+            <version>3.206.100</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.swt</artifactId>
+            <version>3.127.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-maven-plugin</artifactId>
+                <version>4.0.8</version>
+                <extensions>true</extensions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>target-platform-configuration</artifactId>
+                <version>4.0.7</version>
+                <configuration>
+                    <environments>
+                        <environment>
+                            <os>linux</os>
+                            <ws>gtk</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>win32</os>
+                            <ws>win32</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>macosx</os>
+                            <ws>cocoa</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                    </environments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
