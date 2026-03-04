@@ -3,7 +3,8 @@ import EventEmitter from 'node:events';
 import * as vscode from 'vscode';
 
 export class ContextView extends EventEmitter<{
-	'dispose': []
+	'dispose': [],
+	'changeViewState': [vscode.WebviewPanelOnDidChangeViewStateEvent]
 }> {
 	private panel: vscode.WebviewPanel;
 
@@ -37,6 +38,8 @@ export class ContextView extends EventEmitter<{
 		this.panel.onDidDispose(() => {
 			this.emit('dispose');
 		});
+
+		this.panel.onDidChangeViewState(e => this.emit('changeViewState', e));
 	}
 
 	public postContext(ctx: Context): void {

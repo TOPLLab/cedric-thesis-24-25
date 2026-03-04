@@ -18,6 +18,11 @@ export class SasylfDocument {
 		this.process = new Client(ctx);
 		this.editors = [];
 		this.ctxView = new ContextView(ctx, fileName);
+		this.ctxView.on('changeViewState', (e) => {
+			if (e.webviewPanel.active && this.editors.length > 0) {
+				vscode.window.showTextDocument(this.editors[0].document, this.editors[0].viewColumn);
+			}
+		});
 		this.ctxView.reveal();
 		this.decorations = new DecorationsView();
 		this.lastPosition = new vscode.Position(0, 0);
@@ -28,6 +33,7 @@ export class SasylfDocument {
 	public close(): void {
 		this.process.removeAllListeners();
 		this.process.close();
+		this.ctxView?.removeAllListeners();
 		this.ctxView?.dispose();
 		this.ctxView = null;
 	}
