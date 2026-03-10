@@ -8,7 +8,7 @@
   "repository": "https://github.com/TOPLLab/cedric-thesis-24-25",
   "license": "EPL-2.0",
   "displayName": "Live SASyLF",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "packageManager": "pnpm@9.12.3",
   "type": "module",
   "engines": {
@@ -41,6 +41,26 @@
         "title": "SASyLF: Restart Current Process"
       }
     ],
+    "keybindings": [
+      {
+        "command": "live-sasylf.runToCursor",
+        "key": "alt+right",
+        "mac": "ctrl+alt+right"
+      },
+      {
+        "command": "live-sasylf.runNext",
+        "key": "alt+down",
+        "mac": "ctrl+alt+down"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceLangId == sasylf",
+          "command": "live-sasylf.runToCursor"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "sasylf",
