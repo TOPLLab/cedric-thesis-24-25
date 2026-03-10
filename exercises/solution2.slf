@@ -160,6 +160,14 @@ assumes Gamma
 -------------------------- t-unit
 Gamma |- "("")" : unit
 
+
+-------------------------- t-true-bool
+Gamma |- true: bool
+
+
+-------------------------- t-false-bool
+Gamma |- false: bool
+
 /** This rule shows how to use an assumption in Gamma to determine that a variable
  * is well-typed.  These assumption-using rules have a special form: no premises are
  * allowed, exactly one variable must be free in Gamma, and one variable free in the
@@ -267,6 +275,30 @@ is
 
 	dv : e value by rule val-unit
 	dsv : "("")" stepsorvalue by rule stepsorvalue-value on dv
+
+end case
+
+case rule
+
+    --------------------- t-true-bool
+    dtt: * |- true : bool
+
+is
+
+	dv : e value by rule val-true
+	dsv : true stepsorvalue by rule stepsorvalue-value on dv
+
+end case
+
+case rule
+
+    ---------------------- t-false-bool
+    dtt: * |- false : bool
+
+is
+
+	dv : e value by rule val-false
+	dsv : false stepsorvalue by rule stepsorvalue-value on dv
 
 end case
 
@@ -413,6 +445,15 @@ is
     d1sv: e1 stepsorvalue by induction hypothesis on dift1
 
     dsv: e stepsorvalue by case analysis on d1sv:
+		case rule
+			d1v: e1 -> e1'
+			----------------------- stepsorvalue-steps
+			d1sv': e1 stepsorvalue
+		is
+			ds: if e1 then e2 else e3 -> if e1' then e2 else e3 by rule r-if-cond on d1v
+			dsv: e stepsorvalue by rule stepsorvalue-steps on ds
+		end case
+
         case rule
             d1v: e1 value
             ----------------------- stepsorvalue-value
@@ -421,12 +462,53 @@ is
             /* e1 is a value; because it has type bool, it must be 'true' or 'false' */
             dsv: e stepsorvalue by case analysis on dift1:
                 case rule
-				   
-                    ----------------------- t-true
-                    dtruet: * |- true : bool
-                is
-				
 
+					---------------------- t-true-bool
+					det1: * |- true : bool
+				is 
+					ds: if true then e2 else e3 -> e2 by rule r-if-true
+					dsv: e stepsorvalue by rule stepsorvalue-steps on ds
+				end case
+
+                case rule
+
+					----------------------- t-false-bool
+					def1: * |- false : bool
+				is 
+					ds: if false then e2 else e3 -> e3 by rule r-if-false
+					dsv: e stepsorvalue by rule stepsorvalue-steps on ds
+				end case
+			
+				case rule
+				
+					dp1t1' : * |- e11 : tau' -> bool
+					dp1t2' : * |- e12 : tau'
+					--------------------------------------------- t-app
+					tp1t' : * |- e11 e12 : bool
+				
+				is
+					dsv : e stepsorvalue by case analysis on d1v :
+					
+					end case analysis
+				end case
+
+				case rule
+				
+					dift1' : * |- e11 : bool
+					dift2' : * |- e12 : bool
+					dift3' : * |- e13 : bool
+					---------------------------------------------- t-if
+					dift' : * |- if e11 then e12 else e13 : bool
+
+				is
+					dsv : e stepsorvalue by case analysis on d1v :
+					
+					end case analysis
+				end case
+			end case analysis
+		end case
+	end case analysis
+end case
 end induction
 end theorem
 
