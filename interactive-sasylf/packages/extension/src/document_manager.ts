@@ -52,8 +52,8 @@ export class DocumentManager {
 			document.changedAt(ctx, changes[0].range.start);
 		}));
 
-		ctx.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(evt => {
-			this.cursorChanged(evt.selections);
+		ctx.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(async evt => {
+			await this.cursorChanged(evt.selections);
 		}));
 	}
 
@@ -168,7 +168,7 @@ export class DocumentManager {
 		this.getCurrentDocumentHandler()!.activate();
 	}
 
-	private cursorChanged(selections: readonly vscode.Selection[]) {
-		this.getCurrentDocumentHandler()?.cursorChanged(selections);
+	private async cursorChanged(selections: readonly vscode.Selection[]) {
+		await this.getCurrentDocumentHandler()?.cursorChanged(selections);
 	}
 }

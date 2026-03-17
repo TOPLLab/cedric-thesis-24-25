@@ -1,8 +1,8 @@
-/* 
+/*
  * Formalization of integers, addition, and a proof that addition commutes
  *
  * Author: Jonathan Aldrich
- * 
+ *
  * This file defines natural numbers in terms of zero (z) and successor s n,
  * defines judgments for sums and less than, proves a lemma and a theorem,
  * and sets up another lemma to be proven as SASyLF exercise 1.  With the new
@@ -73,7 +73,7 @@ n1 + n2 = n3
  * derivation of the judgment itself must be named (see further below).
  * We can assume derivations are available for all the facts in the forall
  * part; we are trying to construct a derivation for the exists part.
- */ 
+ */
 
 theorem n_plus_1_equals_s_n : forall n exists (s (z)) + n = (s n).
 
@@ -196,7 +196,7 @@ theorem sum-commutes: forall d1: n1 + n2 = n3 exists n2 + n1 = n3.
  * but over the derivation "d1" of the judgment "n1 + n2 = n3."  Thus
  * our case analysis will be not over alternative BNF forms, but of
  * that could have been used to derive d1.
- */ 
+ */
 
 d2: n2 + n1 = n3 by induction on d1:
 
@@ -216,7 +216,7 @@ is
 	 * by giving a syntax or a judgment for each of the "forall" clauses
 	 * of the theorem.
 	 */
-	
+
 	dz1: n + (z) = n by theorem sum-z-rh on n
 
 end case

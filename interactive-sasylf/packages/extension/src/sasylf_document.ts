@@ -18,11 +18,12 @@ export class SasylfDocument {
 		this.process = new Client(ctx);
 		this.editors = [];
 		this.ctxView = new ContextView(ctx, fileName);
-		this.ctxView.on('changeViewState', (e) => {
-			if (e.webviewPanel.active && this.editors.length > 0) {
-				vscode.window.showTextDocument(this.editors[0].document, this.editors[0].viewColumn);
-			}
-		});
+		// FIXME: disabled because it would not allow to close an editor without closing the ctx view first.
+		// this.ctxView.on('changeViewState', (e) => {
+		// 	if (e.webviewPanel.active && this.editors.length > 0) {
+		// 		vscode.window.showTextDocument(this.editors[0].document, this.editors[0].viewColumn);
+		// 	}
+		// });
 		this.ctxView.reveal();
 		this.decorations = new DecorationsView();
 		this.lastPosition = new vscode.Position(0, 0);
@@ -145,7 +146,7 @@ export class SasylfDocument {
 		this.process.stageInput(...filtered);
 	}
 
-	public cursorChanged(selections: readonly vscode.Selection[]): void {
+	public async cursorChanged(selections: readonly vscode.Selection[]): Promise<void> {
 		if (selections.length === 0) {
 			return;
 		}
@@ -155,21 +156,21 @@ export class SasylfDocument {
 			// get the range with the cursor inside
 			[...this.contexts.keys()].find(range => range.start.isBeforeOrEqual(position) && range.end.isAfter(position))
 			// fallback to the last context
-			?? [...this.contexts.keys()].reduce((last, range) => range.start.isAfterOrEqual(last.end) ? range : last);
+			?? [...this.contexts.keys()].reduce((last, range) => range.start.isAfterOrEqual(last.end) ? range : last, new vscode.Range(0, 0, 0, 0));
 
 		if (key === undefined) {
-			this.ctxView?.postContext(create(ContextSchema));
+			await this.ctxView?.postContext(create(ContextSchema));
 			return;
 		}
 
 		const context = this.contexts.get(key);
 		if (context === undefined) {
 			vscode.window.showWarningMessage("No context found where one was expected.");
-			this.ctxView?.postContext(create(ContextSchema));
+			await this.ctxView?.postContext(create(ContextSchema));
 			return;
 		}
 
-		this.ctxView?.postContext(context);
+		await this.ctxView?.postContext(context);
 	}
 
 	public deactivate(): void {
@@ -187,10 +188,10 @@ export class SasylfDocument {
 			}
 		});
 
-		this.process.on('success', (range, response) => {
+		this.process.on('success', async (range, response) => {
 			this.contexts.set(range, response.context!);
 
-			this.ctxView?.postContext(response.context!);
+			await this.ctxView?.postContext(response.context!);
 			for (const editor of this.editors) {
 				this.decorations.setSuccess(editor, range, response.warnings);
 			}

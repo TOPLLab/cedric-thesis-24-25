@@ -2113,7 +2113,7 @@ Pair<Theorem, Token> TheoremPrologue(boolean abstractOK) :
 Theorem TheoremEpilogue(Theorem thm, Token t0, boolean abstractOK) :
 { Token tinit = null, t, tp=null; StringSpan s, sp=null; Clause c; Clause a = null; Binding b; Derivation d; }
 {
-  <END> (tp=<THEOREM> | tp=<LEMMA> | sp=RuleName() { tp = null; } ) 
+  <END> (tp=<THEOREM> | tp=<LEMMA> | sp=RuleName() { tp = null; } )  <EOF>
   {
     if (tp == null) {
         ErrorHandler.recoverableError(Errors.WRONG_END,"'end " + t0.image + "'",
@@ -2382,15 +2382,10 @@ whereClauses=WhereClauses()
 
 
 Derivation InductionJustificationEpilogue(DerivationByAnalysis di) :
-{ Token t = null; Token of = null;
+{ Token t = null;
 }
 {
-    of=<END>
-    (t=<INDUCTION> |
-     (LOOKAHEAD(2) <CASE> t=<ANALYSIS> | t=<CASE> | t=<LEMMA> | t=<THEOREM>)
-     { String wrong = t.image;
-       if (wrong.equals("analysis")) wrong = "case analysis";
-       ErrorHandler.recoverableError(Errors.WRONG_END,"'end induction'",new TokenSpan(t),wrong+"\ninduction"); } )
+   <END> t=<INDUCTION> <EOF>
     {
         di.setEndLocation(Location.endOf(t));
         return di;
@@ -2399,13 +2394,10 @@ Derivation InductionJustificationEpilogue(DerivationByAnalysis di) :
 
 
 Derivation CaseAnalysisJustificationEpilogue(DerivationByAnalysis dca) :
-{ Token t = null; Token of = null;
+{ Token t = null;
 }
 {
-     of=<END>
-     ( LOOKAHEAD(2) <CASE> t=<ANALYSIS> |
-      (t=<CASE> | t=<INDUCTION> | t=<LEMMA> | t=<THEOREM> )
-      { ErrorHandler.recoverableError(Errors.WRONG_END,"'end case analysis'",new TokenSpan(t),t.image+"\ncase analysis"); } )
+     <END> <CASE> t=<ANALYSIS> <EOF>
      { dca.setEndLocation(Location.endOf(t)); return dca; }
 }
 
@@ -2590,7 +2582,7 @@ Case CasePrologue() :
 	  );
     }
   )
-    u=<IS>
+    u=<IS> <EOF>
     {
         ca.setEndLocation(Location.endOf(u));
         return ca;
@@ -2599,17 +2591,12 @@ Case CasePrologue() :
 
 Case CaseEpilogue(Case ca) :
 {
-    Token t, u; Token rest;
+    Token t;
 }
 {
-    t=<END>
-    (LOOKAHEAD(2) u=<CASE> |
-     (<CASE> u=<ANALYSIS> | u=<INDUCTION> | u=<LEMMA> | u=<THEOREM>)
-     { String bad = u.image;
-       if (bad.equals("analysis")) bad = "case analysis";
-       ErrorHandler.recoverableError(Errors.WRONG_END,"'end case'",new TokenSpan(u),bad+"\ncase"); } )
+    <END> t=<CASE> <EOF>
     {
-        ca.setEndLocation(Location.endOf(u));
+        ca.setEndLocation(Location.endOf(t));
         return ca;
     }
 }

@@ -31,7 +31,7 @@ public class DerivationByCaseAnalysis extends DerivationByAnalysis {
 
     @Override
     public void run(Orchestrator orch, Context ctx) {
-        this.epilogueParseFn = (parser) -> parser.CaseAnalysisJustificationEpilogue(this);
+        super.epilogueParseFn = (parser) -> parser.CaseAnalysisJustificationEpilogue(this);
 
         if (getArgStrings().size() != 1) {
             ErrorHandler.recoverableError(Errors.CASE_SUBJECT_MULTIPLE, this);

@@ -80,7 +80,7 @@ public class DerivationByInduction extends DerivationByAnalysis {
         }
         assert is != null;
 // TODO:       System.out.println("Induction variable: " + this.getArgStrings().get(is.hashCode()));
-        this.epilogueParseFn = (parser) -> parser.InductionJustificationEpilogue(this);
+        super.epilogueParseFn = (parser) -> parser.InductionJustificationEpilogue(this);
         super.run(orch, ctx);
     }
 

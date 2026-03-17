@@ -47,7 +47,7 @@ export class Client extends EventEmitter<{
 		const jarPath = path.join(ctx.extensionPath, "lib", "SASyLF.jar");
 		this.ps = spawn("java", [
 			// "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
-			"--sun-misc-unsafe-memory-access=allow",
+			// "--sun-misc-unsafe-memory-access=allow",
 			"-jar",
 			jarPath,
 			"--interactive"
@@ -173,6 +173,11 @@ export class Client extends EventEmitter<{
 
 	private handleStdErr(data: ArrayBuffer) {
 		const stream = data.toString();
+
+		// Let's ignore those pesky warning
+		if (stream.includes('WARNING:')) {
+			return;
+		}
 
 		console.error(`An error occurred in the SASyLF process: ${stream}`);
 

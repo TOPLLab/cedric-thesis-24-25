@@ -42,8 +42,8 @@ export class ContextView extends EventEmitter<{
 		this.panel.onDidChangeViewState(e => this.emit('changeViewState', e));
 	}
 
-	public postContext(ctx: Context): void {
-		this.panel.webview.postMessage(ctx);
+	public async postContext(ctx: Context): Promise<void> {
+		await this.panel.webview.postMessage(ctx);
 	}
 
 	public reveal(): void {
