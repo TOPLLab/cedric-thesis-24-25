@@ -37,7 +37,6 @@ function getSyncWordsAndIndexes(input: string): [SyncWord, number][] {
 		.map((word): [SyncWord, number | null] => {
 			const re = new RegExp(`\\b${word.replace(' ', `\\s+`)}\\b`);
 			const match = re.exec(input);
-			console.log(match);
 			return [word, match?.index ?? null];
 		})
 		.filter((result): result is [SyncWord, number] => result[1] !== null)
@@ -121,42 +120,41 @@ export function preparse(input: string): SasylfInput[] {
 			if (resultInThm.length > 0) {
 				currentPos = resultInThm[resultInThm.length - 1].range.end;
 			}
-		} else
-			if (index !== 0 && input.slice(0, index).trim() !== "") {
-				const slice = input.slice(0, index);
-				const endPos = calculatePosition(currentPos, slice);
-				result.push({
+		} else if (index !== 0 && input.slice(0, index).trim() !== "") {
+			const slice = input.slice(0, index);
+			const endPos = calculatePosition(currentPos, slice);
+			result.push({
+				range: new vscode.Range(currentPos, endPos),
+				input: slice
+			});
+			currentPos = endPos;
+			input = input.slice(index);
+		} else {
+			const newInput = input.slice(index + sync.length);
+
+			// Get slice until next Sync
+			const nextSyncIndex = getFirstSyncWordAndIndex(newInput);
+
+			// If no Sync, take everything till the end
+			if (nextSyncIndex === null) {
+				const endPos = calculatePosition(currentPos, input);
+				return [...result, {
 					range: new vscode.Range(currentPos, endPos),
-					input: slice
-				});
-				currentPos = endPos;
-				input = input.slice(index);
-			} else {
-				const newInput = input.slice(index + sync.length);
-
-				// Get slice until next Sync
-				const nextSyncIndex = getFirstSyncWordAndIndex(newInput);
-
-				// If no Sync, take everything till the end
-				if (nextSyncIndex === null) {
-					const endPos = calculatePosition(currentPos, input);
-					return [...result, {
-						range: new vscode.Range(currentPos, endPos),
-						input: input
-					}];
-				}
-
-				// Else slice until next sync
-				const [_, nextIndex] = nextSyncIndex;
-				const slice = input.slice(0, index + sync.length + nextIndex);
-				const endPos = calculatePosition(currentPos, slice);
-				result.push({
-					range: new vscode.Range(currentPos, endPos),
-					input: slice
-				});
-				currentPos = endPos;
-				input = input.slice(index + sync.length + nextIndex);
+					input: input
+				}];
 			}
+
+			// Else slice until next sync
+			const [_, nextIndex] = nextSyncIndex;
+			const slice = input.slice(0, index + sync.length + nextIndex);
+			const endPos = calculatePosition(currentPos, slice);
+			result.push({
+				range: new vscode.Range(currentPos, endPos),
+				input: slice
+			});
+			currentPos = endPos;
+			input = input.slice(index + sync.length + nextIndex);
+		}
 	}
 }
 

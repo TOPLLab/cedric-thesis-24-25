@@ -37,6 +37,7 @@ public class Orchestrator {
 
         var responsePb = Response.newBuilder()
                 .setContext(ctx.toTypePb())
+                .addAllErrors(errorReports)
                 .addAllWarnings(waringReports)
                 .build();
         String jsonOutput = JsonFormat.printer()

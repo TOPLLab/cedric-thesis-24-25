@@ -1596,7 +1596,7 @@ CompUnit InteractiveUnit() :
   CompUnit cu;
 }
 {
-  [ pkg=PackageDeclaration() ]
+  pkg=PackageDeclaration()
   [ LOOKAHEAD(3) firstToken=<MODULE> t=<IDENTIFIER> { moduleName = t.image; } ]
   {
     if (pkg == null)

@@ -1,43 +1,11 @@
-/* Comment
-*/
-package edu.cmu.cs.sum;
+package test
 
+terminals s z
 
-/**************** TERMINALS & SYNTAX *************************************/
-
-/** SASyLF programs explicitly declare terminals that are
- * used to parse expressions. This helps the SASyLF parser
- * detect problems in the input grammar--anything that is not
- * a declared terminal, non-terminal, or variable must be an error.
- * The user should declare all identifiers used in syntax and judgment
- * that do not themselves denote syntactic classes. Symbols like
- * + or |- do not need to be declared, even if they are terminals.
- */
-terminals z s
-
-/** The syntax section declares the syntax of the formal
- *  system. Syntax is given using an ordinary BNF grammar.
- */
 syntax
 
-/** This declaration declares n as a nonterminal, representing a natural
- *  number.  n and variants of n (n', n'', n1, n2, etc.--you can add
- *  primes or numbers) are used as metavariables for this syntactic
- *  category, as commonly used in the PL research literature.
- */
 n ::= z
-  | s n
-
-
-/************************ JUDGMENTS **************************************/
-
-/** We declare a judgment with a name ("sum") and a form ("n + n = n").
- * The judgment is then followed by a series of inference rules that define
- * the judgment's semantics.
- *
- * Rules are defined with the premises above the line and the conclusion
- * below the line.
- */
+    | s n
 
 judgment sum: n + n = n
 
@@ -47,45 +15,3 @@ z + n = n
 n1 + n2 = n3
 -------------------- sum-s
 (s n1) + n2 = (s n3)
-
-/************************************************************************
- * EXERCISE 1 HERE											            *
- ************************************************************************/
-
-theorem sum-s-rh: forall d1: n1 + n2 = n3 exists n1 + (s n2) = (s n3).
-
-    d2: n1 + (s n2) = s n3 by unproved // TODO: replace the unproved with a real proof
-
-end theorem
-
-
-/************************************************************************
- * Given sum-z-rh for finishing sum-commutes                            *
- ************************************************************************/
-
-theorem sum-z-rh: forall n exists n + (z) = n.
-
-    d1: n + (z) = n by induction on n:
-
-        case z is
-           	d2: (z) + (z) = (z)	by rule sum-z
-        end case
-
-        case s n' is
-           	d3: n' + (z) = n'	by induction hypothesis on n'
-           	d4: (s n') + (z) = (s n')	by rule sum-s on d3
-        end case
-
-    end induction
-
-end theorem
-
-/************************************************************************
- * EXERCISE 2 HERE											            *
- ************************************************************************/
-
-theorem sum-commutes: forall d1: n1 + n2 = n3 exists n2 + n1 = n3.
-
-    d2: n2 + n1 = n3 by unproved // TODO: replace the unproved with a real proof
-
-end theorem
